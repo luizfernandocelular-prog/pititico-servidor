@@ -1,0 +1,22 @@
+PiTiTiCo MongoDB Atlas
+
+1. Substitua:
+   C:\pititico-servidor\server.js
+
+2. Crie um arquivo chamado:
+   C:\pititico-servidor\.env
+
+3. Copie o conteúdo do arquivo .env.example para o .env.
+
+4. No .env, troque SUA_SENHA_AQUI pela senha real do MongoDB Atlas.
+
+5. Instale:
+   npm.cmd install mongodb dotenv
+
+6. Reinicie:
+   node server.js
+
+7. Teste:
+   http://localhost:3000/status
+
+Se o MongoDB estiver vazio e o banco.json tiver dados, o servidor tenta migrar automaticamente.

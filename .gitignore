@@ -1,0 +1,6 @@
+node_modules
+.env
+banco.json
+*.zip
+ngrok.exe
+ngrok-v3-stable-windows-amd64.zip
