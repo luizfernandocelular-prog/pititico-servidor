@@ -211,8 +211,9 @@ function renderItens(){
 }
 
 function renderAnuncios(){
-  if(!anuncios.length){anuncios.innerHTML='<div class="empty">Nenhum anúncio cadastrado.</div>';return}
-  anuncios.innerHTML=anuncios.map(a=>{
+  const boxAnuncios = document.getElementById("anuncios");
+  if(!anuncios.length){boxAnuncios.innerHTML='<div class="empty">Nenhum anúncio cadastrado.</div>';return}
+  boxAnuncios.innerHTML=anuncios.map(a=>{
     const st=a.status||"ativo", id=a.id||a._id||"";
     return `<div class="ad">
       <h2>${esc(a.titulo||"Anúncio")}</h2>
