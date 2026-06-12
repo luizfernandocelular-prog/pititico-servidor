@@ -39,6 +39,44 @@ textarea{min-height:80px}
 .modal h2{color:#eb4fa0}
 pre{white-space:pre-wrap;font-size:12px;background:#fff6fa;padding:12px;border-radius:12px}
 @media(max-width:1000px){.cards{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}}
+
+.ad-preview {
+  margin-top: 12px;
+  background: #fff2f8;
+  border-radius: 20px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.ad-preview img, .ad-preview .ad-preview-fallback {
+  width: 62px;
+  height: 62px;
+  border-radius: 999px;
+  object-fit: cover;
+  background: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  flex: 0 0 62px;
+}
+.ad-preview strong {
+  display: block;
+  color: #eb4fa0;
+  margin-bottom: 4px;
+}
+.ad-preview small {
+  color: #655568;
+  font-weight: 700;
+}
+.ad-help {
+  font-size: 13px;
+  color: #7a6072;
+  margin-top: -6px;
+  margin-bottom: 10px;
+}
+
 </style>
 </head>
 <body>
@@ -98,7 +136,7 @@ pre{white-space:pre-wrap;font-size:12px;background:#fff6fa;padding:12px;border-r
     <input type="hidden" id="adId">
     <label>Título</label><input id="adTitulo" placeholder="Promoção, aviso ou parceiro">
     <label>Texto</label><textarea id="adTexto"></textarea>
-    <label>Imagem/GIF URL</label><input id="adImagem" placeholder="https://...">
+    <label>Imagem/GIF URL</label><input id="adImagem" placeholder="https://i.imgur.com/banner.png"><div class="ad-help">Use link direto de imagem: .jpg, .png, .gif ou .webp. Google Photos normalmente não funciona direto.</div>
     <label>Link</label><input id="adLink" placeholder="https://...">
     <label>Status</label><select id="adStatus"><option value="ativo">Ativo</option><option value="inativo">Inativo</option></select>
     <button class="btn-light" onclick="fecharAnuncio()">Cancelar</button>
@@ -212,13 +250,32 @@ function renderItens(){
 
 function renderAnuncios(){
   const boxAnuncios = document.getElementById("anuncios");
-  if(!anuncios.length){boxAnuncios.innerHTML='<div class="empty">Nenhum anúncio cadastrado.</div>';return}
+
+  if(!anuncios.length){
+    boxAnuncios.innerHTML='<div class="empty">Nenhum anúncio cadastrado.</div>';
+    return;
+  }
+
   boxAnuncios.innerHTML=anuncios.map(a=>{
     const st=a.status||"ativo", id=a.id||a._id||"";
+    const imagem = esc(a.imagem || "");
+    const img = imagem
+      ? `<img src="${imagem}" onerror="this.outerHTML='<span class=&quot;ad-preview-fallback&quot;>🍼</span>'">`
+      : `<span class="ad-preview-fallback">🍼</span>`;
+
     return `<div class="ad">
       <h2>${esc(a.titulo||"Anúncio")}</h2>
       <p><b>Status:</b> <span class="badge ${st}">${st}</span></p>
       <p>${esc(a.texto)}</p>
+
+      <div class="ad-preview">
+        ${img}
+        <div>
+          <strong>${esc(a.titulo||"Anúncio")}</strong>
+          <small>${esc(a.texto||"Toque para saber mais")}</small>
+        </div>
+      </div>
+
       <p><b>Imagem/GIF:</b> ${esc(a.imagem)}</p>
       <p><b>Link:</b> ${esc(a.link)}</p>
       <button class="btn-blue" onclick='editarAd("${id}")'>Editar</button>
