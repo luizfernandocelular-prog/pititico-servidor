@@ -853,7 +853,7 @@
   <div class="splash">
     <div class="splash-baby">👶</div>
     <h1>PiTiTiCo</h1>
-    <p>Para melhor mãe do mundo.</p>
+    <p>Paro melhor bebê do mundo.</p>
   </div>
 
   <aside id="sidebar" class="sidebar">
@@ -862,7 +862,7 @@
         <span class="logo-icon">👶</span>
         <span class="logo-text">
           <strong>PiTiTiCo</strong>
-          <small>Para melhor mãe do mundo.</small>
+          <small>Paro melhor bebê do mundo.</small>
         </span>
       </div>
 
@@ -889,7 +889,7 @@
     <header class="topbar">
       <div class="brand">
         <h1>PiTiTiCo</h1>
-        <p>Para melhor mãe do mundo.</p>
+        <p>Paro melhor bebê do mundo.</p>
       </div>
 
       <div class="top-actions">
@@ -1135,7 +1135,7 @@
     </main>
 
     <footer>
-      <strong>PiTiTiCo - Para melhor mãe do mundo.</strong>
+      <strong>PiTiTiCo - Paro melhor bebê do mundo.</strong>
       © 2026. Todos os direitos registrados.
     </footer>
   </div>
@@ -1203,28 +1203,8 @@
   </div>
 
   <script>
-    const STORAGE_KEY = "pititico_dados_limpo_v1";
-    const API_PITITICO = (() => {
-      const isAndroid = /Android/i.test(navigator.userAgent || "");
-
-      if (location.protocol === "file:") {
-        return isAndroid ? "https://renna-nonvasculose-norah.ngrok-free.dev" : "http://localhost:3000";
-      }
-
-      if (location.protocol === "content:" || location.protocol === "capacitor:") {
-        return "https://renna-nonvasculose-norah.ngrok-free.dev";
-      }
-
-      if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
-        return "http://localhost:3000";
-      }
-
-      if (location.protocol.startsWith("http") && location.hostname !== "chatgpt.com") {
-        return location.origin;
-      }
-
-      return "https://renna-nonvasculose-norah.ngrok-free.dev";
-    })();
+    const STORAGE_BASE_KEY = "pititico_dados_usuario_v1";
+    const API_PITITICO = "https://pititico-servidor.onrender.com";
 
     let acaoConfirmada = null;
     let usuarioAtual = null;
@@ -1260,9 +1240,45 @@
       };
     }
 
-    function carregarDados() {
-      try {
-        const salvos = localStorage.getItem(STORAGE_KEY);
+    
+    function normalizarEmailUsuario() {
+      return String(usuarioAtual?.email || "sem_usuario")
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9@._-]/g, "_");
+    }
+
+    function getStorageKeyUsuario() {
+      return STORAGE_BASE_KEY + "_" + normalizarEmailUsuario();
+    }
+
+    function limparDadosDaSessaoVisual() {
+      if (typeof bebes !== "undefined") bebes = [];
+      if (typeof rotinas !== "undefined") rotinas = [];
+      if (typeof apoios !== "undefined") apoios = [];
+      if (typeof alimentacoes !== "undefined") alimentacoes = [];
+      if (typeof agenda !== "undefined") agenda = [];
+      if (typeof atividadesManuais !== "undefined") atividadesManuais = [];
+      if (typeof publicacoes !== "undefined") publicacoes = [];
+    }
+
+    function renderTudoUsuario() {
+      if (typeof renderBebes === "function") renderBebes();
+      if (typeof renderRotinas === "function") renderRotinas();
+      if (typeof renderApoios === "function") renderApoios();
+      if (typeof renderAtividadesManuais === "function") renderAtividadesManuais();
+      if (typeof atualizarListasBasicas === "function") atualizarListasBasicas();
+      if (typeof renderAgenda === "function") renderAgenda();
+      if (typeof renderAlimentacao === "function") renderAlimentacao();
+      if (typeof carregarMeusItensServidor === "function") carregarMeusItensServidor();
+      if (typeof carregarVitrineServidor === "function") carregarVitrineServidor();
+    }
+
+function carregarDados() {
+      
+      if (!usuarioAtual) { limparDadosDaSessaoVisual(); return; }
+try {
+        const salvos = localStorage.getItem(getStorageKeyUsuario());
         const dados = salvos ? JSON.parse(salvos) : dadosPadrao();
 
         bebes = dados.bebes || [];
@@ -1285,7 +1301,9 @@
     }
 
     function salvarDados() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      
+      if (!usuarioAtual) return;
+localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
         bebes, rotinas, publicacoes, apoios, alimentacoes, agenda, atividadesManuais, temaAtual
       }));
     }
@@ -1456,6 +1474,8 @@
     function trocarUsuario() {
       localStorage.removeItem("pititico_usuario");
       usuarioAtual = null;
+      limparDadosDaSessaoVisual();
+      renderTudoUsuario();
       renderPerfilSuperior();
       fecharPerfilUsuario();
       mostrarLogin(true, "login");
@@ -1539,6 +1559,9 @@
 
         if (typeof renderPerfilSuperior === "function") renderPerfilSuperior();
         if (typeof esconderLogin === "function") esconderLogin();
+        limparDadosDaSessaoVisual();
+        carregarDados();
+        renderTudoUsuario();
 
         if (typeof carregarMeusItensServidor === "function") carregarMeusItensServidor();
         if (typeof carregarVitrineServidor === "function") carregarVitrineServidor();
@@ -1946,7 +1969,7 @@
           `;
         }).join("");
       } catch (erro) {
-        area.innerHTML = "<div class='list'>Não foi possível carregar a vitrine. No PC, teste abrindo http://localhost:3000/index.html. No celular/APK, deixe o ngrok fixo ligado.</div>";
+        area.innerHTML = "<div class='list'>Não foi possível carregar a vitrine. Verifique sua internet e tente atualizar novamente.</div>";
       }
     }
 
@@ -2125,8 +2148,8 @@
 
     window.addEventListener("scroll", fecharPerfilUsuario, { passive: true });
 
-    carregarDados();
     carregarUsuarioLocal();
+    carregarDados();
     renderBebes();
     carregarMeusItensServidor();
     carregarVitrineServidor();

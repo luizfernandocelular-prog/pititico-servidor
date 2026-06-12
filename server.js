@@ -599,6 +599,100 @@ app.delete("/publicacoes/:id", async (req, res) => {
   }
 });
 
+
+// Dados pessoais por usuário: bebês, rotina, atividades, apoio, alimentação e agenda
+app.post("/dados-pessoais/:tipo", async (req, res) => {
+  try {
+    const tipo = req.params.tipo;
+    const permitidos = ["bebes", "rotinas", "atividades", "apoios", "alimentacoes", "agenda"];
+
+    if (!permitidos.includes(tipo)) {
+      return res.status(400).json({ sucesso: false, mensagem: "Tipo de dado inválido." });
+    }
+
+    const emailUsuario = String(req.body.emailUsuario || req.body.email || "").toLowerCase();
+    const deviceId = req.body.deviceId || "";
+
+    if (!emailUsuario && !deviceId) {
+      return res.status(400).json({ sucesso: false, mensagem: "Usuário não identificado." });
+    }
+
+    const dadosCollection = db.collection("dados_pessoais");
+
+    const registro = {
+      ...req.body,
+      id: req.body.id || Date.now(),
+      tipo,
+      emailUsuario,
+      deviceId,
+      criadoEm: req.body.criadoEm || agoraISO(),
+      atualizadoEm: agoraISO(),
+      status: req.body.status || "ativo"
+    };
+
+    await dadosCollection.insertOne(registro);
+    res.json({ sucesso: true, registro });
+  } catch (erro) {
+    res.status(500).json({ sucesso: false, mensagem: "Erro ao salvar dado pessoal.", detalhe: erro.message });
+  }
+});
+
+app.get("/dados-pessoais/:tipo", async (req, res) => {
+  try {
+    const tipo = req.params.tipo;
+    const permitidos = ["bebes", "rotinas", "atividades", "apoios", "alimentacoes", "agenda"];
+
+    if (!permitidos.includes(tipo)) {
+      return res.status(400).json({ sucesso: false, mensagem: "Tipo de dado inválido." });
+    }
+
+    const emailUsuario = String(req.query.email || "").toLowerCase();
+    const deviceId = req.query.deviceId || "";
+
+    if (!emailUsuario && !deviceId) return res.json([]);
+
+    const dadosCollection = db.collection("dados_pessoais");
+    const dados = await dadosCollection.find({
+      tipo,
+      status: "ativo",
+      $or: [{ emailUsuario }, { deviceId }]
+    }).toArray();
+
+    res.json(dados);
+  } catch (erro) {
+    res.status(500).json({ sucesso: false, mensagem: "Erro ao listar dados pessoais.", detalhe: erro.message });
+  }
+});
+
+app.delete("/dados-pessoais/:tipo/:id", async (req, res) => {
+  try {
+    const tipo = req.params.tipo;
+    const id = Number(req.params.id);
+    const emailUsuario = String(req.body.email || req.query.email || "").toLowerCase();
+    const deviceId = req.body.deviceId || req.query.deviceId || "";
+
+    const dadosCollection = db.collection("dados_pessoais");
+    const resultado = await dadosCollection.updateOne(
+      {
+        tipo,
+        id,
+        status: "ativo",
+        $or: [{ emailUsuario }, { deviceId }]
+      },
+      { $set: { status: "removido", removidoEm: agoraISO() } }
+    );
+
+    if (!resultado.matchedCount) {
+      return res.status(404).json({ sucesso: false, mensagem: "Registro não encontrado." });
+    }
+
+    res.json({ sucesso: true, mensagem: "Registro removido." });
+  } catch (erro) {
+    res.status(500).json({ sucesso: false, mensagem: "Erro ao remover dado pessoal.", detalhe: erro.message });
+  }
+});
+
+
 async function iniciarServidor() {
   try {
     await conectarMongo();
