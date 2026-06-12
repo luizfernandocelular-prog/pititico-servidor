@@ -1,0 +1,2162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>PiTiTiCo</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    :root {
+      --primary: #f0529f;
+      --secondary: #f27fbd;
+      --sidebar-end: #d9b5ff;
+      --bg1: #fff8fc;
+      --bg2: #fff0f8;
+      --soft: #fff0f7;
+      --soft2: #ffd8ea;
+      --text: #1e1b2e;
+      --muted: #5b5870;
+    }
+
+    body.boy-theme {
+      --primary: #2997d8;
+      --secondary: #68c7f5;
+      --sidebar-end: #b5dcff;
+      --bg1: #f6fbff;
+      --bg2: #eaf7ff;
+      --soft: #eef8ff;
+      --soft2: #d5efff;
+    }
+
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, var(--bg1), var(--bg2));
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    .login-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      background: linear-gradient(135deg, #fff8fc, #ffe2f1, #f7d9ff);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .login-screen.show {
+      display: flex;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(255,255,255,.96);
+      border-radius: 28px;
+      padding: 24px;
+      box-shadow: 0 18px 44px rgba(149,76,126,.20);
+    }
+
+    .login-card h1 {
+      margin: 0;
+      color: var(--primary);
+      font-size: 36px;
+    }
+
+    .login-card p {
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .splash {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: linear-gradient(135deg, var(--soft2), #fff4fb, var(--sidebar-end));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      padding: 24px;
+      animation: splashOut .7s ease forwards;
+      animation-delay: 1.2s;
+    }
+
+    .splash-baby {
+      font-size: 84px;
+      background: rgba(255,255,255,.45);
+      border-radius: 36px;
+      padding: 20px;
+      box-shadow: 0 16px 40px rgba(0,0,0,.10);
+      margin-bottom: 18px;
+    }
+
+    .splash h1 {
+      margin: 0;
+      color: var(--primary);
+      font-size: 46px;
+    }
+
+    .splash p {
+      margin: 10px 0 0;
+      color: #7a5d78;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    @keyframes splashOut {
+      to { opacity: 0; visibility: hidden; }
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100dvh;
+      width: 68px;
+      background: linear-gradient(180deg, var(--secondary), var(--sidebar-end));
+      z-index: 100;
+      transition: width .25s ease;
+      box-shadow: 8px 0 22px rgba(149, 76, 126, .18);
+      border-top-right-radius: 28px;
+      border-bottom-right-radius: 28px;
+    }
+
+    .sidebar.expanded {
+      width: 242px;
+    }
+
+    .sidebar-content {
+      height: 100%;
+      overflow: hidden;
+      border-top-right-radius: 28px;
+      border-bottom-right-radius: 28px;
+      padding: 10px 8px 92px;
+      position: relative;
+    }
+
+    .sidebar-header {
+      height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-icon {
+      font-size: 34px;
+      width: 52px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,.25);
+      border-radius: 20px;
+    }
+
+    .logo-text {
+      display: none;
+      flex-direction: column;
+      margin-left: 10px;
+      color: #fff;
+      line-height: 1.1;
+    }
+
+    .logo-text strong {
+      font-size: 24px;
+    }
+
+    .logo-text small {
+      font-size: 10px;
+      margin-top: 4px;
+      font-weight: bold;
+    }
+
+    .sidebar.expanded .logo-text {
+      display: flex;
+    }
+
+    .menu {
+      height: calc(100dvh - 170px);
+      overflow-y: auto;
+      padding: 6px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .menu button {
+      border: none;
+      background: transparent;
+      min-height: 52px;
+      width: 52px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 800;
+      color: #19152d;
+      padding: 0;
+      transition: .2s ease;
+    }
+
+    .sidebar.expanded .menu button {
+      width: 100%;
+      justify-content: flex-start;
+      padding: 0 12px;
+    }
+
+    .menu button.active-menu {
+      background: rgba(255,255,255,.43);
+      box-shadow: 0 10px 20px rgba(149,76,126,.14);
+    }
+
+    .menu .icon {
+      font-size: 29px;
+      width: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .menu .label {
+      display: none;
+      margin-left: 12px;
+      white-space: nowrap;
+    }
+
+    .sidebar.expanded .menu .label {
+      display: inline;
+    }
+
+    .bottom-toggle {
+      position: absolute;
+      left: 16px;
+      bottom: 22px;
+      height: 56px;
+      width: 142px;
+      border: none;
+      border-radius: 20px;
+      background: rgba(255,255,255,.35);
+      color: var(--primary);
+      font-weight: bold;
+      font-size: 15px;
+      box-shadow: 0 8px 24px rgba(149,76,126,.14);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      cursor: pointer;
+    }
+
+    .sidebar:not(.expanded) .bottom-toggle {
+      width: 52px;
+      left: 8px;
+      justify-content: center;
+    }
+
+    .sidebar:not(.expanded) .bottom-toggle span {
+      display: none;
+    }
+
+    .app {
+      margin-left: 68px;
+      min-height: 100dvh;
+      transition: margin-left .25s ease;
+      padding: 14px 12px 22px;
+    }
+
+    .app.shifted {
+      margin-left: 242px;
+    }
+
+    .topbar {
+      background: rgba(255,255,255,.86);
+      border-radius: 24px;
+      padding: 16px 18px;
+      box-shadow: 0 8px 26px rgba(149,76,126,.12);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      gap: 12px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      color: var(--primary);
+      font-size: 34px;
+    }
+
+    .brand p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .theme-btn {
+      border: none;
+      background: var(--soft2);
+      color: var(--primary);
+      border-radius: 999px;
+      padding: 9px 11px;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .avatar {
+      width: 48px;
+      height: 48px;
+      background: var(--soft2);
+      border-radius: 50%;
+      font-size: 27px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .user-popover {
+      position: fixed;
+      right: 18px;
+      top: 82px;
+      z-index: 500;
+      width: 280px;
+      background: #fff;
+      border-radius: 22px;
+      padding: 16px;
+      box-shadow: 0 16px 36px rgba(0,0,0,.18);
+      display: none;
+      border: 1px solid var(--soft);
+    }
+
+    .user-popover.show {
+      display: block;
+    }
+
+    .user-popover strong {
+      color: var(--primary);
+      display: block;
+      font-size: 18px;
+      margin-bottom: 6px;
+    }
+
+    .user-popover .mini {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.45;
+      margin-bottom: 10px;
+    }
+
+    .user-popover button {
+      width: 100%;
+      border: none;
+      border-radius: 14px;
+      padding: 11px;
+      margin-top: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .edit-user-btn {
+      background: var(--secondary);
+      color: #fff;
+    }
+
+    .logout-user-btn {
+      background: #ffe8ef;
+      color: #d9275b;
+    }
+
+    .container {
+      max-width: 980px;
+      margin: auto;
+    }
+
+    .card {
+      display: none;
+      background: rgba(255,255,255,.90);
+      padding: 20px;
+      border-radius: 26px;
+      box-shadow: 0 8px 24px rgba(149,76,126,.10);
+      margin-bottom: 20px;
+    }
+
+    .card.active {
+      display: block;
+    }
+
+    h2, .home-title h2 {
+      color: var(--primary);
+      margin: 0 0 14px;
+    }
+
+    .home-title p {
+      color: var(--muted);
+      font-size: 18px;
+      margin: 10px 0 20px;
+    }
+
+    .section-title {
+      margin: 0 0 12px;
+      font-size: 22px;
+      color: #201b34;
+    }
+
+    label {
+      display: block;
+      margin-top: 13px;
+      font-weight: bold;
+      color: #555067;
+      font-size: 14px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      margin-top: 6px;
+      padding: 13px;
+      border-radius: 16px;
+      border: 1px solid #eadce7;
+      background: #fffafd;
+      font-size: 15px;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 92px;
+      resize: vertical;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0 12px;
+    }
+
+    .action {
+      margin-top: 15px;
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 18px;
+      background: var(--secondary);
+      color: #fff;
+      font-weight: bold;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .action.secondary {
+      background: #73c8ef;
+    }
+
+    .list {
+      margin-top: 14px;
+      padding: 13px;
+      background: var(--soft);
+      border-radius: 16px;
+      font-size: 14px;
+      white-space: pre-wrap;
+      line-height: 1.45;
+    }
+
+    .notice {
+      background: #eef9ff;
+      border-left: 4px solid #73c8ef;
+      padding: 12px;
+      border-radius: 14px;
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+
+    .item-list, .baby-list, .support-grid, .manual-activity-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .baby-list {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .baby-card, .swap-item, .support-card, .manual-activity-card {
+      background: #fff;
+      border-radius: 22px;
+      padding: 14px;
+      box-shadow: 0 7px 20px rgba(149,76,126,.10);
+      border: 1px solid var(--soft);
+      position: relative;
+      line-height: 1.45;
+    }
+
+    .baby-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+      padding-right: 36px;
+    }
+
+    .baby-photo {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: var(--soft2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+    }
+
+    .baby-name {
+      font-weight: 800;
+      color: var(--primary);
+      font-size: 17px;
+    }
+
+    .baby-status {
+      font-size: 12px;
+      background: #e8fff0;
+      color: #17964e;
+      padding: 4px 8px;
+      border-radius: 14px;
+      display: inline-block;
+      margin-top: 4px;
+    }
+
+    .remove-baby {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      border: none;
+      background: #ffe8ef;
+      color: #d9275b;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .baby-info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .baby-info {
+      background: var(--soft);
+      border-radius: 15px;
+      padding: 9px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .baby-info strong {
+      display: block;
+      color: #201b34;
+      font-size: 13px;
+      margin-top: 3px;
+    }
+
+    .small {
+      font-size: 13px;
+      line-height: 1.5;
+      color: #555;
+    }
+
+    .danger-mini {
+      border: none;
+      border-radius: 13px;
+      padding: 10px;
+      background: #ffe8ef;
+      color: #d9275b;
+      font-weight: bold;
+      width: 100%;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    .mini-whatsapp {
+      display: block;
+      text-align: center;
+      text-decoration: none;
+      border-radius: 13px;
+      padding: 10px;
+      background: #25D366;
+      color: white;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .expires {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: #fff3d8;
+      color: #9b6500;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .support-whatsapp {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 300;
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: #25D366;
+      color: white;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.22);
+    }
+
+    .modal-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.45);
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .modal-bg.show {
+      display: flex;
+    }
+
+    .modal {
+      background: #fff;
+      max-width: 360px;
+      width: 100%;
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: 0 12px 32px rgba(0,0,0,.22);
+      text-align: center;
+    }
+
+    .modal h3 {
+      color: var(--primary);
+      margin: 0 0 8px;
+    }
+
+    .modal-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .modal-actions button {
+      border: none;
+      border-radius: 16px;
+      padding: 13px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .cancel-btn {
+      background: #f0edf0;
+      color: #444;
+    }
+
+    .confirm-btn {
+      background: var(--secondary);
+      color: #fff;
+    }
+
+    footer {
+      text-align: center;
+      padding: 18px 8px 8px;
+      color: #686078;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    footer strong {
+      color: var(--primary);
+      display: block;
+    }
+
+    @media (max-width: 540px) {
+      .sidebar { width: 62px; }
+      .sidebar.expanded { width: 228px; }
+      .app { margin-left: 62px; padding: 10px 8px 20px; }
+      .app.shifted { margin-left: 62px; }
+      .form-grid, .baby-list { grid-template-columns: 1fr; }
+      .brand h1 { font-size: 29px; }
+      .topbar { padding: 14px 16px; }
+    }
+
+
+    .auth-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin: 18px 0 10px;
+    }
+
+    .auth-tab {
+      border: none;
+      border-radius: 16px;
+      padding: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      background: #f4edf4;
+      color: #555067;
+    }
+
+    .auth-tab.active {
+      background: var(--secondary);
+      color: white;
+    }
+
+    .auth-block { display: none; }
+    .auth-block.active { display: block; }
+
+    .baby-modal-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.45);
+      z-index: 10001;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .baby-modal-bg.show { display: flex; }
+
+    .baby-modal {
+      background: #fff;
+      max-width: 720px;
+      width: 100%;
+      max-height: 92dvh;
+      overflow-y: auto;
+      border-radius: 26px;
+      padding: 20px;
+      box-shadow: 0 14px 38px rgba(0,0,0,.24);
+    }
+
+    .baby-modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .baby-modal-head h3 {
+      color: var(--primary);
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .close-floating {
+      border: none;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #ffe8ef;
+      color: #d9275b;
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .section-head-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .section-head-row .action {
+      width: auto;
+      min-width: 170px;
+      margin-top: 0;
+    }
+
+  </style>
+</head>
+
+<body>
+  <div id="loginScreen" class="login-screen show">
+    <div class="login-card">
+      <h1>PiTiTiCo</h1>
+      <p id="authSubtitle">Entre com e-mail e senha ou faça seu cadastro.</p>
+
+      <div class="auth-tabs">
+        <button id="tabLogin" class="auth-tab active" onclick="mostrarAuth('login')">Login</button>
+        <button id="tabCadastro" class="auth-tab" onclick="mostrarAuth('cadastro')">Cadastro</button>
+      </div>
+
+      <div id="authLogin" class="auth-block active">
+        <label>E-mail</label>
+        <input id="loginEmailEntrar" type="email" placeholder="Ex: ana@email.com" />
+
+        <label>Senha de 4 números</label>
+        <input id="loginSenhaEntrar" type="password" inputmode="numeric" maxlength="4" placeholder="Ex: 1234" />
+
+        <button class="action" onclick="entrarUsuario()">Entrar</button>
+      </div>
+
+      <div id="authCadastro" class="auth-block">
+        <label>Nome</label>
+        <input id="loginNome" placeholder="Ex: Ana Paula" />
+
+        <label>E-mail</label>
+        <input id="loginEmail" type="email" placeholder="Ex: ana@email.com" />
+
+        <label>WhatsApp</label>
+        <input id="loginWhatsapp" placeholder="Ex: 21999999999" />
+
+        <label>Senha de 4 números</label>
+        <input id="loginSenha" type="password" inputmode="numeric" maxlength="4" placeholder="Ex: 1234" />
+
+        <button class="action" onclick="salvarUsuarioInicial()">Cadastrar e entrar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="splash">
+    <div class="splash-baby">👶</div>
+    <h1>PiTiTiCo</h1>
+    <p>Paro melhor bebê do mundo.</p>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-content">
+      <div class="sidebar-header">
+        <span class="logo-icon">👶</span>
+        <span class="logo-text">
+          <strong>PiTiTiCo</strong>
+          <small>Paro melhor bebê do mundo.</small>
+        </span>
+      </div>
+
+      <nav class="menu">
+        <button class="active-menu" onclick="showSection('cadastro', this)"><span class="icon">👶</span><span class="label">Bebês</span></button>
+        <button onclick="showSection('rotina', this)"><span class="icon">🍼</span><span class="label">Rotina</span></button>
+        <button onclick="showSection('trocasCatalogo', this)"><span class="icon">👕</span><span class="label">Troca-Troca</span></button>
+        <button onclick="showSection('atividades', this)"><span class="icon">🧩</span><span class="label">Atividades</span></button>
+        <button onclick="showSection('apoio', this)"><span class="icon">👩‍👧‍👦</span><span class="label">Apoio</span></button>
+        <button onclick="showSection('alimentacao', this)"><span class="icon">🍎</span><span class="label">Alimentação</span></button>
+        <button onclick="showSection('agenda', this)"><span class="icon">🗓️</span><span class="label">Agenda</span></button>
+        <button onclick="showSection('regras', this)"><span class="icon">📋</span><span class="label">Regras</span></button>
+      </nav>
+
+      <button class="bottom-toggle" onclick="toggleMenu()">
+        <b>☰</b>
+        <span>Menu</span>
+        <b>›</b>
+      </button>
+    </div>
+  </aside>
+
+  <div id="app" class="app">
+    <header class="topbar">
+      <div class="brand">
+        <h1>PiTiTiCo</h1>
+        <p>Paro melhor bebê do mundo.</p>
+      </div>
+
+      <div class="top-actions">
+        <button id="themeBtn" class="theme-btn" onclick="toggleTheme()">Menina</button>
+        <div class="avatar" onclick="abrirPerfilUsuario()">🤱</div>
+      </div>
+    </header>
+
+    <main class="container">
+      <section id="cadastro" class="card active">
+        <div class="section-head-row">
+          <div>
+            <h2>👶 Meus Bebês</h2>
+            <p class="small">Aqui ficam todos os bebês cadastrados no aplicativo.</p>
+          </div>
+          <button class="action" onclick="abrirModalBebe()">+ Adicionar bebê</button>
+        </div>
+
+        <div id="listaBebes" class="baby-list"></div>
+      </section>
+
+      <section id="rotina" class="card">
+        <h2>🍼 Rotina do Bebê</h2>
+
+        <label>Bebê</label>
+        <select id="bebeRotina"></select>
+
+        <label>Tipo de rotina</label>
+        <select id="tipoRotina">
+          <option>Mamadeira / Amamentação</option>
+          <option>Troca de fralda</option>
+          <option>Sono</option>
+          <option>Banho</option>
+          <option>Remédio</option>
+          <option>Outro</option>
+        </select>
+
+        <label>Horário</label>
+        <input id="horaRotina" type="time" />
+
+        <label>Observação</label>
+        <textarea id="obsRotina" placeholder="Ex: Dormiu bem, tomou 120ml..."></textarea>
+
+        <button class="action" onclick="adicionarRotina()">Adicionar Rotina</button>
+        <div id="listaRotina" class="list">Nenhuma rotina adicionada.</div>
+      </section>
+
+      <section id="trocasCatalogo" class="card">
+        <h2>👕 Troca-Troca</h2>
+
+        <div class="notice">
+          Cadastre o item no Troca-Troca. Ele será enviado automaticamente para a vitrine PiTiTiCo e ficará ativo por 5 dias.
+        </div>
+
+        <h3 class="section-title">Cadastrar item</h3>
+
+        <label>Tipo de item</label>
+        <select id="tipoPublicacao">
+          <option>Troca</option>
+          <option>Doação</option>
+          <option>Venda</option>
+          <option>Procuro</option>
+        </select>
+
+        <label>Nome do item</label>
+        <input id="itemTroca" placeholder="Ex: Macacão RN, carrinho, brinquedo..." />
+
+        <label>Categoria</label>
+        <select id="categoriaTroca">
+          <option>Roupinha</option>
+          <option>Brinquedo</option>
+          <option>Berço / Carrinho / Bebê conforto</option>
+          <option>Acessório infantil</option>
+          <option>Livro infantil</option>
+          <option>Outro</option>
+        </select>
+
+        <label>Tamanho / idade indicada</label>
+        <input id="tamanhoTroca" placeholder="Ex: 0 a 3 meses, 2 anos..." />
+
+        <label>Estado do item</label>
+        <select id="estadoTroca">
+          <option>Novo</option>
+          <option>Seminovo</option>
+          <option>Usado em bom estado</option>
+        </select>
+
+        <label>Bairro/Cidade</label>
+        <input id="localTroca" placeholder="Ex: Campo Grande - RJ" />
+
+        <label>Contato WhatsApp</label>
+        <input id="whatsTroca" placeholder="Ex: 21999999999" />
+
+        <label>Observação</label>
+        <textarea id="obsTroca" placeholder="Ex: Retirada no local, aceito troca por fraldas..."></textarea>
+
+        <button class="action" onclick="cadastrarItemTroca()">Cadastrar item</button>
+
+        <h3 class="section-title" style="margin-top:22px;">Meus itens cadastrados</h3>
+        <button class="action secondary" onclick="carregarMeusItensServidor()">Atualizar meus itens</button>
+        <div id="listaTrocas" class="item-list"></div>
+
+        <h3 class="section-title" style="margin-top:22px;">Vitrine PiTiTiCo</h3>
+        <button class="action secondary" onclick="carregarVitrineServidor()">Atualizar vitrine</button>
+        <div id="apiDebugPititico" class="small" style="margin-top:8px;color:#777;"></div>
+        <div id="vitrineTrocas" class="item-list"></div>
+      </section>
+
+      <section id="atividades" class="card">
+        <h2>🧩 Atividades por Faixa Etária</h2>
+
+        <label>Faixa etária</label>
+        <select id="faixaAtividade" onchange="mostrarAtividades()">
+          <option>0 a 6 meses</option>
+          <option>6 a 12 meses</option>
+          <option>1 a 2 anos</option>
+          <option>3 a 5 anos</option>
+          <option>6 anos ou mais</option>
+        </select>
+
+        <div id="atividadesResultado" class="list"></div>
+
+        <h3 class="section-title" style="margin-top:22px;">Cadastrar atividade manual</h3>
+
+        <label>Nome da atividade</label>
+        <input id="nomeAtividadeManual" placeholder="Ex: Brincar com potes coloridos" />
+
+        <label>Faixa etária indicada</label>
+        <select id="faixaAtividadeManual">
+          <option>0 a 6 meses</option>
+          <option>6 a 12 meses</option>
+          <option>1 a 2 anos</option>
+          <option>3 a 5 anos</option>
+          <option>6 anos ou mais</option>
+        </select>
+
+        <label>Como executar</label>
+        <textarea id="descricaoAtividadeManual" placeholder="Ex: Separar potes leves..."></textarea>
+
+        <label>Observação para mamãe/babá</label>
+        <textarea id="obsAtividadeManual" placeholder="Ex: Fazer com supervisão."></textarea>
+
+        <button class="action" onclick="cadastrarAtividadeManual()">Cadastrar atividade</button>
+        <div id="listaAtividadesManuais" class="manual-activity-list"></div>
+      </section>
+
+      <section id="apoio" class="card">
+        <h2>👩‍👧‍👦 Rede de Apoio</h2>
+
+        <div class="notice">
+          Cadastre órgãos, locais e contatos oficiais que você for conhecendo.
+        </div>
+
+        <h3 class="section-title">Cadastrar órgão de apoio</h3>
+
+        <label>Nome do órgão/local</label>
+        <input id="nomeApoio" placeholder="Ex: Conselho Tutelar do meu bairro" />
+
+        <label>Tipo de apoio</label>
+        <select id="tipoApoio">
+          <option>Conselho Tutelar</option>
+          <option>CRAS / Assistência Social</option>
+          <option>Unidade de Saúde</option>
+          <option>Escola / Creche</option>
+          <option>Delegacia / Proteção</option>
+          <option>Outro órgão oficial</option>
+        </select>
+
+        <label>Telefone / WhatsApp</label>
+        <input id="contatoApoio" placeholder="Ex: telefone, WhatsApp ou ramal" />
+
+        <label>Endereço / Bairro / Cidade</label>
+        <input id="localApoio" placeholder="Ex: Campo Grande - RJ" />
+
+        <label>Observação</label>
+        <textarea id="pedidoApoio" placeholder="Ex: horário de atendimento..."></textarea>
+
+        <button class="action" onclick="adicionarApoio()">Salvar órgão de apoio</button>
+
+        <h3 class="section-title" style="margin-top:22px;">Meus órgãos de apoio cadastrados</h3>
+        <div id="listaApoio" class="support-grid"></div>
+
+        <h3 class="section-title" style="margin-top:22px;">Contatos oficiais úteis</h3>
+
+        <div class="support-grid">
+          <div class="support-card"><strong>Disque 100 - Direitos Humanos</strong>Canal nacional para denúncias de violações de direitos humanos, incluindo crianças e adolescentes.</div>
+          <div class="support-card"><strong>WhatsApp ONDH</strong>Canal da Ouvidoria Nacional de Direitos Humanos: (61) 99611-0100.</div>
+          <div class="support-card"><strong>Conselho Tutelar</strong>Procure o Conselho Tutelar da sua cidade/bairro para orientação e proteção.</div>
+          <div class="support-card"><strong>Emergência</strong>Polícia Militar: 190. SAMU: 192. Bombeiros: 193.</div>
+        </div>
+      </section>
+
+      <section id="alimentacao" class="card">
+        <h2>🍎 Planejamento Alimentar Infantil</h2>
+
+        <label>Bebê</label>
+        <select id="bebeAlimentacao"></select>
+
+        <label>Refeição</label>
+        <select id="tipoRefeicao">
+          <option>Café da manhã</option>
+          <option>Almoço</option>
+          <option>Lanche</option>
+          <option>Jantar</option>
+        </select>
+
+        <label>Alimento / cardápio</label>
+        <textarea id="cardapio" placeholder="Ex: Banana amassada..."></textarea>
+
+        <button class="action" onclick="adicionarAlimentacao()">Adicionar planejamento</button>
+        <div id="listaAlimentacao" class="list">Nenhum planejamento cadastrado.</div>
+      </section>
+
+      <section id="agenda" class="card">
+        <h2>🗓️ Agenda da Mamãe</h2>
+
+        <label>Compromisso</label>
+        <input id="tituloAgenda" placeholder="Ex: Consulta pediatra..." />
+
+        <label>Data</label>
+        <input id="dataAgenda" type="date" />
+
+        <label>Horário</label>
+        <input id="horaAgenda" type="time" />
+
+        <label>Observação</label>
+        <textarea id="obsAgenda" placeholder="Ex: Levar cartão de vacina..."></textarea>
+
+        <button class="action" onclick="adicionarAgenda()">Salvar compromisso</button>
+        <div id="listaAgenda" class="list">Nenhum compromisso salvo.</div>
+      </section>
+
+      <section id="regras" class="card">
+        <h2>📋 Regras do PiTiTiCo</h2>
+        <div class="small">
+          <p><strong>1.</strong> O PiTiTiCo é um app de apoio, organização e conexão entre mamães.</p>
+          <p><strong>2.</strong> Os itens do Troca-Troca ficam disponíveis por 5 dias.</p>
+          <p><strong>3.</strong> Cada usuária pode remover apenas seus próprios itens.</p>
+          <p><strong>4.</strong> É proibido cadastrar remédios, alimentos abertos, itens vencidos, quebrados ou perigosos.</p>
+          <p><strong>5.</strong> O uso do app deve priorizar segurança, cuidado e responsabilidade.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <strong>PiTiTiCo - Paro melhor bebê do mundo.</strong>
+      © 2026. Todos os direitos registrados.
+    </footer>
+  </div>
+
+  <div id="userPopover" class="user-popover">
+    <strong id="perfilNome">Usuária PiTiTiCo</strong>
+    <div class="mini" id="perfilDados"></div>
+    <button class="edit-user-btn" onclick="editarUsuario()">Editar cadastro</button>
+    <button class="logout-user-btn" onclick="trocarUsuario()">Trocar usuária</button>
+  </div>
+
+  <a class="support-whatsapp" href="https://wa.me/5521997180033?text=Olá,%20preciso%20de%20suporte%20no%20app%20PiTiTiCo." target="_blank">☘</a>
+
+
+  <div id="babyModal" class="baby-modal-bg">
+    <div class="baby-modal">
+      <div class="baby-modal-head">
+        <h3>👶 Cadastrar Bebê</h3>
+        <button class="close-floating" onclick="fecharModalBebe()">×</button>
+      </div>
+
+      <div class="form-grid">
+        <div>
+          <label>Nome do bebê/criança</label>
+          <input id="nomeBebe" placeholder="Ex: Miguel" />
+        </div>
+
+        <div>
+          <label>Data de nascimento</label>
+          <input id="nascimentoBebe" type="date" />
+        </div>
+
+        <div>
+          <label>Peso</label>
+          <input id="pesoBebe" placeholder="Ex: 8,200 kg" />
+        </div>
+
+        <div>
+          <label>Altura</label>
+          <input id="alturaBebe" placeholder="Ex: 72 cm" />
+        </div>
+
+        <div>
+          <label>Tipo sanguíneo</label>
+          <input id="sangueBebe" placeholder="Ex: O+, A-, não sei" />
+        </div>
+      </div>
+
+      <label>Observação importante</label>
+      <textarea id="obsBebe" placeholder="Ex: alergia, rotina especial, pediatra..."></textarea>
+
+      <button class="action" onclick="salvarBebe()">Salvar bebê</button>
+    </div>
+  </div>
+
+  <div id="confirmModal" class="modal-bg">
+    <div class="modal">
+      <h3 id="modalTitle">Confirmar ação</h3>
+      <p id="modalText">Deseja continuar?</p>
+      <div class="modal-actions">
+        <button class="cancel-btn" onclick="fecharModal()">Cancelar</button>
+        <button class="confirm-btn" onclick="confirmarModal()">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_BASE_KEY = "pititico_dados_usuario_v1";
+    const API_PITITICO = "https://pititico-servidor.onrender.com";
+
+    let acaoConfirmada = null;
+    let usuarioAtual = null;
+    let bebes = [];
+    let rotinas = [];
+    let publicacoes = [];
+    let apoios = [];
+    let alimentacoes = [];
+    let agenda = [];
+    let atividadesManuais = [];
+    let temaAtual = "menina";
+
+    function dadosPadrao() {
+      return {
+        bebes: [
+          {
+            nome: "Maria Clara",
+            peso: "6,400 kg",
+            altura: "63 cm",
+            nascimento: "2026-01-22",
+            sangue: "Não informado",
+            obs: "Exemplo para teste.",
+            emoji: "👶"
+          }
+        ],
+        rotinas: [],
+        publicacoes: [],
+        apoios: [],
+        alimentacoes: [],
+        agenda: [],
+        atividadesManuais: [],
+        temaAtual: "menina"
+      };
+    }
+
+    
+    function normalizarEmailUsuario() {
+      return String(usuarioAtual?.email || "sem_usuario")
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9@._-]/g, "_");
+    }
+
+    function getStorageKeyUsuario() {
+      return STORAGE_BASE_KEY + "_" + normalizarEmailUsuario();
+    }
+
+    function limparDadosDaSessaoVisual() {
+      if (typeof bebes !== "undefined") bebes = [];
+      if (typeof rotinas !== "undefined") rotinas = [];
+      if (typeof apoios !== "undefined") apoios = [];
+      if (typeof alimentacoes !== "undefined") alimentacoes = [];
+      if (typeof agenda !== "undefined") agenda = [];
+      if (typeof atividadesManuais !== "undefined") atividadesManuais = [];
+      if (typeof publicacoes !== "undefined") publicacoes = [];
+    }
+
+    function renderTudoUsuario() {
+      if (typeof renderBebes === "function") renderBebes();
+      if (typeof renderRotinas === "function") renderRotinas();
+      if (typeof renderApoios === "function") renderApoios();
+      if (typeof renderAtividadesManuais === "function") renderAtividadesManuais();
+      if (typeof atualizarListasBasicas === "function") atualizarListasBasicas();
+      if (typeof renderAgenda === "function") renderAgenda();
+      if (typeof renderAlimentacao === "function") renderAlimentacao();
+      if (typeof carregarMeusItensServidor === "function") carregarMeusItensServidor();
+      if (typeof carregarVitrineServidor === "function") carregarVitrineServidor();
+    }
+
+function carregarDados() {
+      
+      if (!usuarioAtual) { limparDadosDaSessaoVisual(); return; }
+try {
+        const salvos = localStorage.getItem(getStorageKeyUsuario());
+        const dados = salvos ? JSON.parse(salvos) : dadosPadrao();
+
+        bebes = dados.bebes || [];
+        rotinas = dados.rotinas || [];
+        publicacoes = dados.publicacoes || [];
+        apoios = dados.apoios || [];
+        alimentacoes = dados.alimentacoes || [];
+        agenda = dados.agenda || [];
+        atividadesManuais = dados.atividadesManuais || [];
+        temaAtual = dados.temaAtual || "menina";
+
+        if (temaAtual === "menino") {
+          document.body.classList.add("boy-theme");
+          document.getElementById("themeBtn").innerText = "Menino";
+        }
+      } catch (e) {
+        const dados = dadosPadrao();
+        bebes = dados.bebes;
+      }
+    }
+
+    function salvarDados() {
+      
+      if (!usuarioAtual) return;
+localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
+        bebes, rotinas, publicacoes, apoios, alimentacoes, agenda, atividadesManuais, temaAtual
+      }));
+    }
+
+    function gerarDeviceId() {
+      let id = localStorage.getItem("pititico_device_id");
+      if (!id) {
+        id = "pititico-" + Date.now() + "-" + Math.random().toString(36).slice(2);
+        localStorage.setItem("pititico_device_id", id);
+      }
+      return id;
+    }
+
+    function getUsuariosCadastrados() {
+      try {
+        return JSON.parse(localStorage.getItem("pititico_usuarios_cadastrados") || "[]");
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function salvarUsuariosCadastrados(lista) {
+      localStorage.setItem("pititico_usuarios_cadastrados", JSON.stringify(lista));
+    }
+
+    function senhaValida4Numeros(senha) {
+      return /^\d{4}$/.test(senha || "");
+    }
+
+    function mostrarAuth(tipo) {
+      const login = tipo === "login";
+      document.getElementById("authLogin").classList.toggle("active", login);
+      document.getElementById("authCadastro").classList.toggle("active", !login);
+      document.getElementById("tabLogin").classList.toggle("active", login);
+      document.getElementById("tabCadastro").classList.toggle("active", !login);
+      document.getElementById("authSubtitle").innerText = login
+        ? "Entre com seu e-mail e senha de 4 números."
+        : "Faça seu cadastro básico para acessar o PiTiTiCo.";
+    }
+
+    function carregarUsuarioLocal() {
+      try {
+        usuarioAtual = JSON.parse(localStorage.getItem("pititico_usuario") || "null");
+      } catch (e) {
+        usuarioAtual = null;
+      }
+
+      renderPerfilSuperior();
+
+      if (!usuarioAtual || !usuarioAtual.email || !usuarioAtual.senha) {
+        usuarioAtual = null;
+        localStorage.removeItem("pititico_usuario");
+        mostrarLogin(true, "login");
+      } else {
+        esconderLogin();
+      }
+    }
+
+
+    async function validarUsuarioNoServidor() {
+      if (!usuarioAtual || !usuarioAtual.email) return false;
+
+      if (!usuarioAtual.senha) {
+        localStorage.removeItem("pititico_usuario");
+        usuarioAtual = null;
+        if (typeof renderPerfilSuperior === "function") renderPerfilSuperior();
+        mostrarLogin(true);
+        return false;
+      }
+
+      try {
+        const resposta = await fetch(API_PITITICO + "/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: usuarioAtual.email,
+            senha: usuarioAtual.senha
+          })
+        });
+
+        const resultado = await resposta.json().catch(() => ({}));
+
+        if (!resposta.ok || resultado.sucesso === false || resultado.usuario?.status === "banido") {
+          localStorage.removeItem("pititico_usuario");
+          usuarioAtual = null;
+          if (typeof renderPerfilSuperior === "function") renderPerfilSuperior();
+          mostrarLogin(true);
+          abrirModal("Acesso bloqueado", resultado.mensagem || "Este usuário foi removido/banido ou precisa fazer login novamente.", () => {});
+          return false;
+        }
+
+        usuarioAtual = {
+          ...resultado.usuario,
+          senha: usuarioAtual.senha,
+          deviceId: resultado.usuario?.deviceId || usuarioAtual.deviceId || gerarDeviceId()
+        };
+
+        localStorage.setItem("pititico_usuario", JSON.stringify(usuarioAtual));
+        if (typeof renderPerfilSuperior === "function") renderPerfilSuperior();
+        return true;
+
+      } catch (erro) {
+        return true;
+      }
+    }
+
+    function mostrarLogin(forcar = false, modo = "login") {
+      const tela = document.getElementById("loginScreen");
+      if (!tela) return;
+
+      mostrarAuth(modo);
+
+      if (usuarioAtual && !forcar) {
+        tela.classList.remove("show");
+        return;
+      }
+
+      if (usuarioAtual) {
+        document.getElementById("loginNome").value = usuarioAtual.nome || "";
+        document.getElementById("loginEmail").value = usuarioAtual.email || "";
+        document.getElementById("loginWhatsapp").value = usuarioAtual.whatsapp || "";
+        document.getElementById("loginSenha").value = usuarioAtual.senha || "";
+      }
+
+      tela.classList.add("show");
+    }
+
+    function esconderLogin() {
+      const tela = document.getElementById("loginScreen");
+      if (tela) tela.classList.remove("show");
+    }
+
+    function renderPerfilSuperior() {
+      const nome = document.getElementById("perfilNome");
+      const dados = document.getElementById("perfilDados");
+
+      if (!nome || !dados) return;
+
+      if (!usuarioAtual) {
+        nome.innerText = "Cadastro pendente";
+        dados.innerHTML = "Faça login ou cadastro para publicar itens.";
+        return;
+      }
+
+      nome.innerText = usuarioAtual.nome || "Usuária PiTiTiCo";
+      dados.innerHTML = `
+        <b>E-mail:</b> ${usuarioAtual.email || "-"}<br>
+        <b>WhatsApp:</b> ${usuarioAtual.whatsapp || "-"}
+      `;
+    }
+
+    function fecharPerfilUsuario() {
+      const box = document.getElementById("userPopover");
+      if (box) box.classList.remove("show");
+    }
+
+    function abrirPerfilUsuario() {
+      renderPerfilSuperior();
+      const box = document.getElementById("userPopover");
+      if (box) box.classList.toggle("show");
+    }
+
+    function editarUsuario() {
+      fecharPerfilUsuario();
+      mostrarLogin(true, "cadastro");
+    }
+
+    function trocarUsuario() {
+      localStorage.removeItem("pititico_usuario");
+      usuarioAtual = null;
+      limparDadosDaSessaoVisual();
+      renderTudoUsuario();
+      renderPerfilSuperior();
+      fecharPerfilUsuario();
+      mostrarLogin(true, "login");
+    }
+
+    async function entrarUsuario() {
+      const email = document.getElementById("loginEmailEntrar").value.trim().toLowerCase();
+      const senha = document.getElementById("loginSenhaEntrar").value.trim();
+
+      if (!email || !senhaValida4Numeros(senha)) {
+        abrirModal("Login incompleto", "Informe e-mail e senha com 4 números.", () => {});
+        return;
+      }
+
+      let usuarios = getUsuariosCadastrados();
+      let usuario = usuarios.find(u => (u.email || "").toLowerCase() === email && u.senha === senha);
+
+      if (!usuario) {
+        try {
+          const resposta = await fetch(API_PITITICO + "/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, senha, deviceId: gerarDeviceId() })
+          });
+          const resultado = await resposta.json();
+          if (resposta.ok && resultado.usuario) usuario = resultado.usuario;
+        } catch (erro) {}
+      }
+
+      if (!usuario) {
+        abrirModal("Login não encontrado", "Confira seu e-mail e senha ou faça um novo cadastro.", () => mostrarAuth("cadastro"));
+        return;
+      }
+
+      usuarioAtual = { ...usuario, deviceId: usuario.deviceId || gerarDeviceId() };
+      localStorage.setItem("pititico_usuario", JSON.stringify(usuarioAtual));
+      renderPerfilSuperior();
+      esconderLogin();
+    }
+
+    async function salvarUsuarioInicial() {
+      const nome = document.getElementById("loginNome").value.trim();
+      const email = document.getElementById("loginEmail").value.trim();
+      const whatsapp = document.getElementById("loginWhatsapp").value.trim();
+      const senha = (document.getElementById("loginSenha")?.value || "").trim();
+      const deviceId = gerarDeviceId();
+
+      if (!nome || !email || !whatsapp || !/^\d{4}$/.test(senha)) {
+        abrirModal("Cadastro incompleto", "Preencha nome, e-mail, WhatsApp e senha com 4 números.", () => {});
+        return;
+      }
+
+      const usuarioParaEnviar = { nome, email, whatsapp, senha, deviceId };
+
+      try {
+        const resposta = await fetch(API_PITITICO + "/usuarios", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(usuarioParaEnviar)
+        });
+
+        const resultado = await resposta.json().catch(() => ({}));
+
+        if (!resposta.ok || resultado.sucesso === false) {
+          localStorage.removeItem("pititico_usuario");
+          usuarioAtual = null;
+          if (typeof renderPerfilSuperior === "function") renderPerfilSuperior();
+          abrirModal("Acesso bloqueado", resultado.mensagem || "Não foi possível acessar o aplicativo.", () => {
+            mostrarLogin(true);
+          });
+          return;
+        }
+
+        usuarioAtual = {
+          ...(resultado.usuario || usuarioParaEnviar),
+          senha: senha,
+          deviceId: deviceId
+        };
+
+        localStorage.setItem("pititico_usuario", JSON.stringify(usuarioAtual));
+
+        if (typeof renderPerfilSuperior === "function") renderPerfilSuperior();
+        if (typeof esconderLogin === "function") esconderLogin();
+        limparDadosDaSessaoVisual();
+        carregarDados();
+        renderTudoUsuario();
+
+        if (typeof carregarMeusItensServidor === "function") carregarMeusItensServidor();
+        if (typeof carregarVitrineServidor === "function") carregarVitrineServidor();
+
+      } catch (erro) {
+        abrirModal("Servidor indisponível", "Não foi possível cadastrar agora. Confira se o servidor está ligado.", () => {
+          mostrarLogin(true);
+        });
+      }
+    }
+
+    function abrirModal(titulo, texto, acao) {
+      document.getElementById("modalTitle").innerText = titulo;
+      document.getElementById("modalText").innerText = texto;
+      acaoConfirmada = acao;
+      document.getElementById("confirmModal").classList.add("show");
+    }
+
+    function fecharModal() {
+      document.getElementById("confirmModal").classList.remove("show");
+      acaoConfirmada = null;
+    }
+
+    function confirmarModal() {
+      if (typeof acaoConfirmada === "function") acaoConfirmada();
+      fecharModal();
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle("boy-theme");
+      temaAtual = document.body.classList.contains("boy-theme") ? "menino" : "menina";
+      document.getElementById("themeBtn").innerText = temaAtual === "menino" ? "Menino" : "Menina";
+      salvarDados();
+    }
+
+    function toggleMenu() {
+      document.getElementById("sidebar").classList.toggle("expanded");
+      document.getElementById("app").classList.toggle("shifted");
+    }
+
+    function showSection(id, btn) {
+      fecharPerfilUsuario();
+      document.querySelectorAll(".card").forEach(card => card.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+      document.querySelectorAll(".menu button").forEach(button => button.classList.remove("active-menu"));
+      btn.classList.add("active-menu");
+      if (window.innerWidth <= 540) {
+        document.getElementById("sidebar").classList.remove("expanded");
+        document.getElementById("app").classList.remove("shifted");
+      }
+      if (id === "trocasCatalogo") {
+        carregarMeusItensServidor();
+        carregarVitrineServidor();
+      }
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function formatarDataBR(data) {
+      if (!data) return "Não informado";
+      const partes = data.split("-");
+      if (partes.length !== 3) return data;
+      return `${partes[2]}/${partes[1]}/${partes[0]}`;
+    }
+
+    function calcularIdadePorNascimento(data) {
+      if (!data) return "Não informado";
+
+      const nascimento = new Date(data + "T00:00:00");
+      const hoje = new Date();
+
+      if (nascimento > hoje) return "Data futura";
+
+      let anos = hoje.getFullYear() - nascimento.getFullYear();
+      let meses = hoje.getMonth() - nascimento.getMonth();
+      let dias = hoje.getDate() - nascimento.getDate();
+
+      if (dias < 0) {
+        meses -= 1;
+        dias += new Date(hoje.getFullYear(), hoje.getMonth(), 0).getDate();
+      }
+
+      if (meses < 0) {
+        anos -= 1;
+        meses += 12;
+      }
+
+      if (anos <= 0 && meses <= 0) return `${dias} dias`;
+      if (anos <= 0) return `${meses} meses e ${dias} dias`;
+      return `${anos} anos, ${meses} meses e ${dias} dias`;
+    }
+
+    function renderBebes() {
+      const html = bebes.map((bebe, index) => `
+        <div class="baby-card">
+          <button class="remove-baby" onclick="pedirRemoverBebe(${index})">×</button>
+          <div class="baby-head">
+            <div class="baby-photo">${bebe.emoji || "👶"}</div>
+            <div>
+              <div class="baby-name">${bebe.nome || "Bebê sem nome"}</div>
+              <span class="baby-status">Ativo</span>
+            </div>
+          </div>
+          <div class="small">
+            <strong>Nascimento:</strong> ${formatarDataBR(bebe.nascimento)}<br>
+            <strong>Idade:</strong> ${calcularIdadePorNascimento(bebe.nascimento)}
+          </div>
+          <div class="baby-info-grid">
+            <div class="baby-info">Peso<strong>${bebe.peso || "-"}</strong></div>
+            <div class="baby-info">Altura<strong>${bebe.altura || "-"}</strong></div>
+            <div class="baby-info">Sangue<strong>${bebe.sangue || "-"}</strong></div>
+            <div class="baby-info">Rotinas<strong>${contarRotinasDoBebe(bebe.nome)}</strong></div>
+          </div>
+          <div class="small" style="margin-top:10px;">
+            <strong>Obs:</strong> ${bebe.obs || "Nenhuma observação."}
+          </div>
+        </div>
+      `).join("");
+
+      const vazio = "<div class='list'>Nenhum bebê cadastrado ainda.</div>";
+
+      const homeArea = document.getElementById("homeBabies");
+      if (homeArea) homeArea.innerHTML = html || vazio;
+      document.getElementById("listaBebes").innerHTML = html || vazio;
+      atualizarSelectsBebes();
+    }
+
+    function contarRotinasDoBebe(nome) {
+      return rotinas.filter(r => r.bebe === nome).length + " atividades";
+    }
+
+    function atualizarSelectsBebes() {
+      const options = bebes.map(b => `<option>${b.nome}</option>`).join("");
+      const vazio = "<option>Nenhum bebê cadastrado</option>";
+      document.getElementById("bebeRotina").innerHTML = options || vazio;
+      document.getElementById("bebeAlimentacao").innerHTML = options || vazio;
+    }
+
+    function abrirModalBebe() {
+      document.getElementById("babyModal").classList.add("show");
+    }
+
+    function fecharModalBebe() {
+      document.getElementById("babyModal").classList.remove("show");
+    }
+
+    function salvarBebe() {
+      const nome = document.getElementById("nomeBebe").value.trim();
+      const peso = document.getElementById("pesoBebe").value.trim();
+      const altura = document.getElementById("alturaBebe").value.trim();
+      const nascimento = document.getElementById("nascimentoBebe").value;
+      const sangue = document.getElementById("sangueBebe").value.trim();
+      const obs = document.getElementById("obsBebe").value.trim();
+
+      if (!nome) {
+        abrirModal("Cadastro incompleto", "Informe o nome do bebê.", () => {});
+        return;
+      }
+
+      bebes.push({ nome, peso, altura, nascimento, sangue, obs, emoji: "👶" });
+
+      ["nomeBebe","pesoBebe","alturaBebe","nascimentoBebe","sangueBebe","obsBebe"].forEach(id => {
+        document.getElementById(id).value = "";
+      });
+
+      salvarDados();
+      renderBebes();
+      fecharModalBebe();
+    }
+
+    function pedirRemoverBebe(index) {
+      const nome = bebes[index]?.nome || "este bebê";
+      abrirModal("Remover bebê", `Deseja remover ${nome}?`, () => removerBebe(index));
+    }
+
+    function removerBebe(index) {
+      const nome = bebes[index]?.nome || "";
+      bebes.splice(index, 1);
+      rotinas = rotinas.filter(r => r.bebe !== nome);
+      alimentacoes = alimentacoes.filter(a => !a.startsWith(nome + "\n"));
+      salvarDados();
+      renderBebes();
+      atualizarListasBasicas();
+    }
+
+    function adicionarRotina() {
+      const bebe = document.getElementById("bebeRotina").value;
+      if (!bebe || bebe === "Nenhum bebê cadastrado") {
+        abrirModal("Atenção", "Cadastre um bebê primeiro.", () => {});
+        return;
+      }
+
+      const tipo = document.getElementById("tipoRotina").value;
+      const hora = document.getElementById("horaRotina").value;
+      const obs = document.getElementById("obsRotina").value;
+
+      rotinas.push({ bebe, tipo, hora, obs });
+      salvarDados();
+      renderRotinas();
+      renderBebes();
+    }
+
+    function renderRotinas() {
+      document.getElementById("listaRotina").innerText = rotinas.length
+        ? rotinas.map((r, i) => `${i + 1}. ${r.bebe}\n${r.tipo} - ${r.hora}\nObs: ${r.obs}`).join("\n\n")
+        : "Nenhuma rotina adicionada.";
+    }
+
+    async function cadastrarItemTroca() {
+      if (!usuarioAtual) {
+        abrirModal("Cadastro necessário", "Antes de publicar, faça seu cadastro inicial.", () => mostrarLogin(true));
+        return;
+      }
+
+      const tipo = document.getElementById("tipoPublicacao").value;
+      const item = document.getElementById("itemTroca").value.trim();
+      const categoria = document.getElementById("categoriaTroca").value;
+      const tamanho = document.getElementById("tamanhoTroca").value;
+      const estado = document.getElementById("estadoTroca").value;
+      const local = document.getElementById("localTroca").value;
+      const whats = document.getElementById("whatsTroca").value || usuarioAtual.whatsapp;
+      const obs = document.getElementById("obsTroca").value;
+
+      if (!item) {
+        abrirModal("Item incompleto", "Informe o nome do item antes de cadastrar.", () => {});
+        return;
+      }
+
+      const novaPublicacao = {
+        tipo,
+        item,
+        categoria,
+        tamanho,
+        estado,
+        local,
+        whats,
+        obs,
+        deviceId: usuarioAtual.deviceId,
+        nomeUsuario: usuarioAtual.nome,
+        emailUsuario: usuarioAtual.email,
+        whatsappUsuario: usuarioAtual.whatsapp,
+        origem: "app-pititico"
+      };
+
+      try {
+        const resposta = await fetch(API_PITITICO + "/publicacoes", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(novaPublicacao)
+        });
+
+        const resultado = await resposta.json();
+
+        if (!resposta.ok) {
+          throw new Error(resultado.mensagem || resultado.detalhe || "Erro ao enviar.");
+        }
+
+        publicacoes.push(resultado.publicacao || novaPublicacao);
+        salvarDados();
+        await carregarMeusItensServidor();
+
+        ["itemTroca","tamanhoTroca","localTroca","whatsTroca","obsTroca"].forEach(id => {
+          document.getElementById(id).value = "";
+        });
+
+        abrirModal("Item publicado", "Item enviado para a vitrine PiTiTiCo. Ele ficará ativo por 5 dias.", () => {
+          carregarVitrineServidor();
+        });
+      } catch (erro) {
+        abrirModal("Erro ao publicar", "Não foi possível enviar para o servidor. Confira o servidor/ngrok e tente novamente.", () => {});
+      }
+    }
+
+    function diasRestantes(expiraEm) {
+      if (!expiraEm) return "Expira em 5 dia(s)";
+      const diff = new Date(expiraEm) - new Date();
+      const dias = Math.ceil(diff / (1000 * 60 * 60 * 24));
+      if (dias <= 0) return "Expira hoje";
+      return `Expira em ${dias} dia(s)`;
+    }
+
+    function renderTrocas() {
+      const deviceId = gerarDeviceId();
+      const meus = publicacoes;
+
+      if (!meus.length) {
+        document.getElementById("listaTrocas").innerHTML = "<div class='list'>Nenhum item cadastrado por você ainda.</div>";
+        return;
+      }
+
+      document.getElementById("listaTrocas").innerHTML = meus.slice().reverse().map((p) => `
+        <div class="swap-item">
+          <strong>${p.tipo || "Item"}: ${p.item}</strong><br>
+          Categoria: ${p.categoria || "-"}<br>
+          Tamanho/idade: ${p.tamanho || "-"}<br>
+          Estado: ${p.estado || "-"}<br>
+          Local: ${p.local || "-"}<br>
+          WhatsApp: ${p.whats || p.usuario?.whatsapp || "-"}<br>
+          Obs: ${p.obs || "-"}<br>
+          <span class="expires">${diasRestantes(p.expiraEm)}</span>
+          ${p.id ? `<button class="danger-mini" onclick="pedirRemoverPublicacao(${p.id})">Remover item</button>` : ""}
+        </div>
+      `).join("");
+    }
+
+    async function carregarMeusItensServidor() {
+      try {
+        if (!usuarioAtual || !usuarioAtual.email) {
+          publicacoes = [];
+          renderTrocas();
+          return;
+        }
+
+        const deviceId = gerarDeviceId();
+        const email = (usuarioAtual.email || "").toLowerCase();
+
+        let dados = [];
+
+        // Primeiro tenta a rota correta de "minhas publicações"
+        try {
+          const url = API_PITITICO
+            + "/minhas-publicacoes?deviceId=" + encodeURIComponent(deviceId)
+            + "&email=" + encodeURIComponent(email);
+
+          const resposta = await fetch(url, { cache: "no-store" });
+
+          if (resposta.ok) {
+            const recebidos = await resposta.json();
+            dados = Array.isArray(recebidos) ? recebidos : [];
+          }
+        } catch (erroRotaMinhas) {}
+
+        // Se por algum motivo a rota não retornar, usa fallback lendo tudo do admin e filtrando no APP
+        if (!dados.length) {
+          try {
+            const respostaAdmin = await fetch(API_PITITICO + "/admin/publicacoes", { cache: "no-store" });
+            if (respostaAdmin.ok) {
+              const todos = await respostaAdmin.json();
+              dados = (Array.isArray(todos) ? todos : []).filter(p => {
+                const emailItem = (p.usuario?.email || p.emailUsuario || "").toLowerCase();
+                return (
+                  p.status === "ativo" &&
+                  (
+                    p.donoDeviceId === deviceId ||
+                    p.deviceId === deviceId ||
+                    (email && emailItem === email)
+                  )
+                );
+              });
+            }
+          } catch (erroFallback) {}
+        }
+
+        publicacoes = dados;
+        salvarDados();
+        renderTrocas();
+
+      } catch (erro) {
+        renderTrocas();
+      }
+    }
+
+
+    async function carregarVitrineServidor() {
+      const debugApi = document.getElementById("apiDebugPititico");
+      if (debugApi) debugApi.innerText = "API usada: " + API_PITITICO;
+
+      const area = document.getElementById("vitrineTrocas");
+      if (!area) return;
+
+      area.innerHTML = "<div class='list'>Carregando vitrine...</div>";
+
+      try {
+        const resposta = await fetch(API_PITITICO + "/publicacoes?deviceId=" + encodeURIComponent(gerarDeviceId()) + "&email=" + encodeURIComponent(usuarioAtual?.email || ""));
+        const dadosRecebidos = await resposta.json();
+        const dados = Array.isArray(dadosRecebidos) ? dadosRecebidos : [];
+        const deviceId = gerarDeviceId();
+        const emailAtual = (usuarioAtual?.email || "").toLowerCase();
+        const outros = dados.filter(p => {
+          const emailDono = (p.usuario?.email || p.emailUsuario || "").toLowerCase();
+          return p.donoDeviceId !== deviceId && p.deviceId !== deviceId && (!emailAtual || emailDono !== emailAtual);
+        });
+
+        if (!outros.length) {
+          area.innerHTML = "<div class='list'>Nenhum item de outras mamães publicado na vitrine ainda.</div>";
+          return;
+        }
+
+        area.innerHTML = outros.slice().reverse().map((p) => {
+          const telefone = (p.usuario?.whatsapp || p.whats || "").replace(/\D/g, "");
+          const numero = telefone.startsWith("55") ? telefone : "55" + telefone;
+          const linkWhats = telefone ? `https://wa.me/${numero}?text=${encodeURIComponent("Olá! Vi seu item no PiTiTiCo: " + (p.item || ""))}` : "";
+
+          return `
+            <div class="swap-item">
+              <strong>${p.tipo || "Item"}: ${p.item || "Sem nome"}</strong><br>
+              Categoria: ${p.categoria || "-"}<br>
+              Tamanho/idade: ${p.tamanho || "-"}<br>
+              Estado: ${p.estado || "-"}<br>
+              Local: ${p.local || p.cidade || "-"}<br>
+              Mamãe: ${p.usuario?.nome || p.nomeUsuario || "-"}<br>
+              Observação: ${p.obs || p.observacao || "-"}<br>
+              <span class="expires">${diasRestantes(p.expiraEm)}</span>
+              ${linkWhats ? `<a class="mini-whatsapp" href="${linkWhats}" target="_blank">Conversar no WhatsApp</a>` : ""}
+            </div>
+          `;
+        }).join("");
+      } catch (erro) {
+        area.innerHTML = "<div class='list'>Não foi possível carregar a vitrine. Verifique sua internet e tente atualizar novamente.</div>";
+      }
+    }
+
+    function pedirRemoverPublicacao(id) {
+      abrirModal("Remover item", "Deseja remover este item da vitrine PiTiTiCo?", () => removerPublicacao(id));
+    }
+
+    async function removerPublicacao(id) {
+      try {
+        const resposta = await fetch(API_PITITICO + "/publicacoes/" + id, {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ deviceId: gerarDeviceId() })
+        });
+
+        const resultado = await resposta.json();
+
+        if (!resposta.ok) {
+          throw new Error(resultado.mensagem || "Erro ao remover item.");
+        }
+
+        publicacoes = publicacoes.filter(p => p.id !== id);
+        salvarDados();
+        await carregarMeusItensServidor();
+        carregarVitrineServidor();
+
+        abrirModal("Item removido", "O item foi removido da vitrine.", () => {});
+      } catch (erro) {
+        abrirModal("Erro ao remover", erro.message, () => {});
+      }
+    }
+
+    function mostrarAtividades() {
+      const faixa = document.getElementById("faixaAtividade").value;
+      const ideias = {
+        "0 a 6 meses": "• Conversar olhando nos olhos\n• Brincar com sons suaves\n• Estimular movimentos com brinquedos coloridos",
+        "6 a 12 meses": "• Brincar de esconder objetos\n• Incentivar engatinhar\n• Brinquedos de encaixe grande",
+        "1 a 2 anos": "• Pintura com supervisão\n• Música e dança\n• Livros de figuras",
+        "3 a 5 anos": "• Massinha\n• Histórias curtas\n• Jogos de cores, formas e números",
+        "6 anos ou mais": "• Leitura guiada\n• Desenho livre\n• Jogos educativos simples"
+      };
+      document.getElementById("atividadesResultado").innerText = ideias[faixa];
+    }
+
+    function cadastrarAtividadeManual() {
+      const nome = document.getElementById("nomeAtividadeManual").value.trim();
+      const faixa = document.getElementById("faixaAtividadeManual").value;
+      const descricao = document.getElementById("descricaoAtividadeManual").value.trim();
+      const obs = document.getElementById("obsAtividadeManual").value.trim();
+
+      if (!nome) {
+        abrirModal("Atividade incompleta", "Informe o nome da atividade.", () => {});
+        return;
+      }
+
+      atividadesManuais.push({ nome, faixa, descricao, obs });
+      salvarDados();
+
+      document.getElementById("nomeAtividadeManual").value = "";
+      document.getElementById("descricaoAtividadeManual").value = "";
+      document.getElementById("obsAtividadeManual").value = "";
+
+      renderAtividadesManuais();
+    }
+
+    function renderAtividadesManuais() {
+      const area = document.getElementById("listaAtividadesManuais");
+      if (!atividadesManuais.length) {
+        area.innerHTML = "<div class='list'>Nenhuma atividade manual cadastrada ainda.</div>";
+        return;
+      }
+
+      area.innerHTML = atividadesManuais.map((a, i) => `
+        <div class="manual-activity-card">
+          <strong>${a.nome}</strong>
+          <div><b>Faixa:</b> ${a.faixa}</div>
+          <div><b>Como executar:</b> ${a.descricao || "-"}</div>
+          <div><b>Obs:</b> ${a.obs || "-"}</div>
+          <button class="danger-mini" onclick="removerAtividade(${i})">Remover atividade</button>
+        </div>
+      `).join("");
+    }
+
+    function removerAtividade(index) {
+      atividadesManuais.splice(index, 1);
+      salvarDados();
+      renderAtividadesManuais();
+    }
+
+    function adicionarApoio() {
+      const nome = document.getElementById("nomeApoio").value.trim();
+      const tipo = document.getElementById("tipoApoio").value;
+      const contato = document.getElementById("contatoApoio").value.trim();
+      const local = document.getElementById("localApoio").value.trim();
+      const obs = document.getElementById("pedidoApoio").value.trim();
+
+      if (!nome) {
+        abrirModal("Cadastro incompleto", "Informe o nome do órgão ou local de apoio.", () => {});
+        return;
+      }
+
+      apoios.push({ nome, tipo, contato, local, obs });
+      salvarDados();
+
+      document.getElementById("nomeApoio").value = "";
+      document.getElementById("contatoApoio").value = "";
+      document.getElementById("localApoio").value = "";
+      document.getElementById("pedidoApoio").value = "";
+
+      renderApoios();
+    }
+
+    function renderApoios() {
+      const area = document.getElementById("listaApoio");
+      if (!apoios.length) {
+        area.innerHTML = "<div class='list'>Nenhum órgão de apoio cadastrado ainda.</div>";
+        return;
+      }
+
+      area.innerHTML = apoios.map((a, i) => `
+        <div class="support-card">
+          <strong>${a.nome}</strong>
+          <div><b>Tipo:</b> ${a.tipo || "-"}</div>
+          <div><b>Contato:</b> ${a.contato || "-"}</div>
+          <div><b>Local:</b> ${a.local || "-"}</div>
+          <div><b>Obs:</b> ${a.obs || "-"}</div>
+          <button class="danger-mini" onclick="removerApoio(${i})">Remover</button>
+        </div>
+      `).join("");
+    }
+
+    function removerApoio(index) {
+      apoios.splice(index, 1);
+      salvarDados();
+      renderApoios();
+    }
+
+    function adicionarAlimentacao() {
+      const bebe = document.getElementById("bebeAlimentacao").value;
+      if (!bebe || bebe === "Nenhum bebê cadastrado") {
+        abrirModal("Atenção", "Cadastre um bebê primeiro.", () => {});
+        return;
+      }
+
+      const refeicao = document.getElementById("tipoRefeicao").value;
+      const cardapio = document.getElementById("cardapio").value;
+      alimentacoes.push(`${bebe}\n${refeicao}\n${cardapio}`);
+      salvarDados();
+      document.getElementById("listaAlimentacao").innerText = alimentacoes.join("\n\n");
+    }
+
+    function adicionarAgenda() {
+      const titulo = document.getElementById("tituloAgenda").value;
+      const data = document.getElementById("dataAgenda").value;
+      const hora = document.getElementById("horaAgenda").value;
+      const obs = document.getElementById("obsAgenda").value;
+
+      agenda.push(`${titulo}\nData: ${formatarDataBR(data)}\nHora: ${hora}\nObs: ${obs}`);
+      salvarDados();
+      document.getElementById("listaAgenda").innerText = agenda.join("\n\n");
+    }
+
+    function atualizarListasBasicas() {
+      renderRotinas();
+      document.getElementById("listaAlimentacao").innerText = alimentacoes.length ? alimentacoes.join("\n\n") : "Nenhum planejamento cadastrado.";
+      document.getElementById("listaAgenda").innerText = agenda.length ? agenda.join("\n\n") : "Nenhum compromisso salvo.";
+    }
+
+    document.addEventListener("click", function(event) {
+      const box = document.getElementById("userPopover");
+      const avatar = document.querySelector(".avatar");
+      if (box && box.classList.contains("show") && !box.contains(event.target) && !avatar.contains(event.target)) {
+        fecharPerfilUsuario();
+      }
+    });
+
+    window.addEventListener("scroll", fecharPerfilUsuario, { passive: true });
+
+    carregarUsuarioLocal();
+    carregarDados();
+    renderBebes();
+    carregarMeusItensServidor();
+    carregarVitrineServidor();
+    mostrarAtividades();
+    renderAtividadesManuais();
+    renderApoios();
+    atualizarListasBasicas();
+  </script>
+</body>
+</html>
