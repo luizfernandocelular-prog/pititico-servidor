@@ -717,7 +717,7 @@
       .topbar { padding: 14px 16px; }
     }
   
-    /* ETAPA 4 - Anúncios no APP */
+    /* ETAPA 4.1 - Anúncios + Regras em botões */
     .pititico-ads-box {
       background: rgba(255,255,255,.95);
       border-radius: 22px;
@@ -735,10 +735,7 @@
       margin-bottom: 8px;
       font-size: 14px;
     }
-    .pititico-ads-window {
-      overflow: hidden;
-      white-space: nowrap;
-    }
+    .pititico-ads-window { overflow: hidden; white-space: nowrap; }
     .pititico-ads-track {
       display: inline-flex;
       gap: 14px;
@@ -766,13 +763,60 @@
       background: #fff;
       flex: 0 0 auto;
     }
-    .pititico-ad-item span {
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
+    .pititico-ad-item span { overflow: hidden; text-overflow: ellipsis; }
     @keyframes pititicoAdsMove {
       from { transform: translateX(100%); }
       to { transform: translateX(-100%); }
+    }
+
+    .rule-buttons {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .rule-buttons button {
+      border: none;
+      border-radius: 18px;
+      padding: 16px 18px;
+      background: var(--soft);
+      color: var(--primary);
+      font-weight: 900;
+      cursor: pointer;
+      text-align: left;
+      font-size: 15px;
+    }
+    .rule-buttons button:hover {
+      filter: brightness(.98);
+      transform: translateY(-1px);
+    }
+    .modal-wide {
+      max-width: 720px;
+      text-align: left;
+      max-height: 92dvh;
+      overflow-y: auto;
+    }
+    .modal-wide h3 {
+      text-align: left;
+      font-size: 24px;
+      color: var(--primary);
+    }
+    .modal-full-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .modal-full-actions button {
+      flex: 1;
+      border: none;
+      border-radius: 16px;
+      padding: 13px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    @media (max-width: 540px) {
+      .rule-buttons { grid-template-columns: 1fr; }
+      .modal-full-actions { flex-direction: column; }
     }
 
   </style>
@@ -1112,12 +1156,17 @@
 
       <section id="regras" class="card">
         <h2>📋 Regras do PiTiTiCo</h2>
-        <div class="small">
-          <p><strong>1.</strong> O PiTiTiCo é um app de apoio, organização e conexão entre mamães.</p>
-          <p><strong>2.</strong> Os itens do Troca-Troca ficam disponíveis por 5 dias.</p>
-          <p><strong>3.</strong> Cada usuária pode remover apenas seus próprios itens.</p>
-          <p><strong>4.</strong> É proibido cadastrar remédios, alimentos abertos, itens vencidos, quebrados ou perigosos.</p>
-          <p><strong>5.</strong> O uso do app deve priorizar segurança, cuidado e responsabilidade.</p>
+
+        <div class="notice">
+          Toque em cada botão para abrir as regras em uma tela flutuante.
+        </div>
+
+        <div class="rule-buttons">
+          <button onclick="abrirRegra('seguranca')">🛡️ Segurança</button>
+          <button onclick="abrirRegra('trocas')">👕 Troca-Troca</button>
+          <button onclick="abrirRegra('privacidade')">🔒 Privacidade</button>
+          <button onclick="abrirRegra('penalidades')">🚫 Penalidades</button>
+          <button onclick="abrirRegra('duvidas')">❓ Dúvidas</button>
         </div>
       </section>
     </main>
@@ -1136,6 +1185,17 @@
   </div>
 
   <a class="support-whatsapp" href="https://wa.me/5521997180033?text=Olá,%20preciso%20de%20suporte%20no%20app%20PiTiTiCo." target="_blank">☘</a>
+
+
+  <div id="regraModal" class="modal-bg">
+    <div class="modal modal-wide">
+      <h3 id="regraTitulo">Regra</h3>
+      <div id="regraTexto" class="small"></div>
+      <div class="modal-full-actions">
+        <button class="confirm-btn" onclick="fecharRegra()">Entendi</button>
+      </div>
+    </div>
+  </div>
 
   <div id="confirmModal" class="modal-bg">
     <div class="modal">
@@ -1816,7 +1876,7 @@
 
     carregarDados();
 
-    // ETAPA 4 - carregar anúncios no APP
+    // ETAPA 4.1 - anúncios e regras em modal
     async function carregarAnunciosPititico() {
       const box = document.getElementById("pititicoAdsBox");
       const track = document.getElementById("pititicoAdsTrack");
@@ -1850,6 +1910,45 @@
         box.style.display = "none";
       }
     }
+
+    const regrasPititico = {
+      seguranca: {
+        titulo: "🛡️ Segurança",
+        texto: "<p>Use o PiTiTiCo com responsabilidade. Combine trocas em locais seguros, evite passar dados sensíveis e prefira contato claro pelo WhatsApp.</p>"
+      },
+      trocas: {
+        titulo: "👕 Regras do Troca-Troca",
+        texto: "<p>Os itens do Troca-Troca ficam disponíveis por 5 dias.</p><p>Cada usuária pode remover apenas seus próprios itens.</p><p>É proibido cadastrar remédios, alimentos abertos, itens vencidos, quebrados ou perigosos.</p>"
+      },
+      privacidade: {
+        titulo: "🔒 Privacidade",
+        texto: "<p>Os dados pessoais devem ser usados apenas para funcionamento do APP e contato entre usuárias interessadas nos itens.</p>"
+      },
+      penalidades: {
+        titulo: "🚫 Penalidades",
+        texto: "<p>Usuários com comportamento inadequado, anúncios falsos ou itens proibidos podem ser removidos ou banidos pelo administrador.</p>"
+      },
+      duvidas: {
+        titulo: "❓ Dúvidas",
+        texto: "<p>Em caso de dúvida, use o botão de suporte do PiTiTiCo ou fale com o administrador do APP.</p>"
+      }
+    };
+
+    function abrirRegra(tipo) {
+      const regra = regrasPititico[tipo] || regrasPititico.duvidas;
+      document.getElementById("regraTitulo").innerText = regra.titulo;
+      document.getElementById("regraTexto").innerHTML = regra.texto;
+      document.getElementById("regraModal").classList.add("show");
+    }
+
+    function fecharRegra() {
+      document.getElementById("regraModal").classList.remove("show");
+    }
+
+    document.addEventListener("click", function(e) {
+      const regra = document.getElementById("regraModal");
+      if (regra && e.target === regra) fecharRegra();
+    });
 
     carregarUsuarioLocal();
     renderBebes();
