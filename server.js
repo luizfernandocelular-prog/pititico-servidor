@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const fs = require("fs");
 const path = require("path");
-const { MongoClient } = require("mongodb");
+const { MongoClient, ObjectId } = require("mongodb");
 
 require("dotenv").config();
 
@@ -689,6 +689,108 @@ app.delete("/dados-pessoais/:tipo/:id", async (req, res) => {
     res.json({ sucesso: true, mensagem: "Registro removido." });
   } catch (erro) {
     res.status(500).json({ sucesso: false, mensagem: "Erro ao remover dado pessoal.", detalhe: erro.message });
+  }
+});
+
+
+
+// ETAPA 2 - ROTAS ADMIN, USUÁRIOS, ITENS E ANÚNCIOS
+app.get("/admin/anuncios", async (req, res) => {
+  try {
+    const anuncios = await db.collection("anuncios").find({}).sort({ criadoEm: -1 }).toArray();
+    res.json(anuncios);
+  } catch (erro) {
+    res.status(500).json({ sucesso:false, mensagem:"Erro ao listar anúncios.", detalhe:erro.message });
+  }
+});
+
+app.get("/anuncios", async (req, res) => {
+  try {
+    const anuncios = await db.collection("anuncios").find({ status:"ativo" }).sort({ criadoEm: -1 }).toArray();
+    res.json(anuncios);
+  } catch (erro) {
+    res.status(500).json({ sucesso:false, mensagem:"Erro ao listar anúncios.", detalhe:erro.message });
+  }
+});
+
+app.post("/admin/anuncios", async (req, res) => {
+  try {
+    const anuncio = {
+      id: Date.now(),
+      titulo: req.body.titulo || "",
+      texto: req.body.texto || "",
+      imagem: req.body.imagem || "",
+      link: req.body.link || "",
+      status: req.body.status || "ativo",
+      criadoEm: agoraISO(),
+      atualizadoEm: agoraISO()
+    };
+    await db.collection("anuncios").insertOne(anuncio);
+    res.json({ sucesso:true, anuncio });
+  } catch (erro) {
+    res.status(500).json({ sucesso:false, mensagem:"Erro ao cadastrar anúncio.", detalhe:erro.message });
+  }
+});
+
+app.put("/admin/anuncios/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const filtro = isNaN(Number(id)) ? { _id: new ObjectId(id) } : { id:Number(id) };
+    const dados = { ...req.body, atualizadoEm: agoraISO() };
+    delete dados._id;
+    const r = await db.collection("anuncios").updateOne(filtro, { $set:dados });
+    if (!r.matchedCount) return res.status(404).json({ sucesso:false, mensagem:"Anúncio não encontrado." });
+    res.json({ sucesso:true });
+  } catch (erro) {
+    res.status(500).json({ sucesso:false, mensagem:"Erro ao atualizar anúncio.", detalhe:erro.message });
+  }
+});
+
+app.delete("/admin/anuncios/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const filtro = isNaN(Number(id)) ? { _id: new ObjectId(id) } : { id:Number(id) };
+    const r = await db.collection("anuncios").deleteOne(filtro);
+    if (!r.deletedCount) return res.status(404).json({ sucesso:false, mensagem:"Anúncio não encontrado." });
+    res.json({ sucesso:true });
+  } catch (erro) {
+    res.status(500).json({ sucesso:false, mensagem:"Erro ao excluir anúncio.", detalhe:erro.message });
+  }
+});
+
+app.post("/admin/usuarios/banir", async (req, res) => {
+  try {
+    const email = String(req.body.email || "").trim().toLowerCase();
+    if (!email) return res.status(400).json({ sucesso:false, mensagem:"E-mail obrigatório." });
+    const r = await db.collection("usuarios").updateOne({ email }, { $set:{ status:"banido", banidoEm:agoraISO() } });
+    if (!r.matchedCount) return res.status(404).json({ sucesso:false, mensagem:"Usuário não encontrado." });
+    res.json({ sucesso:true });
+  } catch (erro) {
+    res.status(500).json({ sucesso:false, mensagem:"Erro ao banir usuário.", detalhe:erro.message });
+  }
+});
+
+app.post("/admin/usuarios/reativar", async (req, res) => {
+  try {
+    const email = String(req.body.email || "").trim().toLowerCase();
+    if (!email) return res.status(400).json({ sucesso:false, mensagem:"E-mail obrigatório." });
+    const r = await db.collection("usuarios").updateOne({ email }, { $set:{ status:"ativo", reativadoEm:agoraISO() }, $unset:{ banidoEm:"" } });
+    if (!r.matchedCount) return res.status(404).json({ sucesso:false, mensagem:"Usuário não encontrado." });
+    res.json({ sucesso:true });
+  } catch (erro) {
+    res.status(500).json({ sucesso:false, mensagem:"Erro ao reativar usuário.", detalhe:erro.message });
+  }
+});
+
+app.post("/admin/publicacoes/:id/remover", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const filtro = isNaN(Number(id)) ? { _id: new ObjectId(id) } : { id:Number(id) };
+    const r = await db.collection("publicacoes").updateOne(filtro, { $set:{ status:"removido", removidoEm:agoraISO() } });
+    if (!r.matchedCount) return res.status(404).json({ sucesso:false, mensagem:"Item não encontrado." });
+    res.json({ sucesso:true });
+  } catch (erro) {
+    res.status(500).json({ sucesso:false, mensagem:"Erro ao remover item.", detalhe:erro.message });
   }
 });
 

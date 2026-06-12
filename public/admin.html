@@ -2,484 +2,235 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Painel Admin PiTiTiCo</title>
 <style>
-body {
-  font-family: Arial, sans-serif;
-  background: #fff4f9;
-  padding: 24px;
-  color: #222;
-}
-h1 {
-  color: #e85aa4;
-  margin-bottom: 8px;
-}
-button {
-  background: #e85aa4;
-  color: white;
-  border: none;
-  padding: 10px 14px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: bold;
-}
-button.secondary { background: #73c8ef; }
-button.danger {
-  background: #ffe8ef;
-  color: #d9275b;
-}
-button.ok {
-  background: #e8fff0;
-  color: #17964e;
-}
-.card {
-  background: white;
-  padding: 16px;
-  margin-bottom: 15px;
-  border-radius: 14px;
-  box-shadow: 0 2px 8px rgba(0,0,0,.1);
-}
-.status {
-  font-weight: bold;
-  padding: 4px 8px;
-  border-radius: 999px;
-}
-.ativo { background: #e8fff0; color: #17964e; }
-.expirado { background: #fff3d8; color: #a16b00; }
-.removido, .banido { background: #ffe8ef; color: #d9275b; }
-pre {
-  background: #f7f7f7;
-  padding: 12px;
-  border-radius: 10px;
-  overflow: auto;
-}
-.grid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 10px;
-  margin: 18px 0;
-}
-.stat {
-  background: white;
-  border-radius: 14px;
-  padding: 14px;
-  box-shadow: 0 2px 8px rgba(0,0,0,.08);
-}
-.stat strong {
-  display: block;
-  font-size: 24px;
-  color: #e85aa4;
-}
-.api-box {
-  font-size: 13px;
-  color: #666;
-  margin: 8px 0 18px;
-  line-height: 1.5;
-}
-.admin-layout {
-  display: grid;
-  grid-template-columns: 380px 1fr;
-  gap: 16px;
-  align-items: start;
-}
-.user-card {
-  border: 2px solid transparent;
-  cursor: pointer;
-}
-.user-card.selected {
-  border-color: #e85aa4;
-  background: #fff8fc;
-}
-.user-card.banned-card {
-  opacity: .72;
-  background: #fff8fa;
-}
-.user-name {
-  font-weight: bold;
-  color: #e85aa4;
-  font-size: 17px;
-}
-.user-meta {
-  font-size: 13px;
-  color: #555;
-  line-height: 1.5;
-  margin-top: 6px;
-}
-.small {
-  font-size: 13px;
-  color: #666;
-}
-.tabs {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-top: 10px;
-}
-.tab-btn.active {
-  outline: 3px solid rgba(232,90,164,.25);
-}
-@media(max-width:900px) {
-  .admin-layout { grid-template-columns: 1fr; }
-  .grid { grid-template-columns: 1fr 1fr; }
-}
+*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+body{margin:0;background:#fff2f8;color:#111226}
+.page{padding:34px}
+.header{display:flex;align-items:center;gap:14px;margin-bottom:10px}
+.logo{font-size:38px}
+h1{margin:0;color:#eb4fa0;font-size:42px;font-weight:900}
+.api,.status{color:#55576a;margin:7px 0}
+.ok{color:#168b4a;font-weight:800}
+button{border:0;border-radius:12px;padding:12px 17px;font-weight:800;cursor:pointer;margin:4px}
+.btn-pink{background:#eb5aa5;color:white}
+.btn-blue{background:#69c6ec;color:white}
+.btn-light{background:#ffe2ef;color:#d62173}
+.btn-green{background:#24c76c;color:white}
+.btn-red{background:#ffe4ee;color:#d31d62}
+.cards{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin:22px 0}
+.card{background:white;border-radius:16px;padding:18px;box-shadow:0 4px 12px #0001}
+.card .label{font-size:16px}
+.card .num{font-size:30px;color:#eb4fa0;font-weight:900;margin-top:5px}
+.grid{display:grid;grid-template-columns:380px 1fr;gap:18px;align-items:start}
+.panel,.user,.item,.ad{background:white;border-radius:17px;padding:20px;margin-bottom:16px;box-shadow:0 4px 12px #0001}
+h2{margin-top:0;font-size:28px}
+.user.selected{border:2px solid #eb4fa0}
+.user h3{margin:0 0 8px;color:#eb4fa0}
+.badge{display:inline-block;border-radius:12px;padding:4px 9px;font-weight:800;font-size:13px}
+.ativo{background:#e1ffec;color:#0b8b3e}
+.banido,.removido,.inativo{background:#ffe1ee;color:#d31d62}
+input,textarea,select{width:100%;padding:12px;border:1px solid #f3c6dc;border-radius:12px;margin:6px 0 12px;background:#fffafd;font-size:15px}
+textarea{min-height:80px}
+.empty{background:#fff0f7;border-radius:14px;padding:18px;color:#725466}
+.modal-bg{position:fixed;inset:0;background:#0007;display:none;align-items:center;justify-content:center;padding:20px;z-index:999}
+.modal{background:white;border-radius:24px;padding:24px;width:min(720px,96vw);max-height:90vh;overflow:auto}
+.modal h2{color:#eb4fa0}
+pre{white-space:pre-wrap;font-size:12px;background:#fff6fa;padding:12px;border-radius:12px}
+@media(max-width:1000px){.cards{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<h1>👶 Painel Admin PiTiTiCo</h1>
+<div class="page">
+  <div class="header"><div class="logo">👶</div><h1>Painel Admin PiTiTiCo</h1></div>
+  <div class="api">API conectada: <b>https://pititico-servidor.onrender.com</b></div>
+  <div class="status" id="status">Status: verificando...</div>
 
-<div class="api-box">
-  API conectada: <b id="apiAtual">testando...</b><br>
-  Status: <span id="statusApi">verificando servidor...</span>
+  <button class="btn-pink" onclick="carregar()">Atualizar painel</button>
+  <button class="btn-blue" onclick="verTodos()">Ver todos os itens</button>
+  <button class="btn-green" onclick="abrirAnuncio()">+ Novo anúncio</button>
+
+  <div class="cards">
+    <div class="card"><div class="label">Usuários total</div><div class="num" id="cUsuarios">0</div></div>
+    <div class="card"><div class="label">Usuários ativos</div><div class="num" id="cAtivos">0</div></div>
+    <div class="card"><div class="label">Banidos</div><div class="num" id="cBanidos">0</div></div>
+    <div class="card"><div class="label">Itens ativos</div><div class="num" id="cItensAtivos">0</div></div>
+    <div class="card"><div class="label">Anúncios ativos</div><div class="num" id="cAnuncios">0</div></div>
+    <div class="card"><div class="label">Total itens</div><div class="num" id="cItens">0</div></div>
+  </div>
+
+  <div class="grid">
+    <div>
+      <div class="panel">
+        <h2>Usuários cadastrados</h2>
+        <p>Usuários banidos ficam separados e não conseguem mais acessar o app.</p>
+        <button class="btn-blue" onclick="filtro='ativo';renderUsuarios()">Ativos</button>
+        <button class="btn-light" onclick="filtro='banido';renderUsuarios()">Banidos</button>
+        <button class="btn-pink" onclick="filtro='todos';renderUsuarios()">Todos</button>
+      </div>
+      <div id="usuarios"></div>
+    </div>
+
+    <div>
+      <div class="panel">
+        <h2 id="tituloItens">Todos os itens do Troca-Troca</h2>
+        <p id="subItens">Lista geral com todos os itens cadastrados.</p>
+      </div>
+      <div id="itens"></div>
+
+      <div class="panel">
+        <h2>📢 Anúncios</h2>
+        <p>Anúncios cadastrados pelo admin e exibidos no APP.</p>
+        <button class="btn-green" onclick="abrirAnuncio()">+ Cadastrar anúncio</button>
+      </div>
+      <div id="anuncios"></div>
+    </div>
+  </div>
 </div>
 
-<button onclick="carregarTudo()">Atualizar painel</button>
-
-<div class="grid">
-  <div class="stat">Usuários total<strong id="totalUsuarios">0</strong></div>
-  <div class="stat">Usuários ativos<strong id="usuariosAtivos">0</strong></div>
-  <div class="stat">Banidos<strong id="usuariosBanidos">0</strong></div>
-  <div class="stat">Itens ativos<strong id="ativos">0</strong></div>
-  <div class="stat">Removidos<strong id="removidos">0</strong></div>
-  <div class="stat">Total itens<strong id="total">0</strong></div>
-</div>
-
-<div class="admin-layout">
-  <section>
-    <div class="card">
-      <h2>Usuários cadastrados</h2>
-      <p class="small">Usuários banidos ficam separados e não conseguem mais acessar o app.</p>
-
-      <div class="tabs">
-        <button id="tabAtivos" class="secondary tab-btn active" onclick="setFiltroUsuarios('ativos')">Ativos</button>
-        <button id="tabBanidos" class="danger tab-btn" onclick="setFiltroUsuarios('banidos')">Banidos</button>
-        <button id="tabTodos" class="tab-btn" onclick="setFiltroUsuarios('todos')">Todos</button>
-      </div>
-
-      <div style="margin-top:12px;">
-        <button class="secondary" onclick="selecionarUsuario(null)">Ver todos os itens</button>
-      </div>
-    </div>
-    <div id="listaUsuarios"></div>
-  </section>
-
-  <section>
-    <div class="card">
-      <h2 id="tituloItens">Todos os itens do Troca-Troca</h2>
-      <p id="subtituloItens" class="small">Lista geral com todos os itens cadastrados.</p>
-    </div>
-    <div id="listaItens"></div>
-  </section>
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <h2 id="modalTitulo">Cadastrar anúncio</h2>
+    <input type="hidden" id="adId">
+    <label>Título</label><input id="adTitulo" placeholder="Promoção, aviso ou parceiro">
+    <label>Texto</label><textarea id="adTexto"></textarea>
+    <label>Imagem/GIF URL</label><input id="adImagem" placeholder="https://...">
+    <label>Link</label><input id="adLink" placeholder="https://...">
+    <label>Status</label><select id="adStatus"><option value="ativo">Ativo</option><option value="inativo">Inativo</option></select>
+    <button class="btn-light" onclick="fecharAnuncio()">Cancelar</button>
+    <button class="btn-pink" onclick="salvarAnuncio()">Salvar</button>
+  </div>
 </div>
 
 <script>
-const API_FIXA_NGROK = "https://renna-nonvasculose-norah.ngrok-free.dev";
-let API_ADMIN = null;
-let usuariosCache = [];
-let itensCache = [];
-let usuarioSelecionado = null;
-let filtroUsuarios = "ativos";
+const API="https://pititico-servidor.onrender.com";
+let usuarios=[], itens=[], anuncios=[], filtro="ativo", selecionado=null;
 
-function montarApisPossiveis() {
-  const lista = [];
-
-  if (location.protocol.startsWith("http") && location.hostname !== "chatgpt.com") {
-    lista.push(location.origin);
-  }
-
-  lista.push("http://localhost:3000");
-  lista.push("http://127.0.0.1:3000");
-  lista.push(API_FIXA_NGROK);
-
-  return [...new Set(lista)];
+function esc(v){return String(v??"").replace(/[<>&]/g,"")}
+function email(v){return String(v??"").trim().toLowerCase()}
+async function api(url,opt={}){
+  const r=await fetch(url,opt); const t=await r.text();
+  let j=null; try{j=t?JSON.parse(t):null}catch(e){throw new Error("Resposta inválida: "+t.slice(0,80))}
+  if(!r.ok) throw new Error(j?.mensagem||j?.erro||"Erro HTTP "+r.status);
+  return j;
 }
 
-async function fetchJsonSeguro(url) {
-  const resposta = await fetch(url, { cache: "no-store" });
-  const texto = await resposta.text();
-
-  try {
-    return JSON.parse(texto);
-  } catch (e) {
-    throw new Error("Rota respondeu HTML/texto em vez de JSON. Reinicie o servidor corrigido. Rota: " + url);
+async function carregar(){
+  status.textContent="Status: carregando...";
+  try{
+    const a=await api(API+"/admin");
+    usuarios=a.usuarios||[];
+    itens=a.publicacoes||a.itens||[];
+    try{anuncios=await api(API+"/admin/anuncios")}catch(e){anuncios=[]}
+    status.textContent="Status: conectado"; status.className="status ok";
+    cards(); renderUsuarios(); renderItens(); renderAnuncios();
+  }catch(e){
+    status.textContent="Erro: "+e.message;
   }
 }
 
-async function testarApi(api) {
-  try {
-    const dados = await fetchJsonSeguro(api + "/admin/publicacoes");
-    if (!Array.isArray(dados)) return false;
-
-    const usuarios = await fetchJsonSeguro(api + "/admin/usuarios");
-    if (!Array.isArray(usuarios)) return false;
-
-    return true;
-  } catch (e) {
-    return false;
-  }
+function cards(){
+  cUsuarios.textContent=usuarios.length;
+  cAtivos.textContent=usuarios.filter(u=>(u.status||"ativo")==="ativo").length;
+  cBanidos.textContent=usuarios.filter(u=>["banido","removido","inativo"].includes(u.status)).length;
+  cItens.textContent=itens.length;
+  cItensAtivos.textContent=itens.filter(i=>(i.status||"ativo")==="ativo").length;
+  cAnuncios.textContent=anuncios.filter(a=>(a.status||"ativo")==="ativo").length;
 }
 
-async function encontrarApi() {
-  const apis = montarApisPossiveis();
-
-  for (const api of apis) {
-    document.getElementById("apiAtual").innerText = api;
-    document.getElementById("statusApi").innerText = "testando " + api + "...";
-
-    const ok = await testarApi(api);
-
-    if (ok) {
-      API_ADMIN = api;
-      document.getElementById("apiAtual").innerText = api;
-      document.getElementById("statusApi").innerText = "conectado";
-      return true;
-    }
-  }
-
-  document.getElementById("apiAtual").innerText = "nenhuma API conectada";
-  document.getElementById("statusApi").innerText = "falhou";
-  return false;
+function itensDoUsuario(u){
+  const em=email(u.email);
+  return itens.filter(i=> email(i.emailUsuario||i.email||i.usuarioEmail||i.donoEmail)===em || (u.deviceId && i.donoDeviceId===u.deviceId));
 }
 
-function statusUsuario(usuario) {
-  return usuario.status || "ativo";
-}
-
-function itemPertenceAoUsuario(item, usuario) {
-  if (!usuario) return true;
-
-  const emailItem = String(item.usuario?.email || item.emailUsuario || "").toLowerCase();
-  const emailUsuario = String(usuario.email || "").toLowerCase();
-
-  return (
-    item.donoDeviceId === usuario.deviceId ||
-    item.deviceId === usuario.deviceId ||
-    (emailItem && emailUsuario && emailItem === emailUsuario)
-  );
-}
-
-function atualizarStats() {
-  document.getElementById("totalUsuarios").innerText = usuariosCache.length;
-  document.getElementById("usuariosAtivos").innerText = usuariosCache.filter(u => statusUsuario(u) !== "banido").length;
-  document.getElementById("usuariosBanidos").innerText = usuariosCache.filter(u => statusUsuario(u) === "banido").length;
-
-  document.getElementById("total").innerText = itensCache.length;
-  document.getElementById("ativos").innerText = itensCache.filter(i => i.status === "ativo").length;
-  document.getElementById("removidos").innerText = itensCache.filter(i => i.status === "removido").length;
-}
-
-function setFiltroUsuarios(filtro) {
-  filtroUsuarios = filtro;
-  document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-
-  if (filtro === "ativos") document.getElementById("tabAtivos").classList.add("active");
-  if (filtro === "banidos") document.getElementById("tabBanidos").classList.add("active");
-  if (filtro === "todos") document.getElementById("tabTodos").classList.add("active");
-
-  renderUsuarios();
-}
-
-function usuariosFiltrados() {
-  if (filtroUsuarios === "ativos") {
-    return usuariosCache.filter(u => statusUsuario(u) !== "banido");
-  }
-
-  if (filtroUsuarios === "banidos") {
-    return usuariosCache.filter(u => statusUsuario(u) === "banido");
-  }
-
-  return usuariosCache;
-}
-
-function renderUsuarios() {
-  const area = document.getElementById("listaUsuarios");
-  const usuarios = usuariosFiltrados();
-
-  if (!usuarios.length) {
-    area.innerHTML = '<div class="card">Nenhum usuário nesta categoria.</div>';
-    return;
-  }
-
-  area.innerHTML = usuarios.map(usuario => {
-    const selected = usuarioSelecionado && usuarioSelecionado.id === usuario.id ? "selected" : "";
-    const status = statusUsuario(usuario);
-    const bannedClass = status === "banido" ? "banned-card" : "";
-
-    return `
-      <div class="card user-card ${selected} ${bannedClass}" onclick="selecionarUsuarioPorId(${usuario.id})">
-        <div class="user-name">${usuario.nome || "Usuário sem nome"}</div>
-        <div class="user-meta">
-          <b>E-mail:</b> ${usuario.email || "-"}<br>
-          <b>WhatsApp:</b> ${usuario.whatsapp || "-"}<br>
-          <b>Status:</b> <span class="status ${status}">${status}</span><br>
-          <b>Itens:</b> ${usuario.totalItens || 0} |
-          <b>Ativos:</b> ${usuario.itensAtivos || 0} |
-          <b>Removidos:</b> ${usuario.itensRemovidos || 0}<br>
-          ${usuario.banidoEm ? "<b>Banido em:</b> " + new Date(usuario.banidoEm).toLocaleString() + "<br>" : ""}
-        </div>
-
-        ${status === "banido"
-          ? `<button class="ok" onclick="event.stopPropagation(); reativarUsuario(${usuario.id})">Reativar usuário</button>`
-          : `<button class="danger" onclick="event.stopPropagation(); confirmarBanirUsuario(${usuario.id})">Remover/Banir usuário</button>`
-        }
-      </div>
-    `;
+function renderUsuarios(){
+  let lista=usuarios;
+  if(filtro==="ativo") lista=usuarios.filter(u=>(u.status||"ativo")==="ativo");
+  if(filtro==="banido") lista=usuarios.filter(u=>["banido","removido","inativo"].includes(u.status));
+  if(!lista.length){usuarios.innerHTML='<div class="empty">Nenhum usuário encontrado.</div>';return}
+  usuarios.innerHTML=lista.map(u=>{
+    const its=itensDoUsuario(u), st=u.status||"ativo", em=email(u.email);
+    return `<div class="user ${selecionado&&email(selecionado.email)===em?'selected':''}">
+      <h3>${esc(u.nome||u.mamae||"Usuário sem nome")}</h3>
+      <p><b>E-mail:</b> ${esc(u.email)}</p>
+      <p><b>WhatsApp:</b> ${esc(u.whatsapp||u.telefone)}</p>
+      <p><b>Status:</b> <span class="badge ${st}">${st}</span></p>
+      <p><b>Itens:</b> ${its.length} | <b>Ativos:</b> ${its.filter(i=>(i.status||"ativo")==="ativo").length}</p>
+      <button class="btn-blue" onclick='selecionar("${em}")'>Ver dados</button>
+      ${st==="ativo"?`<button class="btn-red" onclick='banir("${em}")'>Banir</button>`:`<button class="btn-green" onclick='reativar("${em}")'>Reativar</button>`}
+    </div>`;
   }).join("");
 }
 
-function renderItens() {
-  const area = document.getElementById("listaItens");
-  let itens = itensCache;
+function selecionar(em){selecionado=usuarios.find(u=>email(u.email)===em);renderUsuarios();renderItens()}
+function verTodos(){selecionado=null;renderUsuarios();renderItens()}
 
-  if (usuarioSelecionado) {
-    itens = itensCache.filter(item => itemPertenceAoUsuario(item, usuarioSelecionado));
-    document.getElementById("tituloItens").innerText = "Itens de " + (usuarioSelecionado.nome || "usuário");
-    document.getElementById("subtituloItens").innerText = "Mostrando apenas os itens cadastrados por este usuário.";
-  } else {
-    document.getElementById("tituloItens").innerText = "Todos os itens do Troca-Troca";
-    document.getElementById("subtituloItens").innerText = "Lista geral com todos os itens cadastrados.";
+function renderItens(){
+  let lista=itens;
+  if(selecionado){
+    lista=itensDoUsuario(selecionado);
+    tituloItens.textContent="Itens de "+(selecionado.nome||selecionado.email);
+    subItens.textContent="Mostrando apenas os itens cadastrados por este usuário.";
+  }else{
+    tituloItens.textContent="Todos os itens do Troca-Troca";
+    subItens.textContent="Lista geral com todos os itens cadastrados.";
   }
-
-  if (!itens.length) {
-    area.innerHTML = '<div class="card">Nenhum item encontrado.</div>';
-    return;
-  }
-
-  area.innerHTML = itens.slice().reverse().map(item => `
-    <div class="card">
-      <h3>${item.item || "Sem nome"}</h3>
-      <p>Status: <span class="status ${item.status}">${item.status}</span></p>
-      <p><b>Tipo:</b> ${item.tipo || "-"}</p>
-      <p><b>Categoria:</b> ${item.categoria || "-"}</p>
-      <p><b>Tamanho/idade:</b> ${item.tamanho || "-"}</p>
-      <p><b>Estado:</b> ${item.estado || "-"}</p>
-      <p><b>Local:</b> ${item.local || item.cidade || "-"}</p>
-      <p><b>Mamãe:</b> ${item.usuario?.nome || item.nomeUsuario || "-"}</p>
-      <p><b>E-mail:</b> ${item.usuario?.email || item.emailUsuario || "-"}</p>
-      <p><b>WhatsApp:</b> ${item.usuario?.whatsapp || item.whats || "-"}</p>
-      <p><b>Criado:</b> ${item.criadoEm ? new Date(item.criadoEm).toLocaleString() : "-"}</p>
-      <p><b>Expira:</b> ${item.expiraEm ? new Date(item.expiraEm).toLocaleString() : "-"}</p>
-      ${item.motivoRemocao ? "<p><b>Motivo:</b> " + item.motivoRemocao + "</p>" : ""}
-      <details><summary>Dados completos</summary><pre>${JSON.stringify(item,null,2)}</pre></details>
-    </div>
-  `).join("");
+  if(!lista.length){itens.innerHTML='<div class="empty">Nenhum item encontrado.</div>';return}
+  itens.innerHTML=lista.map(i=>{
+    const st=i.status||"ativo", id=i.id||i._id||"";
+    return `<div class="item">
+      <h2>${esc(i.nome||i.titulo||i.item||"Item sem nome")}</h2>
+      <p><b>Status:</b> <span class="badge ${st}">${st}</span></p>
+      <p><b>Tipo:</b> ${esc(i.tipo||"Troca")}</p>
+      <p><b>Categoria:</b> ${esc(i.categoria)}</p>
+      <p><b>Tamanho/idade:</b> ${esc(i.tamanho||i.idade)}</p>
+      <p><b>Estado:</b> ${esc(i.estado)}</p>
+      <p><b>Local:</b> ${esc(i.local||i.bairro||i.cidade)}</p>
+      <p><b>Mamãe:</b> ${esc(i.mamae||i.nomeUsuario||i.nomeDono)}</p>
+      <p><b>E-mail:</b> ${esc(i.emailUsuario||i.email||i.usuarioEmail)}</p>
+      <p><b>WhatsApp:</b> ${esc(i.whatsapp)}</p>
+      <details><summary>Dados completos</summary><pre>${esc(JSON.stringify(i,null,2))}</pre></details>
+      ${st==="ativo"?`<button class="btn-red" onclick='removerItem("${id}")'>Remover item</button>`:""}
+    </div>`;
+  }).join("");
 }
 
-function selecionarUsuario(usuario) {
-  usuarioSelecionado = usuario;
-  renderUsuarios();
-  renderItens();
+function renderAnuncios(){
+  if(!anuncios.length){anuncios.innerHTML='<div class="empty">Nenhum anúncio cadastrado.</div>';return}
+  anuncios.innerHTML=anuncios.map(a=>{
+    const st=a.status||"ativo", id=a.id||a._id||"";
+    return `<div class="ad">
+      <h2>${esc(a.titulo||"Anúncio")}</h2>
+      <p><b>Status:</b> <span class="badge ${st}">${st}</span></p>
+      <p>${esc(a.texto)}</p>
+      <p><b>Imagem/GIF:</b> ${esc(a.imagem)}</p>
+      <p><b>Link:</b> ${esc(a.link)}</p>
+      <button class="btn-blue" onclick='editarAd("${id}")'>Editar</button>
+      <button class="btn-light" onclick='statusAd("${id}","${st==="ativo"?"inativo":"ativo"}")'>${st==="ativo"?"Desativar":"Ativar"}</button>
+      <button class="btn-red" onclick='excluirAd("${id}")'>Excluir</button>
+    </div>`;
+  }).join("");
 }
 
-function selecionarUsuarioPorId(id) {
-  const usuario = usuariosCache.find(u => Number(u.id) === Number(id));
-  selecionarUsuario(usuario || null);
+async function banir(em){if(!confirm("Banir usuário?"))return;await api(API+"/admin/usuarios/banir",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:em})});carregar()}
+async function reativar(em){await api(API+"/admin/usuarios/reativar",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:em})});carregar()}
+async function removerItem(id){if(!confirm("Remover item?"))return;await api(API+"/admin/publicacoes/"+encodeURIComponent(id)+"/remover",{method:"POST"});carregar()}
+
+function abrirAnuncio(){adId.value="";adTitulo.value="";adTexto.value="";adImagem.value="";adLink.value="";adStatus.value="ativo";modal.style.display="flex"}
+function fecharAnuncio(){modal.style.display="none"}
+function editarAd(id){const a=anuncios.find(x=>String(x.id||x._id)===String(id));if(!a)return;adId.value=id;adTitulo.value=a.titulo||"";adTexto.value=a.texto||"";adImagem.value=a.imagem||"";adLink.value=a.link||"";adStatus.value=a.status||"ativo";modal.style.display="flex"}
+async function salvarAnuncio(){
+  const dados={titulo:adTitulo.value,texto:adTexto.value,imagem:adImagem.value,link:adLink.value,status:adStatus.value};
+  if(!dados.titulo.trim())return alert("Informe o título.");
+  if(adId.value) await api(API+"/admin/anuncios/"+encodeURIComponent(adId.value),{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(dados)});
+  else await api(API+"/admin/anuncios",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(dados)});
+  fecharAnuncio();carregar();
 }
-
-function confirmarBanirUsuario(id) {
-  const usuario = usuariosCache.find(u => Number(u.id) === Number(id));
-  if (!usuario) return;
-
-  const ok = confirm(
-    "Deseja remover/banir o usuário " + usuario.nome + "?\n\n" +
-    "Ele não conseguirá mais acessar o aplicativo e os itens ativos serão removidos da vitrine."
-  );
-
-  if (ok) banirUsuario(id);
-}
-
-async function banirUsuario(id) {
-  try {
-    const resposta = await fetch(API_ADMIN + "/admin/usuarios/" + id, {
-      method: "DELETE"
-    });
-
-    const resultado = await resposta.json();
-
-    if (!resposta.ok) {
-      alert(resultado.mensagem || "Erro ao remover usuário.");
-      return;
-    }
-
-    alert(resultado.mensagem || "Usuário removido/banido.");
-    usuarioSelecionado = null;
-    await carregarTudo();
-
-  } catch (e) {
-    alert("Erro ao remover usuário: " + e.message);
-  }
-}
-
-async function reativarUsuario(id) {
-  try {
-    const ok = confirm("Deseja reativar este usuário?");
-    if (!ok) return;
-
-    const resposta = await fetch(API_ADMIN + "/admin/usuarios/" + id + "/reativar", {
-      method: "POST"
-    });
-
-    const resultado = await resposta.json();
-
-    if (!resposta.ok) {
-      alert(resultado.mensagem || "Erro ao reativar usuário.");
-      return;
-    }
-
-    alert(resultado.mensagem || "Usuário reativado.");
-    await carregarTudo();
-
-  } catch (e) {
-    alert("Erro ao reativar usuário: " + e.message);
-  }
-}
-
-async function carregarTudo() {
-  const listaItens = document.getElementById("listaItens");
-  const listaUsuarios = document.getElementById("listaUsuarios");
-
-  listaItens.innerHTML = "Carregando itens...";
-  listaUsuarios.innerHTML = "Carregando usuários...";
-
-  try {
-    if (!API_ADMIN) {
-      const ok = await encontrarApi();
-
-      if (!ok) {
-        listaItens.innerHTML = `
-          <div class="card">
-            <b>Erro ao carregar painel.</b><br><br>
-            Substitua o server.js e reinicie com <b>node server.js</b>.
-          </div>
-        `;
-        listaUsuarios.innerHTML = "";
-        return;
-      }
-    }
-
-    const [itensRecebidos, usuariosRecebidos] = await Promise.all([
-      fetchJsonSeguro(API_ADMIN + "/admin/publicacoes"),
-      fetchJsonSeguro(API_ADMIN + "/admin/usuarios")
-    ]);
-
-    itensCache = Array.isArray(itensRecebidos) ? itensRecebidos : [];
-    usuariosCache = Array.isArray(usuariosRecebidos) ? usuariosRecebidos : [];
-
-    if (usuarioSelecionado) {
-      usuarioSelecionado = usuariosCache.find(u => Number(u.id) === Number(usuarioSelecionado.id)) || null;
-    }
-
-    atualizarStats();
-    renderUsuarios();
-    renderItens();
-
-  } catch (e) {
-    listaItens.innerHTML = '<div class="card">Erro: ' + e.message + '</div>';
-    listaUsuarios.innerHTML = '';
-  }
-}
-
-carregarTudo();
-setInterval(carregarTudo, 15000);
+async function statusAd(id,st){await api(API+"/admin/anuncios/"+encodeURIComponent(id),{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({status:st})});carregar()}
+async function excluirAd(id){if(!confirm("Excluir anúncio?"))return;await api(API+"/admin/anuncios/"+encodeURIComponent(id),{method:"DELETE"});carregar()}
+window.onclick=e=>{if(e.target===modal)fecharAnuncio()}
+carregar();
 </script>
 </body>
 </html>
