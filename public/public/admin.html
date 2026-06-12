@@ -49,6 +49,9 @@ pre{white-space:pre-wrap;font-size:12px;background:#fff6fa;padding:12px;border-r
 
   <button class="btn-pink" onclick="carregar()">Atualizar painel</button>
   <button class="btn-blue" onclick="verTodos()">Ver todos os itens</button>
+  <button class="btn-light" onclick="filtroItens='ativo';renderItens()">Itens ativos</button>
+  <button class="btn-light" onclick="filtroItens='removido';renderItens()">Itens removidos</button>
+  <button class="btn-pink" onclick="filtroItens='todos';renderItens()">Todos os itens</button>
   <button class="btn-green" onclick="abrirAnuncio()">+ Novo anúncio</button>
 
   <div class="cards">
@@ -105,7 +108,7 @@ pre{white-space:pre-wrap;font-size:12px;background:#fff6fa;padding:12px;border-r
 
 <script>
 const API="https://pititico-servidor.onrender.com";
-let usuarios=[], itens=[], anuncios=[], filtro="ativo", selecionado=null;
+let usuarios=[], itens=[], anuncios=[], filtro="ativo", selecionado=null, filtroItens="ativo";
 
 function esc(v){return String(v??"").replace(/[<>&]/g,"")}
 function email(v){return String(v??"").trim().toLowerCase()}
@@ -156,7 +159,7 @@ function renderUsuarios(){
       <p><b>E-mail:</b> ${esc(u.email)}</p>
       <p><b>WhatsApp:</b> ${esc(u.whatsapp||u.telefone)}</p>
       <p><b>Status:</b> <span class="badge ${st}">${st}</span></p>
-      <p><b>Itens:</b> ${its.length} | <b>Ativos:</b> ${its.filter(i=>(i.status||"ativo")==="ativo").length}</p>
+      <p><b>Itens:</b> ${its.length} | <b>Ativos:</b> ${its.filter(i=>(i.status||"ativo")==="ativo").length} | <b>Removidos:</b> ${its.filter(i=>(i.status||"ativo")!=="ativo").length}</p>
       <button class="btn-blue" onclick='selecionar("${em}")'>Ver dados</button>
       ${st==="ativo"?`<button class="btn-red" onclick='banir("${em}")'>Banir</button>`:`<button class="btn-green" onclick='reativar("${em}")'>Reativar</button>`}
     </div>`;
@@ -166,15 +169,26 @@ function renderUsuarios(){
 function selecionar(em){selecionado=usuarios.find(u=>email(u.email)===em);renderUsuarios();renderItens()}
 function verTodos(){selecionado=null;renderUsuarios();renderItens()}
 
+
+function filtrarItensPorStatus(lista){
+  if(filtroItens === "ativo"){
+    return lista.filter(i => (i.status || "ativo") === "ativo");
+  }
+  if(filtroItens === "removido"){
+    return lista.filter(i => ["removido","banido","inativo","expirado"].includes(i.status));
+  }
+  return lista;
+}
+
 function renderItens(){
-  let lista=itens;
+  let lista = filtrarItensPorStatus(itens);
   if(selecionado){
-    lista=itensDoUsuario(selecionado);
+    lista = filtrarItensPorStatus(itensDoUsuario(selecionado));
     tituloItens.textContent="Itens de "+(selecionado.nome||selecionado.email);
-    subItens.textContent="Mostrando apenas os itens cadastrados por este usuário.";
+    subItens.textContent="Mostrando itens " + filtroItens + " deste usuário.";
   }else{
     tituloItens.textContent="Todos os itens do Troca-Troca";
-    subItens.textContent="Lista geral com todos os itens cadastrados.";
+    subItens.textContent="Mostrando itens " + filtroItens + " do sistema.";
   }
   if(!lista.length){itens.innerHTML='<div class="empty">Nenhum item encontrado.</div>';return}
   itens.innerHTML=lista.map(i=>{
