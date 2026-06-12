@@ -281,6 +281,37 @@ app.get("/usuarios", async (req, res) => {
   }
 });
 
+
+// ROTA RESUMO DO ADMIN - necessária para o painel admin.html
+app.get("/admin", async (req, res) => {
+  try {
+    await limparExpirados();
+
+    const usuarios = await usuariosCollection.find({}).toArray();
+    const publicacoes = await publicacoesCollection.find({}).toArray();
+
+    res.json({
+      sucesso: true,
+      usuarios,
+      publicacoes,
+      itens: publicacoes,
+      totais: {
+        usuarios: usuarios.length,
+        usuariosAtivos: usuarios.filter(u => (u.status || "ativo") === "ativo").length,
+        usuariosBanidos: usuarios.filter(u => (u.status || "ativo") === "banido").length,
+        publicacoes: publicacoes.length,
+        publicacoesAtivas: publicacoes.filter(p => (p.status || "ativo") === "ativo").length
+      }
+    });
+  } catch (erro) {
+    res.status(500).json({
+      sucesso: false,
+      mensagem: "Erro ao carregar resumo do admin.",
+      detalhe: erro.message
+    });
+  }
+});
+
 app.get("/admin/usuarios", async (req, res) => {
   try {
     await limparExpirados();
@@ -762,7 +793,7 @@ app.post("/admin/usuarios/banir", async (req, res) => {
   try {
     const email = String(req.body.email || "").trim().toLowerCase();
     if (!email) return res.status(400).json({ sucesso:false, mensagem:"E-mail obrigatório." });
-    const r = await db.collection("usuarios").updateOne({ email }, { $set:{ status:"banido", banidoEm:agoraISO() } });
+    const r = await db.collection("usuarios").updateOne({ $or: [{ email }, { emailLower: email }] }, { $set:{ status:"banido", banidoEm:agoraISO() } });
     if (!r.matchedCount) return res.status(404).json({ sucesso:false, mensagem:"Usuário não encontrado." });
     res.json({ sucesso:true });
   } catch (erro) {
@@ -774,7 +805,7 @@ app.post("/admin/usuarios/reativar", async (req, res) => {
   try {
     const email = String(req.body.email || "").trim().toLowerCase();
     if (!email) return res.status(400).json({ sucesso:false, mensagem:"E-mail obrigatório." });
-    const r = await db.collection("usuarios").updateOne({ email }, { $set:{ status:"ativo", reativadoEm:agoraISO() }, $unset:{ banidoEm:"" } });
+    const r = await db.collection("usuarios").updateOne({ $or: [{ email }, { emailLower: email }] }, { $set:{ status:"ativo", reativadoEm:agoraISO() }, $unset:{ banidoEm:"" } });
     if (!r.matchedCount) return res.status(404).json({ sucesso:false, mensagem:"Usuário não encontrado." });
     res.json({ sucesso:true });
   } catch (erro) {

@@ -809,9 +809,139 @@
     }
 
   </style>
+
+<style id="etapa3-style">
+  .pititico-ad-bar {
+    width: 100%;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 4px 14px rgba(0,0,0,.08);
+    overflow: hidden;
+    margin: 14px 0 22px;
+    border: 1px solid #ffe0ef;
+  }
+  .pititico-ad-track {
+    display: flex;
+    gap: 35px;
+    white-space: nowrap;
+    animation: pititicoMarquee 25s linear infinite;
+    padding: 13px 0;
+  }
+  .pititico-ad-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: #e94698;
+    font-weight: 800;
+    padding-left: 100%;
+  }
+  .pititico-ad-item img {
+    height: 34px;
+    width: 34px;
+    border-radius: 8px;
+    object-fit: cover;
+  }
+  @keyframes pititicoMarquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+  }
+  .pititico-actions-line {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 15px 0;
+  }
+  .pititico-modal-bg {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.45);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    padding: 18px;
+  }
+  .pititico-modal {
+    background: #fff;
+    width: min(720px, 96vw);
+    max-height: 90vh;
+    overflow: auto;
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: 0 15px 35px rgba(0,0,0,.25);
+  }
+  .pititico-modal h2 {
+    color: #eb4fa0;
+    margin-top: 0;
+  }
+  .pititico-modal input,
+  .pititico-modal select,
+  .pititico-modal textarea {
+    width: 100%;
+    padding: 13px;
+    border-radius: 13px;
+    border: 1px solid #f4c9dc;
+    background: #fffafd;
+    margin: 6px 0 12px;
+    font-size: 15px;
+  }
+  .pititico-modal textarea {
+    min-height: 90px;
+  }
+  .pititico-btn-pink {
+    background: #eb5aa5;
+    color: #fff;
+    border: none;
+    border-radius: 13px;
+    padding: 13px 18px;
+    font-weight: 900;
+    cursor: pointer;
+  }
+  .pititico-btn-blue {
+    background: #69c6ec;
+    color: #fff;
+    border: none;
+    border-radius: 13px;
+    padding: 13px 18px;
+    font-weight: 900;
+    cursor: pointer;
+  }
+  .pititico-btn-light {
+    background: #ffe2ef;
+    color: #d62173;
+    border: none;
+    border-radius: 13px;
+    padding: 13px 18px;
+    font-weight: 900;
+    cursor: pointer;
+  }
+  .pititico-item-resumo {
+    background: #fff1f7;
+    border-radius: 16px;
+    padding: 15px;
+    margin: 12px 0;
+    color: #6d4156;
+    font-weight: 800;
+  }
+  .pititico-regra-card {
+    background: #fff;
+    border-radius: 17px;
+    padding: 18px;
+    margin: 12px 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,.07);
+  }
+</style>
+
 </head>
 
 <body>
+
+<div class="pititico-ad-bar" id="pititicoAdBar" style="display:none;">
+  <div class="pititico-ad-track" id="pititicoAdTrack">
+    <span class="pititico-ad-item">📢 Anúncios PiTiTiCo carregando...</span>
+  </div>
+</div>
+
   <div id="loginScreen" class="login-screen show">
     <div class="login-card">
       <h1>PiTiTiCo</h1>
@@ -2158,5 +2288,364 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
     renderApoios();
     atualizarListasBasicas();
   </script>
+
+<div class="pititico-modal-bg" id="modalTrocaEtapa3">
+  <div class="pititico-modal">
+    <h2>Cadastrar item no Troca-Troca</h2>
+
+    <label>Tipo</label>
+    <select id="mTipoItem">
+      <option value="Troca">Troca</option>
+      <option value="Doação">Doação</option>
+      <option value="Venda">Venda</option>
+    </select>
+
+    <label>Nome do item</label>
+    <input id="mNomeItem" placeholder="Ex: Carrinho, roupinha, brinquedo">
+
+    <label>Categoria</label>
+    <input id="mCategoriaItem" placeholder="Ex: Roupinha, Brinquedo, Berço">
+
+    <label>Tamanho/idade</label>
+    <input id="mTamanhoItem" placeholder="Ex: 0 a 3 meses, 1 ano">
+
+    <label>Estado</label>
+    <select id="mEstadoItem">
+      <option value="Novo">Novo</option>
+      <option value="Usado em bom estado">Usado em bom estado</option>
+      <option value="Usado">Usado</option>
+    </select>
+
+    <label>Bairro/Cidade</label>
+    <input id="mLocalItem" placeholder="Ex: Campo Grande - RJ">
+
+    <label>WhatsApp</label>
+    <input id="mWhatsappItem" placeholder="Ex: 21999999999">
+
+    <label>Observação</label>
+    <textarea id="mObsItem" placeholder="Ex: Retirar no local, aceito troca..."></textarea>
+
+    <div class="pititico-actions-line">
+      <button class="pititico-btn-light" onclick="fecharModalTrocaEtapa3()">Cancelar</button>
+      <button class="pititico-btn-pink" onclick="salvarItemTrocaEtapa3()">Cadastrar item</button>
+    </div>
+  </div>
+</div>
+
+<div class="pititico-modal-bg" id="modalMeusItensEtapa3">
+  <div class="pititico-modal">
+    <h2>Meus itens cadastrados</h2>
+    <div id="conteudoMeusItensEtapa3"></div>
+    <div class="pititico-actions-line">
+      <button class="pititico-btn-light" onclick="fecharModalMeusItensEtapa3()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<div class="pititico-modal-bg" id="modalRegraEtapa3">
+  <div class="pititico-modal">
+    <h2 id="tituloRegraEtapa3">Regras</h2>
+    <div id="textoRegraEtapa3"></div>
+    <div class="pititico-actions-line">
+      <button class="pititico-btn-light" onclick="fecharRegraEtapa3()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+
+<script id="etapa3-script">
+  const PITITICO_API_ETAPA3 = "https://pititico-servidor.onrender.com";
+
+  async function pititicoFetchJson(url, options = {}) {
+    const r = await fetch(url, options);
+    const t = await r.text();
+    let j = null;
+    try { j = t ? JSON.parse(t) : null; } catch(e) { throw new Error("Resposta inválida do servidor."); }
+    if (!r.ok) throw new Error(j?.mensagem || j?.erro || "Erro HTTP " + r.status);
+    return j;
+  }
+
+  function usuarioEtapa3() {
+    try {
+      return usuarioAtual || JSON.parse(localStorage.getItem("pititico_usuario") || "null");
+    } catch(e) {
+      return null;
+    }
+  }
+
+  function abrirModalTrocaEtapa3() {
+    const u = usuarioEtapa3();
+    if (!u) {
+      alert("Faça login antes de cadastrar um item.");
+      return;
+    }
+    document.getElementById("modalTrocaEtapa3").style.display = "flex";
+  }
+
+  function fecharModalTrocaEtapa3() {
+    document.getElementById("modalTrocaEtapa3").style.display = "none";
+  }
+
+  async function salvarItemTrocaEtapa3() {
+    const u = usuarioEtapa3();
+    if (!u) return alert("Usuário não identificado.");
+
+    const nome = document.getElementById("mNomeItem").value.trim();
+    if (!nome) return alert("Informe o nome do item.");
+
+    const item = {
+      tipo: document.getElementById("mTipoItem").value,
+      nome,
+      categoria: document.getElementById("mCategoriaItem").value.trim(),
+      tamanho: document.getElementById("mTamanhoItem").value.trim(),
+      estado: document.getElementById("mEstadoItem").value,
+      local: document.getElementById("mLocalItem").value.trim(),
+      whatsapp: document.getElementById("mWhatsappItem").value.trim() || u.whatsapp || "",
+      observacao: document.getElementById("mObsItem").value.trim(),
+      mamae: u.nome || u.mamae || "",
+      nomeUsuario: u.nome || u.mamae || "",
+      emailUsuario: (u.email || "").toLowerCase(),
+      email: (u.email || "").toLowerCase(),
+      deviceId: localStorage.getItem("pititico_deviceId") || u.deviceId || "",
+      donoDeviceId: localStorage.getItem("pititico_deviceId") || u.deviceId || "",
+      status: "ativo"
+    };
+
+    try {
+      await pititicoFetchJson(PITITICO_API_ETAPA3 + "/publicacoes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(item)
+      });
+
+      fecharModalTrocaEtapa3();
+
+      ["mNomeItem","mCategoriaItem","mTamanhoItem","mLocalItem","mWhatsappItem","mObsItem"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = "";
+      });
+
+      if (typeof carregarMeusItensServidor === "function") await carregarMeusItensServidor();
+      if (typeof carregarVitrineServidor === "function") await carregarVitrineServidor();
+      atualizarResumoMeusItensEtapa3();
+      alert("Item cadastrado com sucesso!");
+    } catch(e) {
+      alert("Erro ao cadastrar item: " + e.message);
+    }
+  }
+
+  function abrirModalMeusItensEtapa3() {
+    atualizarConteudoMeusItensEtapa3();
+    document.getElementById("modalMeusItensEtapa3").style.display = "flex";
+  }
+
+  function fecharModalMeusItensEtapa3() {
+    document.getElementById("modalMeusItensEtapa3").style.display = "none";
+  }
+
+  function atualizarResumoMeusItensEtapa3() {
+    const alvo = document.getElementById("resumoMeusItensEtapa3");
+    if (!alvo) return;
+
+    let qtd = 0;
+    try {
+      if (typeof meusItensServidor !== "undefined" && Array.isArray(meusItensServidor)) qtd = meusItensServidor.length;
+      else if (typeof minhasPublicacoes !== "undefined" && Array.isArray(minhasPublicacoes)) qtd = minhasPublicacoes.length;
+      else if (typeof publicacoes !== "undefined" && Array.isArray(publicacoes)) qtd = publicacoes.length;
+    } catch(e) {}
+
+    alvo.innerHTML = `
+      <div class="pititico-item-resumo">
+        Você possui <strong>${qtd}</strong> item(ns) cadastrado(s).
+      </div>
+      <button class="pititico-btn-blue" onclick="abrirModalMeusItensEtapa3()">Visualizar itens</button>
+    `;
+  }
+
+  function atualizarConteudoMeusItensEtapa3() {
+    const box = document.getElementById("conteudoMeusItensEtapa3");
+    if (!box) return;
+
+    let lista = [];
+    try {
+      if (typeof meusItensServidor !== "undefined" && Array.isArray(meusItensServidor)) lista = meusItensServidor;
+      else if (typeof minhasPublicacoes !== "undefined" && Array.isArray(minhasPublicacoes)) lista = minhasPublicacoes;
+      else if (typeof publicacoes !== "undefined" && Array.isArray(publicacoes)) lista = publicacoes;
+    } catch(e) {}
+
+    if (!lista.length) {
+      box.innerHTML = '<div class="pititico-item-resumo">Nenhum item cadastrado por você ainda.</div>';
+      return;
+    }
+
+    box.innerHTML = lista.map(item => `
+      <div class="pititico-regra-card">
+        <h3>${item.nome || item.titulo || item.item || "Item sem nome"}</h3>
+        <p><strong>Tipo:</strong> ${item.tipo || "Troca"}</p>
+        <p><strong>Categoria:</strong> ${item.categoria || ""}</p>
+        <p><strong>Tamanho/idade:</strong> ${item.tamanho || item.idade || ""}</p>
+        <p><strong>Estado:</strong> ${item.estado || ""}</p>
+        <p><strong>Local:</strong> ${item.local || item.bairro || item.cidade || ""}</p>
+        <p><strong>Observação:</strong> ${item.observacao || item.obs || item.descricao || ""}</p>
+        <button class="pititico-btn-light" onclick="removerMeuItemEtapa3('${item.id || item._id || ""}')">Remover item</button>
+      </div>
+    `).join("");
+  }
+
+  async function removerMeuItemEtapa3(id) {
+    if (!id) return alert("ID do item não encontrado.");
+    if (!confirm("Deseja remover este item?")) return;
+
+    try {
+      if (typeof removerPublicacaoServidor === "function") {
+        await removerPublicacaoServidor(id);
+      } else {
+        await pititicoFetchJson(PITITICO_API_ETAPA3 + "/admin/publicacoes/" + encodeURIComponent(id) + "/remover", {
+          method: "POST"
+        });
+      }
+      if (typeof carregarMeusItensServidor === "function") await carregarMeusItensServidor();
+      atualizarConteudoMeusItensEtapa3();
+      atualizarResumoMeusItensEtapa3();
+    } catch(e) {
+      alert("Erro ao remover item: " + e.message);
+    }
+  }
+
+  const regrasEtapa3 = {
+    seguranca: {
+      titulo: "Segurança",
+      texto: "Nunca compartilhe dados pessoais sensíveis. Combine trocas em locais seguros e, sempre que possível, acompanhada de uma pessoa de confiança."
+    },
+    trocas: {
+      titulo: "Regras do Troca-Troca",
+      texto: "Cadastre apenas itens reais, em bom estado e com descrição verdadeira. O PiTiTiCo apenas aproxima usuários; a negociação é responsabilidade das partes."
+    },
+    privacidade: {
+      titulo: "Privacidade",
+      texto: "Os dados cadastrados no app devem ser usados somente para comunicação relacionada aos itens e funções do PiTiTiCo."
+    },
+    penalidades: {
+      titulo: "Penalidades",
+      texto: "Usuários com comportamento inadequado, falso cadastro, golpe, spam ou abuso podem ser banidos pelo administrador."
+    },
+    anuncios: {
+      titulo: "Anúncios",
+      texto: "Os anúncios exibidos no app são cadastrados pelo administrador. Eles podem conter avisos, parceiros, promoções ou informações importantes."
+    }
+  };
+
+  function abrirRegraEtapa3(tipo) {
+    const r = regrasEtapa3[tipo] || regrasEtapa3.seguranca;
+    document.getElementById("tituloRegraEtapa3").textContent = r.titulo;
+    document.getElementById("textoRegraEtapa3").innerHTML = `<p>${r.texto}</p>`;
+    document.getElementById("modalRegraEtapa3").style.display = "flex";
+  }
+
+  function fecharRegraEtapa3() {
+    document.getElementById("modalRegraEtapa3").style.display = "none";
+  }
+
+  async function carregarAnunciosEtapa3() {
+    const bar = document.getElementById("pititicoAdBar");
+    const track = document.getElementById("pititicoAdTrack");
+    if (!bar || !track) return;
+
+    try {
+      const anuncios = await pititicoFetchJson(PITITICO_API_ETAPA3 + "/anuncios");
+      if (!Array.isArray(anuncios) || !anuncios.length) {
+        bar.style.display = "none";
+        return;
+      }
+
+      bar.style.display = "block";
+      track.innerHTML = anuncios.map(a => `
+        <span class="pititico-ad-item" onclick="if('${a.link || ""}') window.open('${a.link || ""}','_blank')">
+          ${a.imagem ? `<img src="${a.imagem}" alt="anúncio">` : "📢"}
+          ${a.titulo || "Anúncio PiTiTiCo"} - ${a.texto || ""}
+        </span>
+      `).join("");
+    } catch(e) {
+      bar.style.display = "none";
+    }
+  }
+
+  function montarRegrasPorBotoesEtapa3() {
+    const possiveis = Array.from(document.querySelectorAll("section, div, main")).filter(el => {
+      const txt = (el.textContent || "").toLowerCase();
+      return txt.includes("regras") && txt.includes("privacidade");
+    });
+
+    const alvo = possiveis[0];
+    if (!alvo || alvo.dataset.etapa3Regras === "ok") return;
+
+    alvo.dataset.etapa3Regras = "ok";
+    alvo.innerHTML = `
+      <div class="pititico-regra-card">
+        <h2>📋 Regras do APP</h2>
+        <p>Escolha uma opção para ler as regras.</p>
+        <div class="pititico-actions-line">
+          <button class="pititico-btn-blue" onclick="abrirRegraEtapa3('seguranca')">Segurança</button>
+          <button class="pititico-btn-blue" onclick="abrirRegraEtapa3('trocas')">Trocas</button>
+          <button class="pititico-btn-blue" onclick="abrirRegraEtapa3('privacidade')">Privacidade</button>
+          <button class="pititico-btn-light" onclick="abrirRegraEtapa3('penalidades')">Penalidades</button>
+          <button class="pititico-btn-pink" onclick="abrirRegraEtapa3('anuncios')">Anúncios</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function ajustarTrocaTrocaEtapa3() {
+    const textos = Array.from(document.querySelectorAll("h1,h2,h3,div,p")).filter(el => {
+      const t = (el.textContent || "").toLowerCase();
+      return t.includes("troca-troca") || t.includes("vitrine pititico");
+    });
+
+    if (!textos.length) return;
+
+    const bloco = textos[0].closest("section") || textos[0].closest(".card") || textos[0].parentElement;
+    if (!bloco || bloco.dataset.etapa3Troca === "ok") return;
+
+    bloco.dataset.etapa3Troca = "ok";
+
+    const painel = document.createElement("div");
+    painel.className = "pititico-regra-card";
+    painel.innerHTML = `
+      <h2>👕 Troca-Troca</h2>
+      <p>Cadastre e administre seus itens pelo botão abaixo.</p>
+      <div class="pititico-actions-line">
+        <button class="pititico-btn-pink" onclick="abrirModalTrocaEtapa3()">Cadastrar item</button>
+      </div>
+      <div id="resumoMeusItensEtapa3"></div>
+    `;
+
+    bloco.prepend(painel);
+    atualizarResumoMeusItensEtapa3();
+  }
+
+  window.addEventListener("click", e => {
+    ["modalTrocaEtapa3","modalMeusItensEtapa3","modalRegraEtapa3"].forEach(id => {
+      const el = document.getElementById(id);
+      if (e.target === el) el.style.display = "none";
+    });
+  });
+
+  window.addEventListener("load", () => {
+    carregarAnunciosEtapa3();
+    setTimeout(() => {
+      montarRegrasPorBotoesEtapa3();
+      ajustarTrocaTrocaEtapa3();
+      atualizarResumoMeusItensEtapa3();
+    }, 700);
+  });
+
+  const observerEtapa3 = new MutationObserver(() => {
+    montarRegrasPorBotoesEtapa3();
+    ajustarTrocaTrocaEtapa3();
+    atualizarResumoMeusItensEtapa3();
+  });
+  observerEtapa3.observe(document.body, { childList: true, subtree: true });
+</script>
+
 </body>
 </html>
