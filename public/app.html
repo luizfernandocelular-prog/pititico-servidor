@@ -716,171 +716,84 @@
       .brand h1 { font-size: 29px; }
       .topbar { padding: 14px 16px; }
     }
-
-
-    .auth-tabs {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin: 18px 0 10px;
-    }
-
-    .auth-tab {
-      border: none;
-      border-radius: 16px;
-      padding: 12px;
-      font-weight: bold;
-      cursor: pointer;
-      background: #f4edf4;
-      color: #555067;
-    }
-
-    .auth-tab.active {
-      background: var(--secondary);
-      color: white;
-    }
-
-    .auth-block { display: none; }
-    .auth-block.active { display: block; }
-
-    .baby-modal-bg {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,.45);
-      z-index: 10001;
-      align-items: center;
-      justify-content: center;
-      padding: 18px;
-    }
-
-    .baby-modal-bg.show { display: flex; }
-
-    .baby-modal {
-      background: #fff;
-      max-width: 720px;
-      width: 100%;
-      max-height: 92dvh;
-      overflow-y: auto;
-      border-radius: 26px;
-      padding: 20px;
-      box-shadow: 0 14px 38px rgba(0,0,0,.24);
-    }
-
-    .baby-modal-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 10px;
-    }
-
-    .baby-modal-head h3 {
-      color: var(--primary);
-      margin: 0;
-      font-size: 24px;
-    }
-
-    .close-floating {
-      border: none;
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      background: #ffe8ef;
-      color: #d9275b;
-      font-size: 24px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .section-head-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-bottom: 10px;
-    }
-
-    .section-head-row .action {
-      width: auto;
-      min-width: 170px;
-      margin-top: 0;
-    }
-
   
-    /* ETAPA 3 SEGURA - Troca-Troca, Regras e Anúncios */
-    .ads-marquee-wrap {
-      background: rgba(255,255,255,.92);
-      border-radius: 20px;
-      margin: 0 0 18px;
-      padding: 10px;
-      box-shadow: 0 8px 22px rgba(149,76,126,.10);
+    /* ETAPA 4 - Anúncios no APP */
+    .pititico-ads-box {
+      background: rgba(255,255,255,.95);
+      border-radius: 22px;
+      padding: 12px 14px;
+      margin: 0 auto 18px;
+      width: min(980px, 100%);
+      box-shadow: 0 12px 28px rgba(149,76,126,.12);
       overflow: hidden;
       border: 1px solid var(--soft);
+      display: none;
     }
-    .ads-title { color: var(--primary); font-weight: 900; margin-bottom: 6px; font-size: 14px; }
-    .ads-marquee { overflow: hidden; white-space: nowrap; }
-    .ads-track { display: inline-flex; gap: 18px; animation: pititicoScrollAds 28s linear infinite; }
-    .ad-pill {
-      display: inline-flex; align-items: center; gap: 8px; min-width: 230px;
-      background: var(--soft); border-radius: 999px; padding: 9px 14px;
-      color: #2b2438; text-decoration: none; font-weight: 800; font-size: 13px;
+    .pititico-ads-title {
+      color: var(--primary);
+      font-weight: 900;
+      margin-bottom: 8px;
+      font-size: 14px;
     }
-    .ad-pill img { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; background: #fff; }
-    @keyframes pititicoScrollAds { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
-    .troca-resumo { background: var(--soft); border-radius: 18px; padding: 16px; margin: 14px 0; display: grid; gap: 10px; }
-    .troca-count { font-size: 16px; font-weight: 900; color: var(--primary); }
-    .modal-wide { max-width: 720px; text-align: left; max-height: 92dvh; overflow-y: auto; }
-    .modal-wide h3 { text-align: left; font-size: 24px; }
-    .modal-full-actions { display: flex; gap: 10px; margin-top: 14px; }
-    .modal-full-actions button { flex: 1; border: none; border-radius: 16px; padding: 13px; font-weight: bold; cursor: pointer; }
-    .rule-buttons { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 12px; }
-    .rule-buttons button {
-      border: none; border-radius: 18px; padding: 15px; background: var(--soft);
-      color: var(--primary); font-weight: 900; cursor: pointer; text-align: left;
+    .pititico-ads-window {
+      overflow: hidden;
+      white-space: nowrap;
     }
-    @media (max-width: 540px) { .rule-buttons { grid-template-columns: 1fr; } .modal-full-actions { flex-direction: column; } }
+    .pititico-ads-track {
+      display: inline-flex;
+      gap: 14px;
+      animation: pititicoAdsMove 26s linear infinite;
+    }
+    .pititico-ad-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      min-width: 260px;
+      max-width: 420px;
+      background: var(--soft);
+      border-radius: 999px;
+      padding: 10px 16px;
+      color: #2b2438;
+      text-decoration: none;
+      font-weight: 900;
+      font-size: 13px;
+    }
+    .pititico-ad-item img {
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      object-fit: cover;
+      background: #fff;
+      flex: 0 0 auto;
+    }
+    .pititico-ad-item span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    @keyframes pititicoAdsMove {
+      from { transform: translateX(100%); }
+      to { transform: translateX(-100%); }
+    }
 
   </style>
 </head>
 
 <body>
-  <div id="loginScreen" class="login-screen show">
+  <div id="loginScreen" class="login-screen">
     <div class="login-card">
       <h1>PiTiTiCo</h1>
-      <p id="authSubtitle">Entre com e-mail e senha ou faça seu cadastro.</p>
+      <p>Antes de entrar, faça seu cadastro básico para publicar itens no Troca-Troca.</p>
 
-      <div class="auth-tabs">
-        <button id="tabLogin" class="auth-tab active" onclick="mostrarAuth('login')">Login</button>
-        <button id="tabCadastro" class="auth-tab" onclick="mostrarAuth('cadastro')">Cadastro</button>
-      </div>
+      <label>Nome</label>
+      <input id="loginNome" placeholder="Ex: Ana Paula" />
 
-      <div id="authLogin" class="auth-block active">
-        <label>E-mail</label>
-        <input id="loginEmailEntrar" type="email" placeholder="Ex: ana@email.com" />
+      <label>E-mail</label>
+      <input id="loginEmail" type="email" placeholder="Ex: ana@email.com" />
 
-        <label>Senha de 4 números</label>
-        <input id="loginSenhaEntrar" type="password" inputmode="numeric" maxlength="4" placeholder="Ex: 1234" />
+      <label>WhatsApp</label>
+      <input id="loginWhatsapp" placeholder="Ex: 21999999999" />
 
-        <button class="action" onclick="entrarUsuario()">Entrar</button>
-      </div>
-
-      <div id="authCadastro" class="auth-block">
-        <label>Nome</label>
-        <input id="loginNome" placeholder="Ex: Ana Paula" />
-
-        <label>E-mail</label>
-        <input id="loginEmail" type="email" placeholder="Ex: ana@email.com" />
-
-        <label>WhatsApp</label>
-        <input id="loginWhatsapp" placeholder="Ex: 21999999999" />
-
-        <label>Senha de 4 números</label>
-        <input id="loginSenha" type="password" inputmode="numeric" maxlength="4" placeholder="Ex: 1234" />
-
-        <button class="action" onclick="salvarUsuarioInicial()">Cadastrar e entrar</button>
-      </div>
+      <button class="action" onclick="salvarUsuarioInicial()">Entrar no PiTiTiCo</button>
     </div>
   </div>
 
@@ -901,7 +814,8 @@
       </div>
 
       <nav class="menu">
-        <button class="active-menu" onclick="showSection('cadastro', this)"><span class="icon">👶</span><span class="label">Bebês</span></button>
+        <button class="active-menu" onclick="showSection('home', this)"><span class="icon">🏠</span><span class="label">Início</span></button>
+        <button onclick="showSection('cadastro', this)"><span class="icon">👶</span><span class="label">Bebês</span></button>
         <button onclick="showSection('rotina', this)"><span class="icon">🍼</span><span class="label">Rotina</span></button>
         <button onclick="showSection('trocasCatalogo', this)"><span class="icon">👕</span><span class="label">Troca-Troca</span></button>
         <button onclick="showSection('atividades', this)"><span class="icon">🧩</span><span class="label">Atividades</span></button>
@@ -932,23 +846,58 @@
       </div>
     </header>
 
-    <div id="adsAreaPititico" class="ads-marquee-wrap" style="display:none;">
-      <div class="ads-title">📢 Anúncios PiTiTiCo</div>
-      <div class="ads-marquee">
-        <div id="adsTrackPititico" class="ads-track"></div>
+    <div id="pititicoAdsBox" class="pititico-ads-box">
+      <div class="pititico-ads-title">📢 Anúncios PiTiTiCo</div>
+      <div class="pititico-ads-window">
+        <div id="pititicoAdsTrack" class="pititico-ads-track"></div>
       </div>
     </div>
 
     <main class="container">
-      <section id="cadastro" class="card active">
-        <div class="section-head-row">
+      <section id="home" class="card active">
+        <div class="home-title">
+          <h2>Meus Bebês</h2>
+          <p>Aqui ficam todos os bebês cadastrados no aplicativo.</p>
+        </div>
+        <div id="homeBabies" class="baby-list"></div>
+      </section>
+
+      <section id="cadastro" class="card">
+        <h2>👶 Cadastro dos Bebês</h2>
+
+        <div class="form-grid">
           <div>
-            <h2>👶 Meus Bebês</h2>
-            <p class="small">Aqui ficam todos os bebês cadastrados no aplicativo.</p>
+            <label>Nome do bebê/criança</label>
+            <input id="nomeBebe" placeholder="Ex: Miguel" />
           </div>
-          <button class="action" onclick="abrirModalBebe()">+ Adicionar bebê</button>
+
+          <div>
+            <label>Data de nascimento</label>
+            <input id="nascimentoBebe" type="date" />
+          </div>
+
+          <div>
+            <label>Peso</label>
+            <input id="pesoBebe" placeholder="Ex: 8,200 kg" />
+          </div>
+
+          <div>
+            <label>Altura</label>
+            <input id="alturaBebe" placeholder="Ex: 72 cm" />
+          </div>
+
+          <div>
+            <label>Tipo sanguíneo</label>
+            <input id="sangueBebe" placeholder="Ex: O+, A-, não sei" />
+          </div>
         </div>
 
+        <label>Observação importante</label>
+        <textarea id="obsBebe" placeholder="Ex: alergia, rotina especial, pediatra..."></textarea>
+
+        <button class="action" onclick="salvarBebe()">Adicionar bebê</button>
+
+        <h3 class="section-title" style="margin-top:20px;">Todos os bebês cadastrados</h3>
         <div id="listaBebes" class="baby-list"></div>
       </section>
 
@@ -982,20 +931,58 @@
         <h2>👕 Troca-Troca</h2>
 
         <div class="notice">
-          Cadastre seus itens de troca, doação, venda ou procura. O cadastro agora abre em tela flutuante para deixar o APP mais limpo.
+          Cadastre o item no Troca-Troca. Ele será enviado automaticamente para a vitrine PiTiTiCo e ficará ativo por 5 dias.
         </div>
 
-        <div class="troca-resumo">
-          <div class="troca-count" id="resumoMeusItens">Meus itens cadastrados: 0</div>
-          <button class="action" onclick="abrirModalTroca()">+ Cadastrar item</button>
-          <button class="action secondary" onclick="alternarMeusItens()">Visualizar meus itens</button>
-        </div>
+        <h3 class="section-title">Cadastrar item</h3>
 
-        <div id="listaTrocas" class="item-list" style="display:none;"></div>
+        <label>Tipo de item</label>
+        <select id="tipoPublicacao">
+          <option>Troca</option>
+          <option>Doação</option>
+          <option>Venda</option>
+          <option>Procuro</option>
+        </select>
+
+        <label>Nome do item</label>
+        <input id="itemTroca" placeholder="Ex: Macacão RN, carrinho, brinquedo..." />
+
+        <label>Categoria</label>
+        <select id="categoriaTroca">
+          <option>Roupinha</option>
+          <option>Brinquedo</option>
+          <option>Berço / Carrinho / Bebê conforto</option>
+          <option>Acessório infantil</option>
+          <option>Livro infantil</option>
+          <option>Outro</option>
+        </select>
+
+        <label>Tamanho / idade indicada</label>
+        <input id="tamanhoTroca" placeholder="Ex: 0 a 3 meses, 2 anos..." />
+
+        <label>Estado do item</label>
+        <select id="estadoTroca">
+          <option>Novo</option>
+          <option>Seminovo</option>
+          <option>Usado em bom estado</option>
+        </select>
+
+        <label>Bairro/Cidade</label>
+        <input id="localTroca" placeholder="Ex: Campo Grande - RJ" />
+
+        <label>Contato WhatsApp</label>
+        <input id="whatsTroca" placeholder="Ex: 21999999999" />
+
+        <label>Observação</label>
+        <textarea id="obsTroca" placeholder="Ex: Retirada no local, aceito troca por fraldas..."></textarea>
+
+        <button class="action" onclick="cadastrarItemTroca()">Cadastrar item</button>
+
+        <h3 class="section-title" style="margin-top:22px;">Meus itens cadastrados</h3>
+        <div id="listaTrocas" class="item-list"></div>
 
         <h3 class="section-title" style="margin-top:22px;">Vitrine PiTiTiCo</h3>
         <button class="action secondary" onclick="carregarVitrineServidor()">Atualizar vitrine</button>
-        <div id="apiDebugPititico" class="small" style="margin-top:8px;color:#777;"></div>
         <div id="vitrineTrocas" class="item-list"></div>
       </section>
 
@@ -1125,17 +1112,12 @@
 
       <section id="regras" class="card">
         <h2>📋 Regras do PiTiTiCo</h2>
-
-        <div class="notice">
-          Toque em cada botão para abrir as regras em uma tela flutuante.
-        </div>
-
-        <div class="rule-buttons">
-          <button onclick="abrirRegra('seguranca')">🛡️ Segurança</button>
-          <button onclick="abrirRegra('trocas')">👕 Troca-Troca</button>
-          <button onclick="abrirRegra('privacidade')">🔒 Privacidade</button>
-          <button onclick="abrirRegra('penalidades')">🚫 Penalidades</button>
-          <button onclick="abrirRegra('duvidas')">❓ Dúvidas</button>
+        <div class="small">
+          <p><strong>1.</strong> O PiTiTiCo é um app de apoio, organização e conexão entre mamães.</p>
+          <p><strong>2.</strong> Os itens do Troca-Troca ficam disponíveis por 5 dias.</p>
+          <p><strong>3.</strong> Cada usuária pode remover apenas seus próprios itens.</p>
+          <p><strong>4.</strong> É proibido cadastrar remédios, alimentos abertos, itens vencidos, quebrados ou perigosos.</p>
+          <p><strong>5.</strong> O uso do app deve priorizar segurança, cuidado e responsabilidade.</p>
         </div>
       </section>
     </main>
@@ -1155,85 +1137,6 @@
 
   <a class="support-whatsapp" href="https://wa.me/5521997180033?text=Olá,%20preciso%20de%20suporte%20no%20app%20PiTiTiCo." target="_blank">☘</a>
 
-
-  <div id="babyModal" class="baby-modal-bg">
-    <div class="baby-modal">
-      <div class="baby-modal-head">
-        <h3>👶 Cadastrar Bebê</h3>
-        <button class="close-floating" onclick="fecharModalBebe()">×</button>
-      </div>
-
-      <div class="form-grid">
-        <div>
-          <label>Nome do bebê/criança</label>
-          <input id="nomeBebe" placeholder="Ex: Miguel" />
-        </div>
-
-        <div>
-          <label>Data de nascimento</label>
-          <input id="nascimentoBebe" type="date" />
-        </div>
-
-        <div>
-          <label>Peso</label>
-          <input id="pesoBebe" placeholder="Ex: 8,200 kg" />
-        </div>
-
-        <div>
-          <label>Altura</label>
-          <input id="alturaBebe" placeholder="Ex: 72 cm" />
-        </div>
-
-        <div>
-          <label>Tipo sanguíneo</label>
-          <input id="sangueBebe" placeholder="Ex: O+, A-, não sei" />
-        </div>
-      </div>
-
-      <label>Observação importante</label>
-      <textarea id="obsBebe" placeholder="Ex: alergia, rotina especial, pediatra..."></textarea>
-
-      <button class="action" onclick="salvarBebe()">Salvar bebê</button>
-    </div>
-  </div>
-
-
-  <div id="trocaModal" class="modal-bg">
-    <div class="modal modal-wide">
-      <h3>👕 Cadastrar item</h3>
-      <label>Tipo de item</label>
-      <select id="tipoPublicacao"><option>Troca</option><option>Doação</option><option>Venda</option><option>Procuro</option></select>
-      <label>Nome do item</label>
-      <input id="itemTroca" placeholder="Ex: Macacão RN, carrinho, brinquedo..." />
-      <label>Categoria</label>
-      <select id="categoriaTroca"><option>Roupinha</option><option>Brinquedo</option><option>Berço / Carrinho / Bebê conforto</option><option>Acessório infantil</option><option>Livro infantil</option><option>Outro</option></select>
-      <label>Tamanho / idade indicada</label>
-      <input id="tamanhoTroca" placeholder="Ex: 0 a 3 meses, 2 anos..." />
-      <label>Estado do item</label>
-      <select id="estadoTroca"><option>Novo</option><option>Seminovo</option><option>Usado em bom estado</option></select>
-      <label>Bairro/Cidade</label>
-      <input id="localTroca" placeholder="Ex: Campo Grande - RJ" />
-      <label>Contato WhatsApp</label>
-      <input id="whatsTroca" placeholder="Ex: 21999999999" />
-      <label>Observação</label>
-      <textarea id="obsTroca" placeholder="Ex: Retirada no local, aceito troca por fraldas..."></textarea>
-      <div class="modal-full-actions">
-        <button class="cancel-btn" onclick="fecharModalTroca()">Cancelar</button>
-        <button class="confirm-btn" onclick="cadastrarItemTroca()">Cadastrar item</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="regraModal" class="modal-bg">
-    <div class="modal modal-wide">
-      <h3 id="regraTitulo">Regra</h3>
-      <div id="regraTexto" class="small"></div>
-      <div class="modal-full-actions">
-        <button class="confirm-btn" onclick="fecharRegra()">Entendi</button>
-      </div>
-    </div>
-  </div>
-
   <div id="confirmModal" class="modal-bg">
     <div class="modal">
       <h3 id="modalTitle">Confirmar ação</h3>
@@ -1246,8 +1149,13 @@
   </div>
 
   <script>
-    const STORAGE_BASE_KEY = "pititico_dados_usuario_v1";
-    const API_PITITICO = "https://pititico-servidor.onrender.com";
+    const STORAGE_KEY = "pititico_dados_limpo_v1";
+    const API_PITITICO = (() => {
+      if (location.protocol.startsWith("http") && location.hostname !== "chatgpt.com") {
+        return location.origin;
+      }
+      return "https://renna-nonvasculose-norah.ngrok-free.dev";
+    })();
 
     let acaoConfirmada = null;
     let usuarioAtual = null;
@@ -1283,45 +1191,9 @@
       };
     }
 
-    
-    function normalizarEmailUsuario() {
-      return String(usuarioAtual?.email || "sem_usuario")
-        .trim()
-        .toLowerCase()
-        .replace(/[^a-z0-9@._-]/g, "_");
-    }
-
-    function getStorageKeyUsuario() {
-      return STORAGE_BASE_KEY + "_" + normalizarEmailUsuario();
-    }
-
-    function limparDadosDaSessaoVisual() {
-      if (typeof bebes !== "undefined") bebes = [];
-      if (typeof rotinas !== "undefined") rotinas = [];
-      if (typeof apoios !== "undefined") apoios = [];
-      if (typeof alimentacoes !== "undefined") alimentacoes = [];
-      if (typeof agenda !== "undefined") agenda = [];
-      if (typeof atividadesManuais !== "undefined") atividadesManuais = [];
-      if (typeof publicacoes !== "undefined") publicacoes = [];
-    }
-
-    function renderTudoUsuario() {
-      if (typeof renderBebes === "function") renderBebes();
-      if (typeof renderRotinas === "function") renderRotinas();
-      if (typeof renderApoios === "function") renderApoios();
-      if (typeof renderAtividadesManuais === "function") renderAtividadesManuais();
-      if (typeof atualizarListasBasicas === "function") atualizarListasBasicas();
-      if (typeof renderAgenda === "function") renderAgenda();
-      if (typeof renderAlimentacao === "function") renderAlimentacao();
-      if (typeof carregarMeusItensServidor === "function") carregarMeusItensServidor();
-      if (typeof carregarVitrineServidor === "function") carregarVitrineServidor();
-    }
-
-function carregarDados() {
-      
-      if (!usuarioAtual) { limparDadosDaSessaoVisual(); return; }
-try {
-        const salvos = localStorage.getItem(getStorageKeyUsuario());
+    function carregarDados() {
+      try {
+        const salvos = localStorage.getItem(STORAGE_KEY);
         const dados = salvos ? JSON.parse(salvos) : dadosPadrao();
 
         bebes = dados.bebes || [];
@@ -1344,9 +1216,7 @@ try {
     }
 
     function salvarDados() {
-      
-      if (!usuarioAtual) return;
-localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
         bebes, rotinas, publicacoes, apoios, alimentacoes, agenda, atividadesManuais, temaAtual
       }));
     }
@@ -1360,33 +1230,6 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
       return id;
     }
 
-    function getUsuariosCadastrados() {
-      try {
-        return JSON.parse(localStorage.getItem("pititico_usuarios_cadastrados") || "[]");
-      } catch (e) {
-        return [];
-      }
-    }
-
-    function salvarUsuariosCadastrados(lista) {
-      localStorage.setItem("pititico_usuarios_cadastrados", JSON.stringify(lista));
-    }
-
-    function senhaValida4Numeros(senha) {
-      return /^\d{4}$/.test(senha || "");
-    }
-
-    function mostrarAuth(tipo) {
-      const login = tipo === "login";
-      document.getElementById("authLogin").classList.toggle("active", login);
-      document.getElementById("authCadastro").classList.toggle("active", !login);
-      document.getElementById("tabLogin").classList.toggle("active", login);
-      document.getElementById("tabCadastro").classList.toggle("active", !login);
-      document.getElementById("authSubtitle").innerText = login
-        ? "Entre com seu e-mail e senha de 4 números."
-        : "Faça seu cadastro básico para acessar o PiTiTiCo.";
-    }
-
     function carregarUsuarioLocal() {
       try {
         usuarioAtual = JSON.parse(localStorage.getItem("pititico_usuario") || "null");
@@ -1396,68 +1239,14 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
 
       renderPerfilSuperior();
 
-      if (!usuarioAtual || !usuarioAtual.email || !usuarioAtual.senha) {
-        usuarioAtual = null;
-        localStorage.removeItem("pititico_usuario");
-        mostrarLogin(true, "login");
-      } else {
-        esconderLogin();
-      }
-    }
-
-
-    async function validarUsuarioNoServidor() {
-      if (!usuarioAtual || !usuarioAtual.email) return false;
-
-      if (!usuarioAtual.senha) {
-        localStorage.removeItem("pititico_usuario");
-        usuarioAtual = null;
-        if (typeof renderPerfilSuperior === "function") renderPerfilSuperior();
+      if (!usuarioAtual) {
         mostrarLogin(true);
-        return false;
-      }
-
-      try {
-        const resposta = await fetch(API_PITITICO + "/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: usuarioAtual.email,
-            senha: usuarioAtual.senha
-          })
-        });
-
-        const resultado = await resposta.json().catch(() => ({}));
-
-        if (!resposta.ok || resultado.sucesso === false || resultado.usuario?.status === "banido") {
-          localStorage.removeItem("pititico_usuario");
-          usuarioAtual = null;
-          if (typeof renderPerfilSuperior === "function") renderPerfilSuperior();
-          mostrarLogin(true);
-          abrirModal("Acesso bloqueado", resultado.mensagem || "Este usuário foi removido/banido ou precisa fazer login novamente.", () => {});
-          return false;
-        }
-
-        usuarioAtual = {
-          ...resultado.usuario,
-          senha: usuarioAtual.senha,
-          deviceId: resultado.usuario?.deviceId || usuarioAtual.deviceId || gerarDeviceId()
-        };
-
-        localStorage.setItem("pititico_usuario", JSON.stringify(usuarioAtual));
-        if (typeof renderPerfilSuperior === "function") renderPerfilSuperior();
-        return true;
-
-      } catch (erro) {
-        return true;
       }
     }
 
-    function mostrarLogin(forcar = false, modo = "login") {
+    function mostrarLogin(forcar = false) {
       const tela = document.getElementById("loginScreen");
       if (!tela) return;
-
-      mostrarAuth(modo);
 
       if (usuarioAtual && !forcar) {
         tela.classList.remove("show");
@@ -1468,15 +1257,13 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
         document.getElementById("loginNome").value = usuarioAtual.nome || "";
         document.getElementById("loginEmail").value = usuarioAtual.email || "";
         document.getElementById("loginWhatsapp").value = usuarioAtual.whatsapp || "";
-        document.getElementById("loginSenha").value = usuarioAtual.senha || "";
       }
 
       tela.classList.add("show");
     }
 
     function esconderLogin() {
-      const tela = document.getElementById("loginScreen");
-      if (tela) tela.classList.remove("show");
+      document.getElementById("loginScreen").classList.remove("show");
     }
 
     function renderPerfilSuperior() {
@@ -1487,7 +1274,7 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
 
       if (!usuarioAtual) {
         nome.innerText = "Cadastro pendente";
-        dados.innerHTML = "Faça login ou cadastro para publicar itens.";
+        dados.innerHTML = "Faça seu cadastro para publicar itens.";
         return;
       }
 
@@ -1498,122 +1285,48 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
       `;
     }
 
-    function fecharPerfilUsuario() {
-      const box = document.getElementById("userPopover");
-      if (box) box.classList.remove("show");
-    }
-
     function abrirPerfilUsuario() {
       renderPerfilSuperior();
-      const box = document.getElementById("userPopover");
-      if (box) box.classList.toggle("show");
+      document.getElementById("userPopover").classList.toggle("show");
     }
 
     function editarUsuario() {
-      fecharPerfilUsuario();
-      mostrarLogin(true, "cadastro");
+      document.getElementById("userPopover").classList.remove("show");
+      mostrarLogin(true);
     }
 
     function trocarUsuario() {
       localStorage.removeItem("pititico_usuario");
       usuarioAtual = null;
-      limparDadosDaSessaoVisual();
-      renderTudoUsuario();
       renderPerfilSuperior();
-      fecharPerfilUsuario();
-      mostrarLogin(true, "login");
-    }
-
-    async function entrarUsuario() {
-      const email = document.getElementById("loginEmailEntrar").value.trim().toLowerCase();
-      const senha = document.getElementById("loginSenhaEntrar").value.trim();
-
-      if (!email || !senhaValida4Numeros(senha)) {
-        abrirModal("Login incompleto", "Informe e-mail e senha com 4 números.", () => {});
-        return;
-      }
-
-      let usuarios = getUsuariosCadastrados();
-      let usuario = usuarios.find(u => (u.email || "").toLowerCase() === email && u.senha === senha);
-
-      if (!usuario) {
-        try {
-          const resposta = await fetch(API_PITITICO + "/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, senha, deviceId: gerarDeviceId() })
-          });
-          const resultado = await resposta.json();
-          if (resposta.ok && resultado.usuario) usuario = resultado.usuario;
-        } catch (erro) {}
-      }
-
-      if (!usuario) {
-        abrirModal("Login não encontrado", "Confira seu e-mail e senha ou faça um novo cadastro.", () => mostrarAuth("cadastro"));
-        return;
-      }
-
-      usuarioAtual = { ...usuario, deviceId: usuario.deviceId || gerarDeviceId() };
-      localStorage.setItem("pititico_usuario", JSON.stringify(usuarioAtual));
-      renderPerfilSuperior();
-      esconderLogin();
+      document.getElementById("userPopover").classList.remove("show");
+      mostrarLogin(true);
     }
 
     async function salvarUsuarioInicial() {
       const nome = document.getElementById("loginNome").value.trim();
       const email = document.getElementById("loginEmail").value.trim();
       const whatsapp = document.getElementById("loginWhatsapp").value.trim();
-      const senha = (document.getElementById("loginSenha")?.value || "").trim();
       const deviceId = gerarDeviceId();
 
-      if (!nome || !email || !whatsapp || !/^\d{4}$/.test(senha)) {
-        abrirModal("Cadastro incompleto", "Preencha nome, e-mail, WhatsApp e senha com 4 números.", () => {});
+      if (!nome || !email || !whatsapp) {
+        abrirModal("Cadastro incompleto", "Preencha nome, e-mail e WhatsApp.", () => {});
         return;
       }
 
-      const usuarioParaEnviar = { nome, email, whatsapp, senha, deviceId };
+      usuarioAtual = { nome, email, whatsapp, deviceId };
+      localStorage.setItem("pititico_usuario", JSON.stringify(usuarioAtual));
+      renderPerfilSuperior();
 
       try {
-        const resposta = await fetch(API_PITITICO + "/usuarios", {
+        await fetch(API_PITITICO + "/usuarios", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(usuarioParaEnviar)
+          body: JSON.stringify(usuarioAtual)
         });
+      } catch (erro) {}
 
-        const resultado = await resposta.json().catch(() => ({}));
-
-        if (!resposta.ok || resultado.sucesso === false) {
-          localStorage.removeItem("pititico_usuario");
-          usuarioAtual = null;
-          if (typeof renderPerfilSuperior === "function") renderPerfilSuperior();
-          abrirModal("Acesso bloqueado", resultado.mensagem || "Não foi possível acessar o aplicativo.", () => {
-            mostrarLogin(true);
-          });
-          return;
-        }
-
-        usuarioAtual = {
-          ...(resultado.usuario || usuarioParaEnviar),
-          senha: senha,
-          deviceId: deviceId
-        };
-
-        localStorage.setItem("pititico_usuario", JSON.stringify(usuarioAtual));
-
-        if (typeof renderPerfilSuperior === "function") renderPerfilSuperior();
-        if (typeof esconderLogin === "function") esconderLogin();
-        limparDadosDaSessaoVisual();
-        carregarDados();
-        renderTudoUsuario();
-
-        if (typeof carregarMeusItensServidor === "function") carregarMeusItensServidor();
-        if (typeof carregarVitrineServidor === "function") carregarVitrineServidor();
-
-      } catch (erro) {
-        abrirModal("Servidor indisponível", "Não foi possível cadastrar agora. Confira se o servidor está ligado.", () => {
-          mostrarLogin(true);
-        });
-      }
+      esconderLogin();
     }
 
     function abrirModal(titulo, texto, acao) {
@@ -1646,7 +1359,6 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
     }
 
     function showSection(id, btn) {
-      fecharPerfilUsuario();
       document.querySelectorAll(".card").forEach(card => card.classList.remove("active"));
       document.getElementById(id).classList.add("active");
       document.querySelectorAll(".menu button").forEach(button => button.classList.remove("active-menu"));
@@ -1654,10 +1366,6 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
       if (window.innerWidth <= 540) {
         document.getElementById("sidebar").classList.remove("expanded");
         document.getElementById("app").classList.remove("shifted");
-      }
-      if (id === "trocasCatalogo") {
-        carregarMeusItensServidor();
-        carregarVitrineServidor();
       }
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -1725,8 +1433,7 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
 
       const vazio = "<div class='list'>Nenhum bebê cadastrado ainda.</div>";
 
-      const homeArea = document.getElementById("homeBabies");
-      if (homeArea) homeArea.innerHTML = html || vazio;
+      document.getElementById("homeBabies").innerHTML = html || vazio;
       document.getElementById("listaBebes").innerHTML = html || vazio;
       atualizarSelectsBebes();
     }
@@ -1740,14 +1447,6 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
       const vazio = "<option>Nenhum bebê cadastrado</option>";
       document.getElementById("bebeRotina").innerHTML = options || vazio;
       document.getElementById("bebeAlimentacao").innerHTML = options || vazio;
-    }
-
-    function abrirModalBebe() {
-      document.getElementById("babyModal").classList.add("show");
-    }
-
-    function fecharModalBebe() {
-      document.getElementById("babyModal").classList.remove("show");
     }
 
     function salvarBebe() {
@@ -1771,7 +1470,6 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
 
       salvarDados();
       renderBebes();
-      fecharModalBebe();
     }
 
     function pedirRemoverBebe(index) {
@@ -1864,14 +1562,12 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
 
         publicacoes.push(resultado.publicacao || novaPublicacao);
         salvarDados();
-        await carregarMeusItensServidor();
+        renderTrocas();
 
         ["itemTroca","tamanhoTroca","localTroca","whatsTroca","obsTroca"].forEach(id => {
           document.getElementById(id).value = "";
         });
 
-        fecharModalTroca();
-        atualizarResumoTrocas();
         abrirModal("Item publicado", "Item enviado para a vitrine PiTiTiCo. Ele ficará ativo por 5 dias.", () => {
           carregarVitrineServidor();
         });
@@ -1889,9 +1585,8 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
     }
 
     function renderTrocas() {
-      atualizarResumoTrocas();
       const deviceId = gerarDeviceId();
-      const meus = publicacoes;
+      const meus = publicacoes.filter(p => (p.donoDeviceId || p.deviceId) === deviceId);
 
       if (!meus.length) {
         document.getElementById("listaTrocas").innerHTML = "<div class='list'>Nenhum item cadastrado por você ainda.</div>";
@@ -1913,83 +1608,17 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
       `).join("");
     }
 
-    async function carregarMeusItensServidor() {
-      try {
-        if (!usuarioAtual || !usuarioAtual.email) {
-          publicacoes = [];
-          renderTrocas();
-          return;
-        }
-
-        const deviceId = gerarDeviceId();
-        const email = (usuarioAtual.email || "").toLowerCase();
-
-        let dados = [];
-
-        // Primeiro tenta a rota correta de "minhas publicações"
-        try {
-          const url = API_PITITICO
-            + "/minhas-publicacoes?deviceId=" + encodeURIComponent(deviceId)
-            + "&email=" + encodeURIComponent(email);
-
-          const resposta = await fetch(url, { cache: "no-store" });
-
-          if (resposta.ok) {
-            const recebidos = await resposta.json();
-            dados = Array.isArray(recebidos) ? recebidos : [];
-          }
-        } catch (erroRotaMinhas) {}
-
-        // Se por algum motivo a rota não retornar, usa fallback lendo tudo do admin e filtrando no APP
-        if (!dados.length) {
-          try {
-            const respostaAdmin = await fetch(API_PITITICO + "/admin/publicacoes", { cache: "no-store" });
-            if (respostaAdmin.ok) {
-              const todos = await respostaAdmin.json();
-              dados = (Array.isArray(todos) ? todos : []).filter(p => {
-                const emailItem = (p.usuario?.email || p.emailUsuario || "").toLowerCase();
-                return (
-                  p.status === "ativo" &&
-                  (
-                    p.donoDeviceId === deviceId ||
-                    p.deviceId === deviceId ||
-                    (email && emailItem === email)
-                  )
-                );
-              });
-            }
-          } catch (erroFallback) {}
-        }
-
-        publicacoes = dados;
-        salvarDados();
-        renderTrocas();
-
-      } catch (erro) {
-        renderTrocas();
-      }
-    }
-
-
     async function carregarVitrineServidor() {
-      const debugApi = document.getElementById("apiDebugPititico");
-      if (debugApi) debugApi.innerText = "API usada: " + API_PITITICO;
-
       const area = document.getElementById("vitrineTrocas");
       if (!area) return;
 
       area.innerHTML = "<div class='list'>Carregando vitrine...</div>";
 
       try {
-        const resposta = await fetch(API_PITITICO + "/publicacoes?deviceId=" + encodeURIComponent(gerarDeviceId()) + "&email=" + encodeURIComponent(usuarioAtual?.email || ""));
-        const dadosRecebidos = await resposta.json();
-        const dados = Array.isArray(dadosRecebidos) ? dadosRecebidos : [];
+        const resposta = await fetch(API_PITITICO + "/publicacoes?deviceId=" + encodeURIComponent(gerarDeviceId()));
+        const dados = await resposta.json();
         const deviceId = gerarDeviceId();
-        const emailAtual = (usuarioAtual?.email || "").toLowerCase();
-        const outros = dados.filter(p => {
-          const emailDono = (p.usuario?.email || p.emailUsuario || "").toLowerCase();
-          return p.donoDeviceId !== deviceId && p.deviceId !== deviceId && (!emailAtual || emailDono !== emailAtual);
-        });
+        const outros = dados.filter(p => p.donoDeviceId !== deviceId && p.deviceId !== deviceId);
 
         if (!outros.length) {
           area.innerHTML = "<div class='list'>Nenhum item de outras mamães publicado na vitrine ainda.</div>";
@@ -2016,7 +1645,7 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
           `;
         }).join("");
       } catch (erro) {
-        area.innerHTML = "<div class='list'>Não foi possível carregar a vitrine. Verifique sua internet e tente atualizar novamente.</div>";
+        area.innerHTML = "<div class='list'>Não foi possível carregar a vitrine. Confira se o servidor está ligado e se o ngrok fixo está rodando.</div>";
       }
     }
 
@@ -2040,7 +1669,7 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
 
         publicacoes = publicacoes.filter(p => p.id !== id);
         salvarDados();
-        await carregarMeusItensServidor();
+        renderTrocas();
         carregarVitrineServidor();
 
         abrirModal("Item removido", "O item foi removido da vitrine.", () => {});
@@ -2185,99 +1814,46 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
       document.getElementById("listaAgenda").innerText = agenda.length ? agenda.join("\n\n") : "Nenhum compromisso salvo.";
     }
 
-    document.addEventListener("click", function(event) {
-      const box = document.getElementById("userPopover");
-      const avatar = document.querySelector(".avatar");
-      if (box && box.classList.contains("show") && !box.contains(event.target) && !avatar.contains(event.target)) {
-        fecharPerfilUsuario();
-      }
-    });
+    carregarDados();
 
-    window.addEventListener("scroll", fecharPerfilUsuario, { passive: true });
-
-
-    // ETAPA 3 SEGURA - funções novas sem quebrar o APP
-    function abrirModalTroca() {
-      if (!usuarioAtual) {
-        abrirModal("Cadastro necessário", "Antes de cadastrar um item, faça login.", () => mostrarLogin(true));
-        return;
-      }
-      const modal = document.getElementById("trocaModal");
-      if (modal) modal.classList.add("show");
-    }
-
-    function fecharModalTroca() {
-      const modal = document.getElementById("trocaModal");
-      if (modal) modal.classList.remove("show");
-    }
-
-    function atualizarResumoTrocas() {
-      const resumo = document.getElementById("resumoMeusItens");
-      if (resumo) resumo.innerText = "Meus itens cadastrados: " + (publicacoes ? publicacoes.length : 0);
-    }
-
-    function alternarMeusItens() {
-      const lista = document.getElementById("listaTrocas");
-      if (!lista) return;
-      const escondido = lista.style.display === "none" || !lista.style.display;
-      lista.style.display = escondido ? "grid" : "none";
-      if (escondido) carregarMeusItensServidor();
-    }
-
-    const regrasPititico = {
-      seguranca: { titulo: "🛡️ Segurança", texto: "<p>Use o PiTiTiCo com responsabilidade. Combine trocas em locais seguros, evite passar dados sensíveis e prefira contato claro pelo WhatsApp.</p>" },
-      trocas: { titulo: "👕 Regras do Troca-Troca", texto: "<p>Os itens ficam ativos por 5 dias. É proibido cadastrar remédios, alimentos abertos, itens vencidos, quebrados ou perigosos.</p><p>Cada usuária deve cadastrar informações verdadeiras sobre estado, local e contato.</p>" },
-      privacidade: { titulo: "🔒 Privacidade", texto: "<p>Os dados pessoais devem ser usados apenas para funcionamento do APP e contato entre usuárias interessadas nos itens.</p>" },
-      penalidades: { titulo: "🚫 Penalidades", texto: "<p>Usuários com comportamento inadequado, anúncios falsos ou itens proibidos podem ser removidos ou banidos pelo administrador.</p>" },
-      duvidas: { titulo: "❓ Dúvidas", texto: "<p>Em caso de dúvida, use o botão de suporte do PiTiTiCo ou fale com o administrador do APP.</p>" }
-    };
-
-    function abrirRegra(tipo) {
-      const regra = regrasPititico[tipo] || regrasPititico.duvidas;
-      document.getElementById("regraTitulo").innerText = regra.titulo;
-      document.getElementById("regraTexto").innerHTML = regra.texto;
-      document.getElementById("regraModal").classList.add("show");
-    }
-
-    function fecharRegra() {
-      document.getElementById("regraModal").classList.remove("show");
-    }
-
+    // ETAPA 4 - carregar anúncios no APP
     async function carregarAnunciosPititico() {
-      const area = document.getElementById("adsAreaPititico");
-      const track = document.getElementById("adsTrackPititico");
-      if (!area || !track) return;
+      const box = document.getElementById("pititicoAdsBox");
+      const track = document.getElementById("pititicoAdsTrack");
+      if (!box || !track) return;
+
       try {
         const resposta = await fetch(API_PITITICO + "/anuncios", { cache: "no-store" });
-        if (!resposta.ok) throw new Error("Sem anúncios");
+        if (!resposta.ok) throw new Error("Erro ao buscar anúncios");
         const dados = await resposta.json();
-        const ativos = (Array.isArray(dados) ? dados : []).filter(a => (a.status || "ativo") === "ativo");
-        if (!ativos.length) { area.style.display = "none"; return; }
-        track.innerHTML = ativos.map(a => {
-          const titulo = String(a.titulo || "Anúncio PiTiTiCo");
-          const texto = String(a.texto || "");
-          const link = String(a.link || "#");
-          const imagem = String(a.imagem || "");
-          const img = imagem ? `<img src="${imagem}" alt="">` : "<span>🍼</span>";
-          return `<a class="ad-pill" href="${link}" target="_blank">${img}<span>${titulo}${texto ? " - " + texto : ""}</span></a>`;
+        const lista = (Array.isArray(dados) ? dados : []).filter(a => (a.status || "ativo") === "ativo");
+
+        if (!lista.length) {
+          box.style.display = "none";
+          track.innerHTML = "";
+          return;
+        }
+
+        const htmlAnuncios = lista.map(a => {
+          const titulo = String(a.titulo || "Anúncio PiTiTiCo").replace(/[<>&]/g, "");
+          const texto = String(a.texto || "").replace(/[<>&]/g, "");
+          const link = String(a.link || "#").trim() || "#";
+          const imagem = String(a.imagem || "").trim();
+          const img = imagem ? `<img src="${imagem}" alt="">` : `<span>🍼</span>`;
+          const legenda = texto ? `${titulo} - ${texto}` : titulo;
+          return `<a class="pititico-ad-item" href="${link}" target="_blank">${img}<span>${legenda}</span></a>`;
         }).join("");
-        area.style.display = "block";
+
+        track.innerHTML = htmlAnuncios + htmlAnuncios;
+        box.style.display = "block";
       } catch (erro) {
-        area.style.display = "none";
+        box.style.display = "none";
       }
     }
 
-    document.addEventListener("click", function(e) {
-      const troca = document.getElementById("trocaModal");
-      const regra = document.getElementById("regraModal");
-      if (troca && e.target === troca) fecharModalTroca();
-      if (regra && e.target === regra) fecharRegra();
-    });
-
     carregarUsuarioLocal();
-    carregarDados();
     renderBebes();
-    carregarMeusItensServidor();
+    renderTrocas();
     carregarVitrineServidor();
     mostrarAtividades();
     renderAtividadesManuais();
