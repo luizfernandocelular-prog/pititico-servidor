@@ -808,6 +808,128 @@
       margin-top: 0;
     }
 
+  
+
+    /* ETAPA 3 - Troca-Troca limpo, regras em botões e anúncios */
+    .ads-marquee {
+      margin: 16px auto 0;
+      width: min(100%, 1220px);
+      background: #fff;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(236, 92, 162, 0.12);
+    }
+
+    .ads-track {
+      display: flex;
+      width: max-content;
+      animation: pititicoMarquee 24s linear infinite;
+      padding: 12px 0;
+    }
+
+    .ad-pill {
+      min-width: 280px;
+      margin: 0 14px;
+      padding: 12px 18px;
+      border-radius: 999px;
+      background: #fff0f7;
+      color: #d62c7e;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .ad-pill a { color: inherit; text-decoration: none; }
+
+    @keyframes pititicoMarquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    .summary-box {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .summary-card {
+      background: #fff0f7;
+      border-radius: 18px;
+      padding: 16px;
+      text-align: center;
+      font-weight: 800;
+      color: #4b4050;
+    }
+
+    .summary-card strong {
+      display: block;
+      font-size: 30px;
+      color: var(--pink);
+      margin-bottom: 4px;
+    }
+
+    .floating-bg {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(0, 0, 0, 0.45);
+      z-index: 9999;
+    }
+
+    .floating-bg.show { display: flex; }
+
+    .floating-card {
+      width: min(760px, 96vw);
+      max-height: 90vh;
+      overflow: auto;
+      background: #fff;
+      border-radius: 26px;
+      padding: 22px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.26);
+    }
+
+    .floating-card h3 {
+      margin: 0 0 15px;
+      color: var(--pink);
+      font-size: 28px;
+    }
+
+    .floating-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .rules-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .rule-btn {
+      background: #fff0f7;
+      color: #d62c7e;
+      border-radius: 18px;
+      padding: 18px;
+      text-align: left;
+      font-size: 16px;
+      border: 1px solid rgba(236, 92, 162, 0.16);
+    }
+
+    .hidden-block { display: none !important; }
+
+    @media (max-width: 640px) {
+      .summary-box, .rules-grid { grid-template-columns: 1fr; }
+      .floating-card { border-radius: 20px; padding: 18px; }
+    }
+
   </style>
 </head>
 
@@ -853,7 +975,7 @@
   <div class="splash">
     <div class="splash-baby">👶</div>
     <h1>PiTiTiCo</h1>
-    <p>Paro melhor bebê do mundo.</p>
+    <p>Para o melhor bebê do mundo.</p>
   </div>
 
   <aside id="sidebar" class="sidebar">
@@ -862,7 +984,7 @@
         <span class="logo-icon">👶</span>
         <span class="logo-text">
           <strong>PiTiTiCo</strong>
-          <small>Paro melhor bebê do mundo.</small>
+          <small>Para o melhor bebê do mundo.</small>
         </span>
       </div>
 
@@ -889,7 +1011,7 @@
     <header class="topbar">
       <div class="brand">
         <h1>PiTiTiCo</h1>
-        <p>Paro melhor bebê do mundo.</p>
+        <p>Para o melhor bebê do mundo.</p>
       </div>
 
       <div class="top-actions">
@@ -897,6 +1019,13 @@
         <div class="avatar" onclick="abrirPerfilUsuario()">🤱</div>
       </div>
     </header>
+
+    <div class="ads-marquee" id="areaAnuncios" aria-label="Anúncios PiTiTiCo">
+      <div class="ads-track" id="adsTrack">
+        <div class="ad-pill">📢 Carregando anúncios PiTiTiCo...</div>
+        <div class="ad-pill">📢 Carregando anúncios PiTiTiCo...</div>
+      </div>
+    </div>
 
     <main class="container">
       <section id="cadastro" class="card active">
@@ -941,61 +1070,30 @@
         <h2>👕 Troca-Troca</h2>
 
         <div class="notice">
-          Cadastre o item no Troca-Troca. Ele será enviado automaticamente para a vitrine PiTiTiCo e ficará ativo por 5 dias.
+          Cadastre itens para troca, doação, venda ou procura. O cadastro abre em tela flutuante para deixar o app mais limpo.
         </div>
 
-        <h3 class="section-title">Cadastrar item</h3>
+        <div class="summary-box">
+          <div class="summary-card"><strong id="qtdMeusItens">0</strong>Meus itens cadastrados</div>
+          <div class="summary-card"><strong id="qtdVitrineItens">0</strong>Itens na vitrine</div>
+        </div>
 
-        <label>Tipo de item</label>
-        <select id="tipoPublicacao">
-          <option>Troca</option>
-          <option>Doação</option>
-          <option>Venda</option>
-          <option>Procuro</option>
-        </select>
+        <button class="action" onclick="abrirModalTroca()">+ Cadastrar item</button>
+        <button class="action secondary" onclick="toggleMeusItens()">Visualizar meus itens</button>
+        <button class="action secondary" onclick="toggleVitrineItens()">Visualizar vitrine</button>
 
-        <label>Nome do item</label>
-        <input id="itemTroca" placeholder="Ex: Macacão RN, carrinho, brinquedo..." />
+        <div id="areaMeusItens" class="hidden-block" style="margin-top:18px;">
+          <h3 class="section-title">Meus itens cadastrados</h3>
+          <button class="action secondary" onclick="carregarMeusItensServidor()">Atualizar meus itens</button>
+          <div id="listaTrocas" class="item-list"></div>
+        </div>
 
-        <label>Categoria</label>
-        <select id="categoriaTroca">
-          <option>Roupinha</option>
-          <option>Brinquedo</option>
-          <option>Berço / Carrinho / Bebê conforto</option>
-          <option>Acessório infantil</option>
-          <option>Livro infantil</option>
-          <option>Outro</option>
-        </select>
-
-        <label>Tamanho / idade indicada</label>
-        <input id="tamanhoTroca" placeholder="Ex: 0 a 3 meses, 2 anos..." />
-
-        <label>Estado do item</label>
-        <select id="estadoTroca">
-          <option>Novo</option>
-          <option>Seminovo</option>
-          <option>Usado em bom estado</option>
-        </select>
-
-        <label>Bairro/Cidade</label>
-        <input id="localTroca" placeholder="Ex: Campo Grande - RJ" />
-
-        <label>Contato WhatsApp</label>
-        <input id="whatsTroca" placeholder="Ex: 21999999999" />
-
-        <label>Observação</label>
-        <textarea id="obsTroca" placeholder="Ex: Retirada no local, aceito troca por fraldas..."></textarea>
-
-        <button class="action" onclick="cadastrarItemTroca()">Cadastrar item</button>
-
-        <h3 class="section-title" style="margin-top:22px;">Meus itens cadastrados</h3>
-        <button class="action secondary" onclick="carregarMeusItensServidor()">Atualizar meus itens</button>
-        <div id="listaTrocas" class="item-list"></div>
-
-        <h3 class="section-title" style="margin-top:22px;">Vitrine PiTiTiCo</h3>
-        <button class="action secondary" onclick="carregarVitrineServidor()">Atualizar vitrine</button>
-        <div id="apiDebugPititico" class="small" style="margin-top:8px;color:#777;"></div>
-        <div id="vitrineTrocas" class="item-list"></div>
+        <div id="areaVitrineItens" class="hidden-block" style="margin-top:18px;">
+          <h3 class="section-title">Vitrine PiTiTiCo</h3>
+          <button class="action secondary" onclick="carregarVitrineServidor()">Atualizar vitrine</button>
+          <div id="apiDebugPititico" class="small" style="margin-top:8px;color:#777;"></div>
+          <div id="vitrineTrocas" class="item-list"></div>
+        </div>
       </section>
 
       <section id="atividades" class="card">
@@ -1124,18 +1222,21 @@
 
       <section id="regras" class="card">
         <h2>📋 Regras do PiTiTiCo</h2>
-        <div class="small">
-          <p><strong>1.</strong> O PiTiTiCo é um app de apoio, organização e conexão entre mamães.</p>
-          <p><strong>2.</strong> Os itens do Troca-Troca ficam disponíveis por 5 dias.</p>
-          <p><strong>3.</strong> Cada usuária pode remover apenas seus próprios itens.</p>
-          <p><strong>4.</strong> É proibido cadastrar remédios, alimentos abertos, itens vencidos, quebrados ou perigosos.</p>
-          <p><strong>5.</strong> O uso do app deve priorizar segurança, cuidado e responsabilidade.</p>
+        <p class="small">Escolha uma opção para ler as regras em tela flutuante.</p>
+
+        <div class="rules-grid">
+          <button class="rule-btn" onclick="abrirRegra('seguranca')">🛡️ Segurança</button>
+          <button class="rule-btn" onclick="abrirRegra('trocas')">👕 Troca-Troca</button>
+          <button class="rule-btn" onclick="abrirRegra('privacidade')">🔒 Privacidade</button>
+          <button class="rule-btn" onclick="abrirRegra('proibidos')">🚫 Itens proibidos</button>
+          <button class="rule-btn" onclick="abrirRegra('responsabilidade')">🤝 Responsabilidade</button>
+          <button class="rule-btn" onclick="abrirRegra('duvidas')">❓ Dúvidas</button>
         </div>
       </section>
     </main>
 
     <footer>
-      <strong>PiTiTiCo - Paro melhor bebê do mundo.</strong>
+      <strong>PiTiTiCo - Para o melhor bebê do mundo.</strong>
       © 2026. Todos os direitos registrados.
     </footer>
   </div>
@@ -1149,6 +1250,69 @@
 
   <a class="support-whatsapp" href="https://wa.me/5521997180033?text=Olá,%20preciso%20de%20suporte%20no%20app%20PiTiTiCo." target="_blank">☘</a>
 
+
+
+
+  <div id="modalTroca" class="floating-bg">
+    <div class="floating-card">
+      <h3>👕 Cadastrar item</h3>
+
+      <label>Tipo de item</label>
+      <select id="tipoPublicacao">
+        <option>Troca</option>
+        <option>Doação</option>
+        <option>Venda</option>
+        <option>Procuro</option>
+      </select>
+
+      <label>Nome do item</label>
+      <input id="itemTroca" placeholder="Ex: Macacão RN, carrinho, brinquedo..." />
+
+      <label>Categoria</label>
+      <select id="categoriaTroca">
+        <option>Roupinha</option>
+        <option>Brinquedo</option>
+        <option>Berço / Carrinho / Bebê conforto</option>
+        <option>Acessório infantil</option>
+        <option>Livro infantil</option>
+        <option>Outro</option>
+      </select>
+
+      <label>Tamanho / idade indicada</label>
+      <input id="tamanhoTroca" placeholder="Ex: 0 a 3 meses, 2 anos..." />
+
+      <label>Estado do item</label>
+      <select id="estadoTroca">
+        <option>Novo</option>
+        <option>Seminovo</option>
+        <option>Usado em bom estado</option>
+      </select>
+
+      <label>Bairro/Cidade</label>
+      <input id="localTroca" placeholder="Ex: Campo Grande - RJ" />
+
+      <label>Contato WhatsApp</label>
+      <input id="whatsTroca" placeholder="Ex: 21999999999" />
+
+      <label>Observação</label>
+      <textarea id="obsTroca" placeholder="Ex: Retirada no local, aceito troca por fraldas..."></textarea>
+
+      <div class="floating-actions">
+        <button class="action secondary" onclick="fecharModalTroca()">Cancelar</button>
+        <button class="action" onclick="cadastrarItemTroca()">Cadastrar item</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modalRegra" class="floating-bg">
+    <div class="floating-card">
+      <h3 id="tituloRegra">📋 Regras</h3>
+      <div id="textoRegra" class="small"></div>
+      <div class="floating-actions">
+        <button class="action" onclick="fecharRegra()">Entendi</button>
+      </div>
+    </div>
+  </div>
 
   <div id="babyModal" class="baby-modal-bg">
     <div class="baby-modal">
@@ -1769,6 +1933,106 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
         : "Nenhuma rotina adicionada.";
     }
 
+
+    function abrirModalTroca() {
+      const modal = document.getElementById("modalTroca");
+      if (modal) modal.classList.add("show");
+    }
+
+    function fecharModalTroca() {
+      const modal = document.getElementById("modalTroca");
+      if (modal) modal.classList.remove("show");
+    }
+
+    function toggleMeusItens() {
+      const area = document.getElementById("areaMeusItens");
+      if (!area) return;
+      area.classList.toggle("hidden-block");
+      if (!area.classList.contains("hidden-block")) carregarMeusItensServidor();
+    }
+
+    function toggleVitrineItens() {
+      const area = document.getElementById("areaVitrineItens");
+      if (!area) return;
+      area.classList.toggle("hidden-block");
+      if (!area.classList.contains("hidden-block")) carregarVitrineServidor();
+    }
+
+    function atualizarResumoTrocas(qtdVitrine) {
+      const qtdMeus = document.getElementById("qtdMeusItens");
+      const qtdVit = document.getElementById("qtdVitrineItens");
+      if (qtdMeus) qtdMeus.innerText = Array.isArray(publicacoes) ? publicacoes.length : 0;
+      if (qtdVit && typeof qtdVitrine === "number") qtdVit.innerText = qtdVitrine;
+    }
+
+    const textosRegras = {
+      seguranca: {
+        titulo: "🛡️ Segurança",
+        texto: "Use o PiTiTiCo com cuidado. Evite compartilhar dados sensíveis publicamente. Combine trocas em locais seguros e, quando possível, com alguém de confiança por perto."
+      },
+      trocas: {
+        titulo: "👕 Troca-Troca",
+        texto: "Os itens ficam disponíveis por tempo limitado. Cada usuária administra apenas os próprios itens. Combine detalhes diretamente pelo WhatsApp."
+      },
+      privacidade: {
+        titulo: "🔒 Privacidade",
+        texto: "Os dados pessoais devem ser usados apenas para o funcionamento do app. Não compartilhe informações de outras usuárias fora do PiTiTiCo."
+      },
+      proibidos: {
+        titulo: "🚫 Itens proibidos",
+        texto: "Não cadastre remédios, alimentos abertos, produtos vencidos, itens quebrados, inseguros ou qualquer produto inadequado para bebês e crianças."
+      },
+      responsabilidade: {
+        titulo: "🤝 Responsabilidade",
+        texto: "O PiTiTiCo ajuda a conectar famílias, mas cada negociação é responsabilidade das pessoas envolvidas. Seja respeitoso e transparente."
+      },
+      duvidas: {
+        titulo: "❓ Dúvidas",
+        texto: "Em caso de dúvida, fale com o suporte pelo botão do WhatsApp disponível no app."
+      }
+    };
+
+    function abrirRegra(tipo) {
+      const regra = textosRegras[tipo] || textosRegras.seguranca;
+      document.getElementById("tituloRegra").innerText = regra.titulo;
+      document.getElementById("textoRegra").innerHTML = "<p>" + regra.texto + "</p>";
+      document.getElementById("modalRegra").classList.add("show");
+    }
+
+    function fecharRegra() {
+      document.getElementById("modalRegra").classList.remove("show");
+    }
+
+    async function carregarAnunciosApp() {
+      const track = document.getElementById("adsTrack");
+      if (!track) return;
+
+      try {
+        const resposta = await fetch(API_PITITICO + "/anuncios", { cache: "no-store" });
+        const dados = resposta.ok ? await resposta.json() : [];
+        const lista = Array.isArray(dados) ? dados : [];
+
+        if (!lista.length) {
+          track.innerHTML = '<div class="ad-pill">📢 PiTiTiCo - Para o melhor bebê do mundo.</div><div class="ad-pill">👶 Cadastre, organize e compartilhe com segurança.</div>';
+          return;
+        }
+
+        const pills = lista.map(a => {
+          const titulo = (a.titulo || "Anúncio PiTiTiCo").replace(/[<>&]/g, "");
+          const texto = (a.texto || "").replace(/[<>&]/g, "");
+          const link = a.link || "";
+          const conteudo = "📢 " + titulo + (texto ? " - " + texto : "");
+          return link
+            ? `<div class="ad-pill"><a href="${link}" target="_blank">${conteudo}</a></div>`
+            : `<div class="ad-pill">${conteudo}</div>`;
+        }).join("");
+
+        track.innerHTML = pills + pills;
+      } catch (erro) {
+        track.innerHTML = '<div class="ad-pill">📢 PiTiTiCo - Para o melhor bebê do mundo.</div><div class="ad-pill">👶 Novidades em breve.</div>';
+      }
+    }
+
     async function cadastrarItemTroca() {
       if (!usuarioAtual) {
         abrirModal("Cadastro necessário", "Antes de publicar, faça seu cadastro inicial.", () => mostrarLogin(true));
@@ -1820,6 +2084,7 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
 
         publicacoes.push(resultado.publicacao || novaPublicacao);
         salvarDados();
+        fecharModalTroca();
         await carregarMeusItensServidor();
 
         ["itemTroca","tamanhoTroca","localTroca","whatsTroca","obsTroca"].forEach(id => {
@@ -1846,6 +2111,7 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
       const deviceId = gerarDeviceId();
       const meus = publicacoes;
 
+      atualizarResumoTrocas();
       if (!meus.length) {
         document.getElementById("listaTrocas").innerHTML = "<div class='list'>Nenhum item cadastrado por você ainda.</div>";
         return;
@@ -1943,6 +2209,8 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
           const emailDono = (p.usuario?.email || p.emailUsuario || "").toLowerCase();
           return p.donoDeviceId !== deviceId && p.deviceId !== deviceId && (!emailAtual || emailDono !== emailAtual);
         });
+
+        atualizarResumoTrocas(outros.length);
 
         if (!outros.length) {
           area.innerHTML = "<div class='list'>Nenhum item de outras mamães publicado na vitrine ainda.</div>";
@@ -2139,6 +2407,8 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
     }
 
     document.addEventListener("click", function(event) {
+      if (event.target && event.target.id === "modalTroca") fecharModalTroca();
+      if (event.target && event.target.id === "modalRegra") fecharRegra();
       const box = document.getElementById("userPopover");
       const avatar = document.querySelector(".avatar");
       if (box && box.classList.contains("show") && !box.contains(event.target) && !avatar.contains(event.target)) {
@@ -2153,6 +2423,7 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
     renderBebes();
     carregarMeusItensServidor();
     carregarVitrineServidor();
+    carregarAnunciosApp();
     mostrarAtividades();
     renderAtividadesManuais();
     renderApoios();
