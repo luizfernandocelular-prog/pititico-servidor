@@ -1204,6 +1204,13 @@
       </div>
     </header>
 
+    <div id="pititicoAdsBox" class="pititico-ads-box">
+      <div class="pititico-ads-title">📢 Anúncios PiTiTiCo</div>
+      <div class="pititico-ads-window">
+        <div id="pititicoAdsTrack" class="pititico-ads-track"></div>
+      </div>
+    </div>
+
     <div id="adsAreaPititico" class="ads-marquee-wrap" style="display:none;">
       <div class="ads-title">📢 Anúncios PiTiTiCo</div>
       <div class="ads-marquee">
@@ -1332,7 +1339,7 @@
   </div>
 
 
-  <div class="pititico-version-badge">v6.5 • browser/app sincronizados</div>
+  <div class="pititico-version-badge">v6.6 • corrigido real</div>
 
   <a class="support-whatsapp" href="https://wa.me/5521997180033?text=Olá,%20preciso%20de%20suporte%20no%20app%20PiTiTiCo." target="_blank">☘</a>
 
@@ -1598,8 +1605,8 @@
         bebes: [
           {
             nome: "Maria Clara",
-            peso: "6,400 kg",
-            altura: "63 cm",
+            peso: "",
+            altura: "",
             nascimento: "2026-01-22",
             sangue: "Não informado",
             obs: "Exemplo para teste.",
@@ -2045,8 +2052,8 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
             <strong>Idade:</strong> ${calcularIdadePorNascimento(bebe.nascimento)}
           </div>
           <div class="baby-info-grid">
-            <div class="baby-info">Peso estimado<strong>${bebe.peso || "-"}</strong></div>
-            <div class="baby-info">Altura estimada<strong>${bebe.altura || "-"}</strong></div>
+            <div class="baby-info">Peso estimado<strong>${estimarCrescimentoBebe(bebe.nascimento).peso || "-"}</strong></div>
+            <div class="baby-info">Altura estimada<strong>${estimarCrescimentoBebe(bebe.nascimento).altura || "-"}</strong></div>
             <div class="baby-info">Sangue<strong>${bebe.sangue || "-"}</strong></div>
             <div class="baby-info">Rotinas<strong>${contarRotinasDoBebe(bebe.nome)}</strong></div>
           </div>
@@ -2122,11 +2129,10 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
       salvarDados();
       renderBebes();
       atualizarListasBasicas();
-    setTimeout(carregarAnunciosPititico, 300);
-    setTimeout(carregarAnunciosPititico, 1200);
-    window.addEventListener("load", carregarAnunciosPititico);
-    setTimeout(carregarAnunciosPititico, 600);
     carregarAnunciosPititico();
+    setTimeout(carregarAnunciosPititico, 400);
+    setTimeout(carregarAnunciosPititico, 1500);
+    window.addEventListener("load", carregarAnunciosPititico);
     }
 
     function adicionarRotina() {
@@ -2590,85 +2596,6 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
       document.getElementById("regraModal").classList.remove("show");
     }
 
-    async function carregarAnunciosPititico() {
-      let box = document.getElementById("pititicoAdsBox");
-      let track = document.getElementById("pititicoAdsTrack");
-
-      if (!box || !track) {
-        const app = document.getElementById("app") || document.body;
-        const header = app.querySelector(".topbar") || app.querySelector("header");
-        const novoBox = document.createElement("div");
-        novoBox.id = "pititicoAdsBox";
-        novoBox.className = "pititico-ads-box";
-        novoBox.innerHTML = `
-          <div class="pititico-ads-title">📢 Anúncios PiTiTiCo</div>
-          <div class="pititico-ads-window">
-            <div id="pititicoAdsTrack" class="pititico-ads-track"></div>
-          </div>
-        `;
-        if (header && header.parentNode) {
-          header.insertAdjacentElement("afterend", novoBox);
-        } else {
-          app.insertAdjacentElement("afterbegin", novoBox);
-        }
-        box = document.getElementById("pititicoAdsBox");
-        track = document.getElementById("pititicoAdsTrack");
-      }
-
-      if (!box || !track) return;
-
-      const limpar = (valor) => String(valor || "").replace(/[<>&]/g, "").trim();
-      const encurtar = (valor, limite = 30) => {
-        const txt = limpar(valor);
-        return txt.length > limite ? txt.slice(0, limite - 3) + "..." : txt;
-      };
-
-      try {
-        const resposta = await fetch(API_PITITICO + "/anuncios", { cache: "no-store" });
-        if (!resposta.ok) throw new Error("Erro ao buscar anúncios");
-
-        const dados = await resposta.json();
-        const lista = (Array.isArray(dados) ? dados : [])
-          .filter(a => (a.status || "ativo") === "ativo");
-
-        if (!lista.length) {
-          box.classList.remove("force-visible");
-          box.style.display = "none";
-          track.innerHTML = "";
-          return;
-        }
-
-        const montarCard = (a) => {
-          const titulo = encurtar(a.titulo || "Anúncio PiTiTiCo", 30);
-          const texto = encurtar(a.texto || "", 34);
-          const link = limpar(a.link || "#") || "#";
-          const imagem = limpar(a.imagem || "");
-
-          const midia = imagem
-            ? `<img class="pititico-ad-img" src="${imagem}" alt="" loading="lazy" onerror="this.outerHTML='<span class=&quot;pititico-ad-fallback&quot;>🍼</span>'">`
-            : `<span class="pititico-ad-fallback">🍼</span>`;
-
-          return `
-            <a class="pititico-ad-item" href="${link}" target="_blank" rel="noopener">
-              ${midia}
-              <span class="pititico-ad-text">
-                <span class="pititico-ad-title">${titulo}</span>
-                <span class="pititico-ad-desc">${texto || "Toque para saber mais"}</span>
-              </span>
-            </a>
-          `;
-        };
-
-        const cards = lista.map(montarCard).join("");
-        track.innerHTML = cards + cards;
-        box.classList.add("force-visible");
-        box.style.display = "block";
-      } catch (erro) {
-        box.classList.remove("force-visible");
-        box.style.display = "none";
-      }
-    }
-
     document.addEventListener("click", function(e) {
       const troca = document.getElementById("trocaModal");
       const regra = document.getElementById("regraModal");
@@ -2749,13 +2676,43 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
       if (area) area.innerHTML = est.texto;
     }
 
+    document.addEventListener("click", function(e) {
+      ["rotinaModal","atividadesModal","apoioModal","alimentacaoModal","agendaModal"].forEach(id => {
+        const modal = document.getElementById(id);
+        if (modal && e.target === modal) modal.classList.remove("show");
+      });
+    });
+
+
     async function carregarAnunciosPititico() {
-      const box = document.getElementById("pititicoAdsBox");
-      const track = document.getElementById("pititicoAdsTrack");
-      if (!box || !track) return;
+      let box = document.getElementById("pititicoAdsBox");
+      let track = document.getElementById("pititicoAdsTrack");
+
+      if (!box || !track) {
+        const app = document.getElementById("app") || document.body;
+        const header = app.querySelector(".topbar") || app.querySelector("header");
+
+        box = document.createElement("div");
+        box.id = "pititicoAdsBox";
+        box.className = "pititico-ads-box";
+        box.innerHTML = `
+          <div class="pititico-ads-title">📢 Anúncios PiTiTiCo</div>
+          <div class="pititico-ads-window">
+            <div id="pititicoAdsTrack" class="pititico-ads-track"></div>
+          </div>
+        `;
+
+        if (header && header.parentNode) {
+          header.insertAdjacentElement("afterend", box);
+        } else {
+          app.insertAdjacentElement("afterbegin", box);
+        }
+
+        track = document.getElementById("pititicoAdsTrack");
+      }
 
       const limpar = (valor) => String(valor || "").replace(/[<>&]/g, "").trim();
-      const encurtar = (valor, limite = 30) => {
+      const encurtar = (valor, limite = 32) => {
         const txt = limpar(valor);
         return txt.length > limite ? txt.slice(0, limite - 3) + "..." : txt;
       };
@@ -2768,14 +2725,15 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
         const lista = (Array.isArray(dados) ? dados : []).filter(a => (a.status || "ativo") === "ativo");
 
         if (!lista.length) {
+          box.classList.remove("force-visible");
           box.style.display = "none";
           track.innerHTML = "";
           return;
         }
 
         const montarCard = (a) => {
-          const titulo = encurtar(a.titulo || "Anúncio PiTiTiCo", 30);
-          const texto = encurtar(a.texto || "", 34);
+          const titulo = encurtar(a.titulo || "Anúncio PiTiTiCo", 32);
+          const texto = encurtar(a.texto || "", 38);
           const link = limpar(a.link || "#") || "#";
           const imagem = limpar(a.imagem || "");
 
@@ -2796,18 +2754,14 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
 
         const cards = lista.map(montarCard).join("");
         track.innerHTML = cards + cards;
+        box.classList.add("force-visible");
         box.style.display = "block";
       } catch (erro) {
+        box.classList.remove("force-visible");
         box.style.display = "none";
       }
     }
 
-    document.addEventListener("click", function(e) {
-      ["rotinaModal","atividadesModal","apoioModal","alimentacaoModal","agendaModal"].forEach(id => {
-        const modal = document.getElementById(id);
-        if (modal && e.target === modal) modal.classList.remove("show");
-      });
-    });
 
     carregarUsuarioLocal();
     carregarDados();
