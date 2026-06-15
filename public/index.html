@@ -716,79 +716,141 @@
       .brand h1 { font-size: 29px; }
       .topbar { padding: 14px 16px; }
     }
-  
-    /* ETAPA 4.1 - Anúncios + Regras em botões */
-    .pititico-ads-box {
-      background: rgba(255,255,255,.95);
-      border-radius: 22px;
-      padding: 12px 14px;
-      margin: 0 auto 18px;
-      width: min(980px, 100%);
-      box-shadow: 0 12px 28px rgba(149,76,126,.12);
-      overflow: hidden;
-      border: 1px solid var(--soft);
-      display: none;
-    }
-    .pititico-ads-title {
-      color: var(--primary);
-      font-weight: 900;
-      margin-bottom: 8px;
-      font-size: 14px;
-    }
-    .pititico-ads-window { overflow: hidden; white-space: nowrap; }
-    .pititico-ads-track {
-      display: inline-flex;
-      gap: 14px;
-      animation: pititicoAdsMove 26s linear infinite;
-    }
-    .pititico-ad-item {
-      display: inline-flex;
-      align-items: center;
-      gap: 9px;
-      min-width: 260px;
-      max-width: 420px;
-      background: var(--soft);
-      border-radius: 999px;
-      padding: 10px 16px;
-      color: #2b2438;
-      text-decoration: none;
-      font-weight: 900;
-      font-size: 13px;
-    }
-    .pititico-ad-item img {
-      width: 36px;
-      height: 36px;
-      border-radius: 999px;
-      object-fit: cover;
-      background: #fff;
-      flex: 0 0 auto;
-    }
-    .pititico-ad-item span { overflow: hidden; text-overflow: ellipsis; }
-    @keyframes pititicoAdsMove {
-      from { transform: translateX(100%); }
-      to { transform: translateX(-100%); }
+
+
+    .auth-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin: 18px 0 10px;
     }
 
-    .rule-buttons {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      margin-top: 14px;
-    }
-    .rule-buttons button {
+    .auth-tab {
       border: none;
-      border-radius: 18px;
-      padding: 16px 18px;
-      background: var(--soft);
-      color: var(--primary);
-      font-weight: 900;
+      border-radius: 16px;
+      padding: 12px;
+      font-weight: bold;
       cursor: pointer;
-      text-align: left;
-      font-size: 15px;
+      background: #f4edf4;
+      color: #555067;
     }
-    .rule-buttons button:hover {
-      filter: brightness(.98);
-      transform: translateY(-1px);
+
+    .auth-tab.active {
+      background: var(--secondary);
+      color: white;
+    }
+
+    .auth-block { display: none; }
+    .auth-block.active { display: block; }
+
+    .baby-modal-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.45);
+      z-index: 10001;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .baby-modal-bg.show { display: flex; }
+
+    .baby-modal {
+      background: #fff;
+      max-width: 720px;
+      width: 100%;
+      max-height: 92dvh;
+      overflow-y: auto;
+      border-radius: 26px;
+      padding: 20px;
+      box-shadow: 0 14px 38px rgba(0,0,0,.24);
+    }
+
+    .baby-modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .baby-modal-head h3 {
+      color: var(--primary);
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .close-floating {
+      border: none;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #ffe8ef;
+      color: #d9275b;
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .section-head-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .section-head-row .action {
+      width: auto;
+      min-width: 170px;
+      margin-top: 0;
+    }
+
+  
+    /* ETAPA 3 SEGURA - Troca-Troca, Regras e Anúncios */
+    .ads-marquee-wrap {
+      background: rgba(255,255,255,.92);
+      border-radius: 20px;
+      margin: 0 0 18px;
+      padding: 10px;
+      box-shadow: 0 8px 22px rgba(149,76,126,.10);
+      overflow: hidden;
+      border: 1px solid var(--soft);
+    }
+    .ads-title { color: var(--primary); font-weight: 900; margin-bottom: 6px; font-size: 14px; }
+    .ads-marquee { overflow: hidden; white-space: nowrap; }
+    .ads-track { display: inline-flex; gap: 18px; animation: pititicoScrollAds 28s linear infinite; }
+    .ad-pill {
+      display: inline-flex; align-items: center; gap: 8px; min-width: 230px;
+      background: var(--soft); border-radius: 999px; padding: 9px 14px;
+      color: #2b2438; text-decoration: none; font-weight: 800; font-size: 13px;
+    }
+    .ad-pill img { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; background: #fff; }
+    @keyframes pititicoScrollAds { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
+    .troca-resumo { background: var(--soft); border-radius: 18px; padding: 16px; margin: 14px 0; display: grid; gap: 10px; }
+    .troca-count { font-size: 16px; font-weight: 900; color: var(--primary); }
+    .modal-wide { max-width: 720px; text-align: left; max-height: 92dvh; overflow-y: auto; }
+    .modal-wide h3 { text-align: left; font-size: 24px; }
+    .modal-full-actions { display: flex; gap: 10px; margin-top: 14px; }
+    .modal-full-actions button { flex: 1; border: none; border-radius: 16px; padding: 13px; font-weight: bold; cursor: pointer; }
+    .rule-buttons { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 12px; }
+    .rule-buttons button {
+      border: none; border-radius: 18px; padding: 15px; background: var(--soft);
+      color: var(--primary); font-weight: 900; cursor: pointer; text-align: left;
+    }
+    @media (max-width: 540px) { .rule-buttons { grid-template-columns: 1fr; } .modal-full-actions { flex-direction: column; } }
+
+  
+    /* ETAPA 6.1 - Menus em telas flutuantes + banner profissional */
+    .floating-actions {
+      display: grid;
+      gap: 12px;
+      margin: 14px 0;
+    }
+    .floating-actions .action {
+      margin-top: 0;
     }
     .modal-wide {
       max-width: 720px;
@@ -800,6 +862,7 @@
       text-align: left;
       font-size: 24px;
       color: var(--primary);
+      margin-top: 0;
     }
     .modal-full-actions {
       display: flex;
@@ -814,90 +877,83 @@
       font-weight: bold;
       cursor: pointer;
     }
-    @media (max-width: 540px) {
-      .rule-buttons { grid-template-columns: 1fr; }
-      .modal-full-actions { flex-direction: column; }
+    .growth-estimate {
+      background: var(--soft);
+      border-radius: 18px;
+      padding: 13px;
+      margin-top: 10px;
+      color: var(--muted);
+      line-height: 1.45;
+      font-size: 14px;
+      border: 1px solid rgba(240,82,159,.13);
+    }
+    .growth-estimate strong {
+      color: var(--primary);
     }
 
-  
-    /* ETAPA 4.3 - Banner profissional de anúncios */
     .pititico-ads-box {
-      background: linear-gradient(135deg, #fff, #fff2f8) !important;
-      border-radius: 24px !important;
-      padding: 14px 16px !important;
-      margin: 0 auto 20px !important;
-      width: min(980px, 100%) !important;
-      box-shadow: 0 14px 34px rgba(149,76,126,.16) !important;
-      overflow: hidden !important;
-      border: 1px solid var(--soft) !important;
+      background: linear-gradient(135deg, #fff, #fff2f8);
+      border-radius: 24px;
+      padding: 14px 16px;
+      margin: 0 auto 20px;
+      width: min(980px, 100%);
+      box-shadow: 0 14px 34px rgba(149,76,126,.16);
+      overflow: hidden;
+      border: 1px solid var(--soft);
       display: none;
     }
-
     .pititico-ads-title {
-      color: var(--primary) !important;
-      font-weight: 900 !important;
-      margin-bottom: 10px !important;
-      font-size: 16px !important;
+      color: var(--primary);
+      font-weight: 900;
+      margin-bottom: 10px;
+      font-size: 16px;
       display: flex;
       align-items: center;
       gap: 8px;
     }
-
-    .pititico-ads-window {
-      overflow: hidden !important;
-      white-space: nowrap !important;
-      width: 100%;
-    }
-
+    .pititico-ads-window { overflow: hidden; white-space: nowrap; width: 100%; }
     .pititico-ads-track {
-      display: inline-flex !important;
-      gap: 18px !important;
+      display: inline-flex;
+      gap: 18px;
       width: max-content;
-      animation: pititicoAdsMovePro 32s linear infinite !important;
+      animation: pititicoAdsMovePro 32s linear infinite;
       will-change: transform;
     }
-
-    .pititico-ads-window:hover .pititico-ads-track {
-      animation-play-state: paused;
-    }
-
+    .pititico-ads-window:hover .pititico-ads-track { animation-play-state: paused; }
     .pititico-ad-item {
-      display: inline-flex !important;
-      align-items: center !important;
-      gap: 12px !important;
-      width: 340px !important;
-      min-width: 340px !important;
-      max-width: 340px !important;
-      background: #ffeaf4 !important;
-      border-radius: 999px !important;
-      padding: 10px 16px 10px 10px !important;
-      color: #2b2438 !important;
-      text-decoration: none !important;
-      font-weight: 900 !important;
-      font-size: 14px !important;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      width: 340px;
+      min-width: 340px;
+      max-width: 340px;
+      background: #ffeaf4;
+      border-radius: 999px;
+      padding: 10px 16px 10px 10px;
+      color: #2b2438;
+      text-decoration: none;
+      font-weight: 900;
+      font-size: 14px;
       box-shadow: inset 0 0 0 1px rgba(235,79,160,.08);
     }
-
     .pititico-ad-img, .pititico-ad-fallback {
-      width: 58px !important;
-      height: 58px !important;
-      border-radius: 999px !important;
-      flex: 0 0 58px !important;
-      background: #fff !important;
-      display: inline-flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      object-fit: cover !important;
-      font-size: 28px !important;
+      width: 58px;
+      height: 58px;
+      border-radius: 999px;
+      flex: 0 0 58px;
+      background: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      object-fit: cover;
+      font-size: 28px;
     }
-
     .pititico-ad-text {
       display: flex;
       flex-direction: column;
       overflow: hidden;
       line-height: 1.15;
     }
-
     .pititico-ad-title {
       color: #20182c;
       overflow: hidden;
@@ -905,7 +961,6 @@
       white-space: nowrap;
       max-width: 235px;
     }
-
     .pititico-ad-desc {
       color: #7a6072;
       font-weight: 700;
@@ -916,43 +971,57 @@
       white-space: nowrap;
       max-width: 235px;
     }
-
     @keyframes pititicoAdsMovePro {
       from { transform: translateX(0); }
       to { transform: translateX(-50%); }
     }
-
     @media (max-width: 700px) {
-      .pititico-ad-item {
-        width: 285px !important;
-        min-width: 285px !important;
-        max-width: 285px !important;
-      }
-      .pititico-ad-title,
-      .pititico-ad-desc {
-        max-width: 180px;
-      }
+      .pititico-ad-item { width: 285px; min-width: 285px; max-width: 285px; }
+      .pititico-ad-title, .pititico-ad-desc { max-width: 180px; }
+    }
+    @media (max-width: 540px) {
+      .modal-full-actions { flex-direction: column; }
     }
 
   </style>
 </head>
 
 <body>
-  <div id="loginScreen" class="login-screen">
+  <div id="loginScreen" class="login-screen show">
     <div class="login-card">
       <h1>PiTiTiCo</h1>
-      <p>Antes de entrar, faça seu cadastro básico para publicar itens no Troca-Troca.</p>
+      <p id="authSubtitle">Entre com e-mail e senha ou faça seu cadastro.</p>
 
-      <label>Nome</label>
-      <input id="loginNome" placeholder="Ex: Ana Paula" />
+      <div class="auth-tabs">
+        <button id="tabLogin" class="auth-tab active" onclick="mostrarAuth('login')">Login</button>
+        <button id="tabCadastro" class="auth-tab" onclick="mostrarAuth('cadastro')">Cadastro</button>
+      </div>
 
-      <label>E-mail</label>
-      <input id="loginEmail" type="email" placeholder="Ex: ana@email.com" />
+      <div id="authLogin" class="auth-block active">
+        <label>E-mail</label>
+        <input id="loginEmailEntrar" type="email" placeholder="Ex: ana@email.com" />
 
-      <label>WhatsApp</label>
-      <input id="loginWhatsapp" placeholder="Ex: 21999999999" />
+        <label>Senha de 4 números</label>
+        <input id="loginSenhaEntrar" type="password" inputmode="numeric" maxlength="4" placeholder="Ex: 1234" />
 
-      <button class="action" onclick="salvarUsuarioInicial()">Entrar no PiTiTiCo</button>
+        <button class="action" onclick="entrarUsuario()">Entrar</button>
+      </div>
+
+      <div id="authCadastro" class="auth-block">
+        <label>Nome</label>
+        <input id="loginNome" placeholder="Ex: Ana Paula" />
+
+        <label>E-mail</label>
+        <input id="loginEmail" type="email" placeholder="Ex: ana@email.com" />
+
+        <label>WhatsApp</label>
+        <input id="loginWhatsapp" placeholder="Ex: 21999999999" />
+
+        <label>Senha de 4 números</label>
+        <input id="loginSenha" type="password" inputmode="numeric" maxlength="4" placeholder="Ex: 1234" />
+
+        <button class="action" onclick="salvarUsuarioInicial()">Cadastrar e entrar</button>
+      </div>
     </div>
   </div>
 
@@ -973,8 +1042,7 @@
       </div>
 
       <nav class="menu">
-        <button class="active-menu" onclick="showSection('home', this)"><span class="icon">🏠</span><span class="label">Início</span></button>
-        <button onclick="showSection('cadastro', this)"><span class="icon">👶</span><span class="label">Bebês</span></button>
+        <button class="active-menu" onclick="showSection('cadastro', this)"><span class="icon">👶</span><span class="label">Bebês</span></button>
         <button onclick="showSection('rotina', this)"><span class="icon">🍼</span><span class="label">Rotina</span></button>
         <button onclick="showSection('trocasCatalogo', this)"><span class="icon">👕</span><span class="label">Troca-Troca</span></button>
         <button onclick="showSection('atividades', this)"><span class="icon">🧩</span><span class="label">Atividades</span></button>
@@ -1005,84 +1073,32 @@
       </div>
     </header>
 
-    <div id="pititicoAdsBox" class="pititico-ads-box">
-      <div class="pititico-ads-title">📢 Anúncios PiTiTiCo</div>
-      <div class="pititico-ads-window">
-        <div id="pititicoAdsTrack" class="pititico-ads-track"></div>
+    <div id="adsAreaPititico" class="ads-marquee-wrap" style="display:none;">
+      <div class="ads-title">📢 Anúncios PiTiTiCo</div>
+      <div class="ads-marquee">
+        <div id="adsTrackPititico" class="ads-track"></div>
       </div>
     </div>
 
     <main class="container">
-      <section id="home" class="card active">
-        <div class="home-title">
-          <h2>Meus Bebês</h2>
-          <p>Aqui ficam todos os bebês cadastrados no aplicativo.</p>
-        </div>
-        <div id="homeBabies" class="baby-list"></div>
-      </section>
-
-      <section id="cadastro" class="card">
-        <h2>👶 Cadastro dos Bebês</h2>
-
-        <div class="form-grid">
+      <section id="cadastro" class="card active">
+        <div class="section-head-row">
           <div>
-            <label>Nome do bebê/criança</label>
-            <input id="nomeBebe" placeholder="Ex: Miguel" />
+            <h2>👶 Meus Bebês</h2>
+            <p class="small">Aqui ficam todos os bebês cadastrados no aplicativo.</p>
           </div>
-
-          <div>
-            <label>Data de nascimento</label>
-            <input id="nascimentoBebe" type="date" />
-          </div>
-
-          <div>
-            <label>Peso</label>
-            <input id="pesoBebe" placeholder="Ex: 8,200 kg" />
-          </div>
-
-          <div>
-            <label>Altura</label>
-            <input id="alturaBebe" placeholder="Ex: 72 cm" />
-          </div>
-
-          <div>
-            <label>Tipo sanguíneo</label>
-            <input id="sangueBebe" placeholder="Ex: O+, A-, não sei" />
-          </div>
+          <button class="action" onclick="abrirModalBebe()">+ Adicionar bebê</button>
         </div>
 
-        <label>Observação importante</label>
-        <textarea id="obsBebe" placeholder="Ex: alergia, rotina especial, pediatra..."></textarea>
-
-        <button class="action" onclick="salvarBebe()">Adicionar bebê</button>
-
-        <h3 class="section-title" style="margin-top:20px;">Todos os bebês cadastrados</h3>
         <div id="listaBebes" class="baby-list"></div>
       </section>
 
       <section id="rotina" class="card">
         <h2>🍼 Rotina do Bebê</h2>
-
-        <label>Bebê</label>
-        <select id="bebeRotina"></select>
-
-        <label>Tipo de rotina</label>
-        <select id="tipoRotina">
-          <option>Mamadeira / Amamentação</option>
-          <option>Troca de fralda</option>
-          <option>Sono</option>
-          <option>Banho</option>
-          <option>Remédio</option>
-          <option>Outro</option>
-        </select>
-
-        <label>Horário</label>
-        <input id="horaRotina" type="time" />
-
-        <label>Observação</label>
-        <textarea id="obsRotina" placeholder="Ex: Dormiu bem, tomou 120ml..."></textarea>
-
-        <button class="action" onclick="adicionarRotina()">Adicionar Rotina</button>
+        <div class="notice">Cadastre novas rotinas em tela flutuante para deixar o menu mais limpo.</div>
+        <div class="floating-actions">
+          <button class="action" onclick="abrirModalRotina()">+ Adicionar rotina</button>
+        </div>
         <div id="listaRotina" class="list">Nenhuma rotina adicionada.</div>
       </section>
 
@@ -1090,137 +1106,44 @@
         <h2>👕 Troca-Troca</h2>
 
         <div class="notice">
-          Cadastre o item no Troca-Troca. Ele será enviado automaticamente para a vitrine PiTiTiCo e ficará ativo por 5 dias.
+          Cadastre seus itens em tela flutuante. A vitrine continua visível abaixo para consulta.
         </div>
 
-        <h3 class="section-title">Cadastrar item</h3>
+        <div class="troca-resumo">
+          <div class="troca-count" id="resumoMeusItens">Meus itens cadastrados: 0</div>
+          <button class="action" onclick="abrirModalTroca()">+ Cadastrar item</button>
+          <button class="action secondary" onclick="alternarMeusItens()">Visualizar meus itens</button>
+        </div>
 
-        <label>Tipo de item</label>
-        <select id="tipoPublicacao">
-          <option>Troca</option>
-          <option>Doação</option>
-          <option>Venda</option>
-          <option>Procuro</option>
-        </select>
-
-        <label>Nome do item</label>
-        <input id="itemTroca" placeholder="Ex: Macacão RN, carrinho, brinquedo..." />
-
-        <label>Categoria</label>
-        <select id="categoriaTroca">
-          <option>Roupinha</option>
-          <option>Brinquedo</option>
-          <option>Berço / Carrinho / Bebê conforto</option>
-          <option>Acessório infantil</option>
-          <option>Livro infantil</option>
-          <option>Outro</option>
-        </select>
-
-        <label>Tamanho / idade indicada</label>
-        <input id="tamanhoTroca" placeholder="Ex: 0 a 3 meses, 2 anos..." />
-
-        <label>Estado do item</label>
-        <select id="estadoTroca">
-          <option>Novo</option>
-          <option>Seminovo</option>
-          <option>Usado em bom estado</option>
-        </select>
-
-        <label>Bairro/Cidade</label>
-        <input id="localTroca" placeholder="Ex: Campo Grande - RJ" />
-
-        <label>Contato WhatsApp</label>
-        <input id="whatsTroca" placeholder="Ex: 21999999999" />
-
-        <label>Observação</label>
-        <textarea id="obsTroca" placeholder="Ex: Retirada no local, aceito troca por fraldas..."></textarea>
-
-        <button class="action" onclick="cadastrarItemTroca()">Cadastrar item</button>
-
-        <h3 class="section-title" style="margin-top:22px;">Meus itens cadastrados</h3>
-        <div id="listaTrocas" class="item-list"></div>
+        <div id="listaTrocas" class="item-list" style="display:none;"></div>
 
         <h3 class="section-title" style="margin-top:22px;">Vitrine PiTiTiCo</h3>
         <button class="action secondary" onclick="carregarVitrineServidor()">Atualizar vitrine</button>
+        <div id="apiDebugPititico" class="small" style="margin-top:8px;color:#777;"></div>
         <div id="vitrineTrocas" class="item-list"></div>
       </section>
 
       <section id="atividades" class="card">
         <h2>🧩 Atividades por Faixa Etária</h2>
-
-        <label>Faixa etária</label>
-        <select id="faixaAtividade" onchange="mostrarAtividades()">
-          <option>0 a 6 meses</option>
-          <option>6 a 12 meses</option>
-          <option>1 a 2 anos</option>
-          <option>3 a 5 anos</option>
-          <option>6 anos ou mais</option>
-        </select>
-
+        <div class="notice">Abra a tela flutuante para consultar atividades por idade ou cadastrar uma atividade manual.</div>
+        <div class="floating-actions">
+          <button class="action" onclick="abrirModalAtividades()">Ver / cadastrar atividades</button>
+        </div>
         <div id="atividadesResultado" class="list"></div>
-
-        <h3 class="section-title" style="margin-top:22px;">Cadastrar atividade manual</h3>
-
-        <label>Nome da atividade</label>
-        <input id="nomeAtividadeManual" placeholder="Ex: Brincar com potes coloridos" />
-
-        <label>Faixa etária indicada</label>
-        <select id="faixaAtividadeManual">
-          <option>0 a 6 meses</option>
-          <option>6 a 12 meses</option>
-          <option>1 a 2 anos</option>
-          <option>3 a 5 anos</option>
-          <option>6 anos ou mais</option>
-        </select>
-
-        <label>Como executar</label>
-        <textarea id="descricaoAtividadeManual" placeholder="Ex: Separar potes leves..."></textarea>
-
-        <label>Observação para mamãe/babá</label>
-        <textarea id="obsAtividadeManual" placeholder="Ex: Fazer com supervisão."></textarea>
-
-        <button class="action" onclick="cadastrarAtividadeManual()">Cadastrar atividade</button>
         <div id="listaAtividadesManuais" class="manual-activity-list"></div>
       </section>
 
       <section id="apoio" class="card">
         <h2>👩‍👧‍👦 Rede de Apoio</h2>
-
-        <div class="notice">
-          Cadastre órgãos, locais e contatos oficiais que você for conhecendo.
+        <div class="notice">Cadastre órgãos, locais e contatos oficiais em tela flutuante.</div>
+        <div class="floating-actions">
+          <button class="action" onclick="abrirModalApoio()">+ Cadastrar órgão de apoio</button>
         </div>
-
-        <h3 class="section-title">Cadastrar órgão de apoio</h3>
-
-        <label>Nome do órgão/local</label>
-        <input id="nomeApoio" placeholder="Ex: Conselho Tutelar do meu bairro" />
-
-        <label>Tipo de apoio</label>
-        <select id="tipoApoio">
-          <option>Conselho Tutelar</option>
-          <option>CRAS / Assistência Social</option>
-          <option>Unidade de Saúde</option>
-          <option>Escola / Creche</option>
-          <option>Delegacia / Proteção</option>
-          <option>Outro órgão oficial</option>
-        </select>
-
-        <label>Telefone / WhatsApp</label>
-        <input id="contatoApoio" placeholder="Ex: telefone, WhatsApp ou ramal" />
-
-        <label>Endereço / Bairro / Cidade</label>
-        <input id="localApoio" placeholder="Ex: Campo Grande - RJ" />
-
-        <label>Observação</label>
-        <textarea id="pedidoApoio" placeholder="Ex: horário de atendimento..."></textarea>
-
-        <button class="action" onclick="adicionarApoio()">Salvar órgão de apoio</button>
 
         <h3 class="section-title" style="margin-top:22px;">Meus órgãos de apoio cadastrados</h3>
         <div id="listaApoio" class="support-grid"></div>
 
         <h3 class="section-title" style="margin-top:22px;">Contatos oficiais úteis</h3>
-
         <div class="support-grid">
           <div class="support-card"><strong>Disque 100 - Direitos Humanos</strong>Canal nacional para denúncias de violações de direitos humanos, incluindo crianças e adolescentes.</div>
           <div class="support-card"><strong>WhatsApp ONDH</strong>Canal da Ouvidoria Nacional de Direitos Humanos: (61) 99611-0100.</div>
@@ -1231,41 +1154,19 @@
 
       <section id="alimentacao" class="card">
         <h2>🍎 Planejamento Alimentar Infantil</h2>
-
-        <label>Bebê</label>
-        <select id="bebeAlimentacao"></select>
-
-        <label>Refeição</label>
-        <select id="tipoRefeicao">
-          <option>Café da manhã</option>
-          <option>Almoço</option>
-          <option>Lanche</option>
-          <option>Jantar</option>
-        </select>
-
-        <label>Alimento / cardápio</label>
-        <textarea id="cardapio" placeholder="Ex: Banana amassada..."></textarea>
-
-        <button class="action" onclick="adicionarAlimentacao()">Adicionar planejamento</button>
+        <div class="notice">Cadastre planejamentos alimentares em tela flutuante.</div>
+        <div class="floating-actions">
+          <button class="action" onclick="abrirModalAlimentacao()">+ Adicionar planejamento</button>
+        </div>
         <div id="listaAlimentacao" class="list">Nenhum planejamento cadastrado.</div>
       </section>
 
       <section id="agenda" class="card">
         <h2>🗓️ Agenda da Mamãe</h2>
-
-        <label>Compromisso</label>
-        <input id="tituloAgenda" placeholder="Ex: Consulta pediatra..." />
-
-        <label>Data</label>
-        <input id="dataAgenda" type="date" />
-
-        <label>Horário</label>
-        <input id="horaAgenda" type="time" />
-
-        <label>Observação</label>
-        <textarea id="obsAgenda" placeholder="Ex: Levar cartão de vacina..."></textarea>
-
-        <button class="action" onclick="adicionarAgenda()">Salvar compromisso</button>
+        <div class="notice">Cadastre compromissos em tela flutuante.</div>
+        <div class="floating-actions">
+          <button class="action" onclick="abrirModalAgenda()">+ Salvar compromisso</button>
+        </div>
         <div id="listaAgenda" class="list">Nenhum compromisso salvo.</div>
       </section>
 
@@ -1302,6 +1203,226 @@
   <a class="support-whatsapp" href="https://wa.me/5521997180033?text=Olá,%20preciso%20de%20suporte%20no%20app%20PiTiTiCo." target="_blank">☘</a>
 
 
+  <div id="babyModal" class="baby-modal-bg">
+    <div class="baby-modal">
+      <div class="baby-modal-head">
+        <h3>👶 Cadastrar Bebê</h3>
+        <button class="close-floating" onclick="fecharModalBebe()">×</button>
+      </div>
+
+      <div class="form-grid">
+        <div>
+          <label>Nome do bebê/criança</label>
+          <input id="nomeBebe" placeholder="Ex: Miguel" />
+        </div>
+
+        <div>
+          <label>Data de nascimento</label>
+          <input id="nascimentoBebe" type="date" onchange="atualizarEstimativaBebe()" />
+        </div>
+
+        <div>
+          <label>Estimativa de peso/altura</label>
+          <div id="estimativaBebe" class="growth-estimate">
+            Informe a data de nascimento para calcular uma estimativa aproximada.
+          </div>
+          <input id="pesoBebe" type="hidden" />
+          <input id="alturaBebe" type="hidden" />
+        </div>
+
+        <div>
+          <label>Tipo sanguíneo</label>
+          <input id="sangueBebe" placeholder="Ex: O+, A-, não sei" />
+        </div>
+      </div>
+
+      <label>Observação importante</label>
+      <textarea id="obsBebe" placeholder="Ex: alergia, rotina especial, pediatra..."></textarea>
+
+      <button class="action" onclick="salvarBebe()">Salvar bebê</button>
+    </div>
+  </div>
+
+
+  <div id="trocaModal" class="modal-bg">
+    <div class="modal modal-wide">
+      <h3>👕 Cadastrar item</h3>
+      <label>Tipo de item</label>
+      <select id="tipoPublicacao"><option>Troca</option><option>Doação</option><option>Venda</option><option>Procuro</option></select>
+      <label>Nome do item</label>
+      <input id="itemTroca" placeholder="Ex: Macacão RN, carrinho, brinquedo..." />
+      <label>Categoria</label>
+      <select id="categoriaTroca"><option>Roupinha</option><option>Brinquedo</option><option>Berço / Carrinho / Bebê conforto</option><option>Acessório infantil</option><option>Livro infantil</option><option>Outro</option></select>
+      <label>Tamanho / idade indicada</label>
+      <input id="tamanhoTroca" placeholder="Ex: 0 a 3 meses, 2 anos..." />
+      <label>Estado do item</label>
+      <select id="estadoTroca"><option>Novo</option><option>Seminovo</option><option>Usado em bom estado</option></select>
+      <label>Bairro/Cidade</label>
+      <input id="localTroca" placeholder="Ex: Campo Grande - RJ" />
+      <label>Contato WhatsApp</label>
+      <input id="whatsTroca" placeholder="Ex: 21999999999" />
+      <label>Observação</label>
+      <textarea id="obsTroca" placeholder="Ex: Retirada no local, aceito troca por fraldas..."></textarea>
+      <div class="modal-full-actions">
+        <button class="cancel-btn" onclick="fecharModalTroca()">Cancelar</button>
+        <button class="confirm-btn" onclick="cadastrarItemTroca()">Cadastrar item</button>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="rotinaModal" class="modal-bg">
+    <div class="modal modal-wide">
+      <h3>🍼 Adicionar Rotina</h3>
+      <label>Bebê</label>
+      <select id="bebeRotina"></select>
+
+      <label>Tipo de rotina</label>
+      <select id="tipoRotina">
+        <option>Mamadeira / Amamentação</option>
+        <option>Troca de fralda</option>
+        <option>Sono</option>
+        <option>Banho</option>
+        <option>Remédio</option>
+        <option>Outro</option>
+      </select>
+
+      <label>Horário</label>
+      <input id="horaRotina" type="time" />
+
+      <label>Observação</label>
+      <textarea id="obsRotina" placeholder="Ex: Dormiu bem, tomou 120ml..."></textarea>
+
+      <div class="modal-full-actions">
+        <button class="cancel-btn" onclick="fecharModalRotina()">Cancelar</button>
+        <button class="confirm-btn" onclick="adicionarRotina()">Adicionar Rotina</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="atividadesModal" class="modal-bg">
+    <div class="modal modal-wide">
+      <h3>🧩 Atividades</h3>
+
+      <label>Faixa etária</label>
+      <select id="faixaAtividade" onchange="mostrarAtividades()">
+        <option>0 a 6 meses</option>
+        <option>6 a 12 meses</option>
+        <option>1 a 2 anos</option>
+        <option>3 a 5 anos</option>
+        <option>6 anos ou mais</option>
+      </select>
+
+      <div id="atividadesResultadoModal" class="list"></div>
+
+      <h3 class="section-title" style="margin-top:22px;">Cadastrar atividade manual</h3>
+
+      <label>Nome da atividade</label>
+      <input id="nomeAtividadeManual" placeholder="Ex: Brincar com potes coloridos" />
+
+      <label>Faixa etária indicada</label>
+      <select id="faixaAtividadeManual">
+        <option>0 a 6 meses</option>
+        <option>6 a 12 meses</option>
+        <option>1 a 2 anos</option>
+        <option>3 a 5 anos</option>
+        <option>6 anos ou mais</option>
+      </select>
+
+      <label>Como executar</label>
+      <textarea id="descricaoAtividadeManual" placeholder="Ex: Separar potes leves..."></textarea>
+
+      <label>Observação para mamãe/babá</label>
+      <textarea id="obsAtividadeManual" placeholder="Ex: Fazer com supervisão."></textarea>
+
+      <div class="modal-full-actions">
+        <button class="cancel-btn" onclick="fecharModalAtividades()">Fechar</button>
+        <button class="confirm-btn" onclick="cadastrarAtividadeManual()">Cadastrar atividade</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="apoioModal" class="modal-bg">
+    <div class="modal modal-wide">
+      <h3>👩‍👧‍👦 Cadastrar órgão de apoio</h3>
+
+      <label>Nome do órgão/local</label>
+      <input id="nomeApoio" placeholder="Ex: Conselho Tutelar do meu bairro" />
+
+      <label>Tipo de apoio</label>
+      <select id="tipoApoio">
+        <option>Conselho Tutelar</option>
+        <option>CRAS / Assistência Social</option>
+        <option>Unidade de Saúde</option>
+        <option>Escola / Creche</option>
+        <option>Delegacia / Proteção</option>
+        <option>Outro órgão oficial</option>
+      </select>
+
+      <label>Telefone / WhatsApp</label>
+      <input id="contatoApoio" placeholder="Ex: telefone, WhatsApp ou ramal" />
+
+      <label>Endereço / Bairro / Cidade</label>
+      <input id="localApoio" placeholder="Ex: Campo Grande - RJ" />
+
+      <label>Observação</label>
+      <textarea id="pedidoApoio" placeholder="Ex: horário de atendimento..."></textarea>
+
+      <div class="modal-full-actions">
+        <button class="cancel-btn" onclick="fecharModalApoio()">Cancelar</button>
+        <button class="confirm-btn" onclick="adicionarApoio()">Salvar órgão</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="alimentacaoModal" class="modal-bg">
+    <div class="modal modal-wide">
+      <h3>🍎 Adicionar planejamento alimentar</h3>
+
+      <label>Bebê</label>
+      <select id="bebeAlimentacao"></select>
+
+      <label>Refeição</label>
+      <select id="tipoRefeicao">
+        <option>Café da manhã</option>
+        <option>Almoço</option>
+        <option>Lanche</option>
+        <option>Jantar</option>
+      </select>
+
+      <label>Alimento / cardápio</label>
+      <textarea id="cardapio" placeholder="Ex: Banana amassada..."></textarea>
+
+      <div class="modal-full-actions">
+        <button class="cancel-btn" onclick="fecharModalAlimentacao()">Cancelar</button>
+        <button class="confirm-btn" onclick="adicionarAlimentacao()">Adicionar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="agendaModal" class="modal-bg">
+    <div class="modal modal-wide">
+      <h3>🗓️ Salvar compromisso</h3>
+
+      <label>Compromisso</label>
+      <input id="tituloAgenda" placeholder="Ex: Consulta pediatra..." />
+
+      <label>Data</label>
+      <input id="dataAgenda" type="date" />
+
+      <label>Horário</label>
+      <input id="horaAgenda" type="time" />
+
+      <label>Observação</label>
+      <textarea id="obsAgenda" placeholder="Ex: Levar cartão de vacina..."></textarea>
+
+      <div class="modal-full-actions">
+        <button class="cancel-btn" onclick="fecharModalAgenda()">Cancelar</button>
+        <button class="confirm-btn" onclick="adicionarAgenda()">Salvar</button>
+      </div>
+    </div>
+  </div>
+
   <div id="regraModal" class="modal-bg">
     <div class="modal modal-wide">
       <h3 id="regraTitulo">Regra</h3>
@@ -1324,13 +1445,8 @@
   </div>
 
   <script>
-    const STORAGE_KEY = "pititico_dados_limpo_v1";
-    const API_PITITICO = (() => {
-      if (location.protocol.startsWith("http") && location.hostname !== "chatgpt.com") {
-        return location.origin;
-      }
-      return "https://renna-nonvasculose-norah.ngrok-free.dev";
-    })();
+    const STORAGE_BASE_KEY = "pititico_dados_usuario_v1";
+    const API_PITITICO = "https://pititico-servidor.onrender.com";
 
     let acaoConfirmada = null;
     let usuarioAtual = null;
@@ -1366,9 +1482,45 @@
       };
     }
 
-    function carregarDados() {
-      try {
-        const salvos = localStorage.getItem(STORAGE_KEY);
+    
+    function normalizarEmailUsuario() {
+      return String(usuarioAtual?.email || "sem_usuario")
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9@._-]/g, "_");
+    }
+
+    function getStorageKeyUsuario() {
+      return STORAGE_BASE_KEY + "_" + normalizarEmailUsuario();
+    }
+
+    function limparDadosDaSessaoVisual() {
+      if (typeof bebes !== "undefined") bebes = [];
+      if (typeof rotinas !== "undefined") rotinas = [];
+      if (typeof apoios !== "undefined") apoios = [];
+      if (typeof alimentacoes !== "undefined") alimentacoes = [];
+      if (typeof agenda !== "undefined") agenda = [];
+      if (typeof atividadesManuais !== "undefined") atividadesManuais = [];
+      if (typeof publicacoes !== "undefined") publicacoes = [];
+    }
+
+    function renderTudoUsuario() {
+      if (typeof renderBebes === "function") renderBebes();
+      if (typeof renderRotinas === "function") renderRotinas();
+      if (typeof renderApoios === "function") renderApoios();
+      if (typeof renderAtividadesManuais === "function") renderAtividadesManuais();
+      if (typeof atualizarListasBasicas === "function") atualizarListasBasicas();
+      if (typeof renderAgenda === "function") renderAgenda();
+      if (typeof renderAlimentacao === "function") renderAlimentacao();
+      if (typeof carregarMeusItensServidor === "function") carregarMeusItensServidor();
+      if (typeof carregarVitrineServidor === "function") carregarVitrineServidor();
+    }
+
+function carregarDados() {
+      
+      if (!usuarioAtual) { limparDadosDaSessaoVisual(); return; }
+try {
+        const salvos = localStorage.getItem(getStorageKeyUsuario());
         const dados = salvos ? JSON.parse(salvos) : dadosPadrao();
 
         bebes = dados.bebes || [];
@@ -1391,7 +1543,9 @@
     }
 
     function salvarDados() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      
+      if (!usuarioAtual) return;
+localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
         bebes, rotinas, publicacoes, apoios, alimentacoes, agenda, atividadesManuais, temaAtual
       }));
     }
@@ -1405,6 +1559,33 @@
       return id;
     }
 
+    function getUsuariosCadastrados() {
+      try {
+        return JSON.parse(localStorage.getItem("pititico_usuarios_cadastrados") || "[]");
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function salvarUsuariosCadastrados(lista) {
+      localStorage.setItem("pititico_usuarios_cadastrados", JSON.stringify(lista));
+    }
+
+    function senhaValida4Numeros(senha) {
+      return /^\d{4}$/.test(senha || "");
+    }
+
+    function mostrarAuth(tipo) {
+      const login = tipo === "login";
+      document.getElementById("authLogin").classList.toggle("active", login);
+      document.getElementById("authCadastro").classList.toggle("active", !login);
+      document.getElementById("tabLogin").classList.toggle("active", login);
+      document.getElementById("tabCadastro").classList.toggle("active", !login);
+      document.getElementById("authSubtitle").innerText = login
+        ? "Entre com seu e-mail e senha de 4 números."
+        : "Faça seu cadastro básico para acessar o PiTiTiCo.";
+    }
+
     function carregarUsuarioLocal() {
       try {
         usuarioAtual = JSON.parse(localStorage.getItem("pititico_usuario") || "null");
@@ -1414,14 +1595,68 @@
 
       renderPerfilSuperior();
 
-      if (!usuarioAtual) {
-        mostrarLogin(true);
+      if (!usuarioAtual || !usuarioAtual.email || !usuarioAtual.senha) {
+        usuarioAtual = null;
+        localStorage.removeItem("pititico_usuario");
+        mostrarLogin(true, "login");
+      } else {
+        esconderLogin();
       }
     }
 
-    function mostrarLogin(forcar = false) {
+
+    async function validarUsuarioNoServidor() {
+      if (!usuarioAtual || !usuarioAtual.email) return false;
+
+      if (!usuarioAtual.senha) {
+        localStorage.removeItem("pititico_usuario");
+        usuarioAtual = null;
+        if (typeof renderPerfilSuperior === "function") renderPerfilSuperior();
+        mostrarLogin(true);
+        return false;
+      }
+
+      try {
+        const resposta = await fetch(API_PITITICO + "/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: usuarioAtual.email,
+            senha: usuarioAtual.senha
+          })
+        });
+
+        const resultado = await resposta.json().catch(() => ({}));
+
+        if (!resposta.ok || resultado.sucesso === false || resultado.usuario?.status === "banido") {
+          localStorage.removeItem("pititico_usuario");
+          usuarioAtual = null;
+          if (typeof renderPerfilSuperior === "function") renderPerfilSuperior();
+          mostrarLogin(true);
+          abrirModal("Acesso bloqueado", resultado.mensagem || "Este usuário foi removido/banido ou precisa fazer login novamente.", () => {});
+          return false;
+        }
+
+        usuarioAtual = {
+          ...resultado.usuario,
+          senha: usuarioAtual.senha,
+          deviceId: resultado.usuario?.deviceId || usuarioAtual.deviceId || gerarDeviceId()
+        };
+
+        localStorage.setItem("pititico_usuario", JSON.stringify(usuarioAtual));
+        if (typeof renderPerfilSuperior === "function") renderPerfilSuperior();
+        return true;
+
+      } catch (erro) {
+        return true;
+      }
+    }
+
+    function mostrarLogin(forcar = false, modo = "login") {
       const tela = document.getElementById("loginScreen");
       if (!tela) return;
+
+      mostrarAuth(modo);
 
       if (usuarioAtual && !forcar) {
         tela.classList.remove("show");
@@ -1432,13 +1667,15 @@
         document.getElementById("loginNome").value = usuarioAtual.nome || "";
         document.getElementById("loginEmail").value = usuarioAtual.email || "";
         document.getElementById("loginWhatsapp").value = usuarioAtual.whatsapp || "";
+        document.getElementById("loginSenha").value = usuarioAtual.senha || "";
       }
 
       tela.classList.add("show");
     }
 
     function esconderLogin() {
-      document.getElementById("loginScreen").classList.remove("show");
+      const tela = document.getElementById("loginScreen");
+      if (tela) tela.classList.remove("show");
     }
 
     function renderPerfilSuperior() {
@@ -1449,7 +1686,7 @@
 
       if (!usuarioAtual) {
         nome.innerText = "Cadastro pendente";
-        dados.innerHTML = "Faça seu cadastro para publicar itens.";
+        dados.innerHTML = "Faça login ou cadastro para publicar itens.";
         return;
       }
 
@@ -1460,48 +1697,122 @@
       `;
     }
 
+    function fecharPerfilUsuario() {
+      const box = document.getElementById("userPopover");
+      if (box) box.classList.remove("show");
+    }
+
     function abrirPerfilUsuario() {
       renderPerfilSuperior();
-      document.getElementById("userPopover").classList.toggle("show");
+      const box = document.getElementById("userPopover");
+      if (box) box.classList.toggle("show");
     }
 
     function editarUsuario() {
-      document.getElementById("userPopover").classList.remove("show");
-      mostrarLogin(true);
+      fecharPerfilUsuario();
+      mostrarLogin(true, "cadastro");
     }
 
     function trocarUsuario() {
       localStorage.removeItem("pititico_usuario");
       usuarioAtual = null;
+      limparDadosDaSessaoVisual();
+      renderTudoUsuario();
       renderPerfilSuperior();
-      document.getElementById("userPopover").classList.remove("show");
-      mostrarLogin(true);
+      fecharPerfilUsuario();
+      mostrarLogin(true, "login");
+    }
+
+    async function entrarUsuario() {
+      const email = document.getElementById("loginEmailEntrar").value.trim().toLowerCase();
+      const senha = document.getElementById("loginSenhaEntrar").value.trim();
+
+      if (!email || !senhaValida4Numeros(senha)) {
+        abrirModal("Login incompleto", "Informe e-mail e senha com 4 números.", () => {});
+        return;
+      }
+
+      let usuarios = getUsuariosCadastrados();
+      let usuario = usuarios.find(u => (u.email || "").toLowerCase() === email && u.senha === senha);
+
+      if (!usuario) {
+        try {
+          const resposta = await fetch(API_PITITICO + "/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, senha, deviceId: gerarDeviceId() })
+          });
+          const resultado = await resposta.json();
+          if (resposta.ok && resultado.usuario) usuario = resultado.usuario;
+        } catch (erro) {}
+      }
+
+      if (!usuario) {
+        abrirModal("Login não encontrado", "Confira seu e-mail e senha ou faça um novo cadastro.", () => mostrarAuth("cadastro"));
+        return;
+      }
+
+      usuarioAtual = { ...usuario, deviceId: usuario.deviceId || gerarDeviceId() };
+      localStorage.setItem("pititico_usuario", JSON.stringify(usuarioAtual));
+      renderPerfilSuperior();
+      esconderLogin();
     }
 
     async function salvarUsuarioInicial() {
       const nome = document.getElementById("loginNome").value.trim();
       const email = document.getElementById("loginEmail").value.trim();
       const whatsapp = document.getElementById("loginWhatsapp").value.trim();
+      const senha = (document.getElementById("loginSenha")?.value || "").trim();
       const deviceId = gerarDeviceId();
 
-      if (!nome || !email || !whatsapp) {
-        abrirModal("Cadastro incompleto", "Preencha nome, e-mail e WhatsApp.", () => {});
+      if (!nome || !email || !whatsapp || !/^\d{4}$/.test(senha)) {
+        abrirModal("Cadastro incompleto", "Preencha nome, e-mail, WhatsApp e senha com 4 números.", () => {});
         return;
       }
 
-      usuarioAtual = { nome, email, whatsapp, deviceId };
-      localStorage.setItem("pititico_usuario", JSON.stringify(usuarioAtual));
-      renderPerfilSuperior();
+      const usuarioParaEnviar = { nome, email, whatsapp, senha, deviceId };
 
       try {
-        await fetch(API_PITITICO + "/usuarios", {
+        const resposta = await fetch(API_PITITICO + "/usuarios", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(usuarioAtual)
+          body: JSON.stringify(usuarioParaEnviar)
         });
-      } catch (erro) {}
 
-      esconderLogin();
+        const resultado = await resposta.json().catch(() => ({}));
+
+        if (!resposta.ok || resultado.sucesso === false) {
+          localStorage.removeItem("pititico_usuario");
+          usuarioAtual = null;
+          if (typeof renderPerfilSuperior === "function") renderPerfilSuperior();
+          abrirModal("Acesso bloqueado", resultado.mensagem || "Não foi possível acessar o aplicativo.", () => {
+            mostrarLogin(true);
+          });
+          return;
+        }
+
+        usuarioAtual = {
+          ...(resultado.usuario || usuarioParaEnviar),
+          senha: senha,
+          deviceId: deviceId
+        };
+
+        localStorage.setItem("pititico_usuario", JSON.stringify(usuarioAtual));
+
+        if (typeof renderPerfilSuperior === "function") renderPerfilSuperior();
+        if (typeof esconderLogin === "function") esconderLogin();
+        limparDadosDaSessaoVisual();
+        carregarDados();
+        renderTudoUsuario();
+
+        if (typeof carregarMeusItensServidor === "function") carregarMeusItensServidor();
+        if (typeof carregarVitrineServidor === "function") carregarVitrineServidor();
+
+      } catch (erro) {
+        abrirModal("Servidor indisponível", "Não foi possível cadastrar agora. Confira se o servidor está ligado.", () => {
+          mostrarLogin(true);
+        });
+      }
     }
 
     function abrirModal(titulo, texto, acao) {
@@ -1534,6 +1845,7 @@
     }
 
     function showSection(id, btn) {
+      fecharPerfilUsuario();
       document.querySelectorAll(".card").forEach(card => card.classList.remove("active"));
       document.getElementById(id).classList.add("active");
       document.querySelectorAll(".menu button").forEach(button => button.classList.remove("active-menu"));
@@ -1541,6 +1853,10 @@
       if (window.innerWidth <= 540) {
         document.getElementById("sidebar").classList.remove("expanded");
         document.getElementById("app").classList.remove("shifted");
+      }
+      if (id === "trocasCatalogo") {
+        carregarMeusItensServidor();
+        carregarVitrineServidor();
       }
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -1608,7 +1924,8 @@
 
       const vazio = "<div class='list'>Nenhum bebê cadastrado ainda.</div>";
 
-      document.getElementById("homeBabies").innerHTML = html || vazio;
+      const homeArea = document.getElementById("homeBabies");
+      if (homeArea) homeArea.innerHTML = html || vazio;
       document.getElementById("listaBebes").innerHTML = html || vazio;
       atualizarSelectsBebes();
     }
@@ -1624,7 +1941,17 @@
       document.getElementById("bebeAlimentacao").innerHTML = options || vazio;
     }
 
+    function abrirModalBebe() {
+      document.getElementById("babyModal").classList.add("show");
+      atualizarEstimativaBebe();
+    }
+
+    function fecharModalBebe() {
+      document.getElementById("babyModal").classList.remove("show");
+    }
+
     function salvarBebe() {
+      atualizarEstimativaBebe();
       const nome = document.getElementById("nomeBebe").value.trim();
       const peso = document.getElementById("pesoBebe").value.trim();
       const altura = document.getElementById("alturaBebe").value.trim();
@@ -1645,6 +1972,7 @@
 
       salvarDados();
       renderBebes();
+      fecharModalBebe();
     }
 
     function pedirRemoverBebe(index) {
@@ -1660,6 +1988,8 @@
       salvarDados();
       renderBebes();
       atualizarListasBasicas();
+    setTimeout(carregarAnunciosPititico, 600);
+    carregarAnunciosPititico();
     }
 
     function adicionarRotina() {
@@ -1677,6 +2007,7 @@
       salvarDados();
       renderRotinas();
       renderBebes();
+      fecharModalRotina();
     }
 
     function renderRotinas() {
@@ -1736,12 +2067,14 @@
 
         publicacoes.push(resultado.publicacao || novaPublicacao);
         salvarDados();
-        renderTrocas();
+        await carregarMeusItensServidor();
 
         ["itemTroca","tamanhoTroca","localTroca","whatsTroca","obsTroca"].forEach(id => {
           document.getElementById(id).value = "";
         });
 
+        fecharModalTroca();
+        atualizarResumoTrocas();
         abrirModal("Item publicado", "Item enviado para a vitrine PiTiTiCo. Ele ficará ativo por 5 dias.", () => {
           carregarVitrineServidor();
         });
@@ -1759,8 +2092,9 @@
     }
 
     function renderTrocas() {
+      atualizarResumoTrocas();
       const deviceId = gerarDeviceId();
-      const meus = publicacoes.filter(p => (p.donoDeviceId || p.deviceId) === deviceId);
+      const meus = publicacoes;
 
       if (!meus.length) {
         document.getElementById("listaTrocas").innerHTML = "<div class='list'>Nenhum item cadastrado por você ainda.</div>";
@@ -1782,17 +2116,83 @@
       `).join("");
     }
 
+    async function carregarMeusItensServidor() {
+      try {
+        if (!usuarioAtual || !usuarioAtual.email) {
+          publicacoes = [];
+          renderTrocas();
+          return;
+        }
+
+        const deviceId = gerarDeviceId();
+        const email = (usuarioAtual.email || "").toLowerCase();
+
+        let dados = [];
+
+        // Primeiro tenta a rota correta de "minhas publicações"
+        try {
+          const url = API_PITITICO
+            + "/minhas-publicacoes?deviceId=" + encodeURIComponent(deviceId)
+            + "&email=" + encodeURIComponent(email);
+
+          const resposta = await fetch(url, { cache: "no-store" });
+
+          if (resposta.ok) {
+            const recebidos = await resposta.json();
+            dados = Array.isArray(recebidos) ? recebidos : [];
+          }
+        } catch (erroRotaMinhas) {}
+
+        // Se por algum motivo a rota não retornar, usa fallback lendo tudo do admin e filtrando no APP
+        if (!dados.length) {
+          try {
+            const respostaAdmin = await fetch(API_PITITICO + "/admin/publicacoes", { cache: "no-store" });
+            if (respostaAdmin.ok) {
+              const todos = await respostaAdmin.json();
+              dados = (Array.isArray(todos) ? todos : []).filter(p => {
+                const emailItem = (p.usuario?.email || p.emailUsuario || "").toLowerCase();
+                return (
+                  p.status === "ativo" &&
+                  (
+                    p.donoDeviceId === deviceId ||
+                    p.deviceId === deviceId ||
+                    (email && emailItem === email)
+                  )
+                );
+              });
+            }
+          } catch (erroFallback) {}
+        }
+
+        publicacoes = dados;
+        salvarDados();
+        renderTrocas();
+
+      } catch (erro) {
+        renderTrocas();
+      }
+    }
+
+
     async function carregarVitrineServidor() {
+      const debugApi = document.getElementById("apiDebugPititico");
+      if (debugApi) debugApi.innerText = "API usada: " + API_PITITICO;
+
       const area = document.getElementById("vitrineTrocas");
       if (!area) return;
 
       area.innerHTML = "<div class='list'>Carregando vitrine...</div>";
 
       try {
-        const resposta = await fetch(API_PITITICO + "/publicacoes?deviceId=" + encodeURIComponent(gerarDeviceId()));
-        const dados = await resposta.json();
+        const resposta = await fetch(API_PITITICO + "/publicacoes?deviceId=" + encodeURIComponent(gerarDeviceId()) + "&email=" + encodeURIComponent(usuarioAtual?.email || ""));
+        const dadosRecebidos = await resposta.json();
+        const dados = Array.isArray(dadosRecebidos) ? dadosRecebidos : [];
         const deviceId = gerarDeviceId();
-        const outros = dados.filter(p => p.donoDeviceId !== deviceId && p.deviceId !== deviceId);
+        const emailAtual = (usuarioAtual?.email || "").toLowerCase();
+        const outros = dados.filter(p => {
+          const emailDono = (p.usuario?.email || p.emailUsuario || "").toLowerCase();
+          return p.donoDeviceId !== deviceId && p.deviceId !== deviceId && (!emailAtual || emailDono !== emailAtual);
+        });
 
         if (!outros.length) {
           area.innerHTML = "<div class='list'>Nenhum item de outras mamães publicado na vitrine ainda.</div>";
@@ -1819,7 +2219,7 @@
           `;
         }).join("");
       } catch (erro) {
-        area.innerHTML = "<div class='list'>Não foi possível carregar a vitrine. Confira se o servidor está ligado e se o ngrok fixo está rodando.</div>";
+        area.innerHTML = "<div class='list'>Não foi possível carregar a vitrine. Verifique sua internet e tente atualizar novamente.</div>";
       }
     }
 
@@ -1843,7 +2243,7 @@
 
         publicacoes = publicacoes.filter(p => p.id !== id);
         salvarDados();
-        renderTrocas();
+        await carregarMeusItensServidor();
         carregarVitrineServidor();
 
         abrirModal("Item removido", "O item foi removido da vitrine.", () => {});
@@ -1861,7 +2261,10 @@
         "3 a 5 anos": "• Massinha\n• Histórias curtas\n• Jogos de cores, formas e números",
         "6 anos ou mais": "• Leitura guiada\n• Desenho livre\n• Jogos educativos simples"
       };
-      document.getElementById("atividadesResultado").innerText = ideias[faixa];
+      const area = document.getElementById("atividadesResultado");
+      if (area) area.innerText = ideias[faixa];
+      const areaModal = document.getElementById("atividadesResultadoModal");
+      if (areaModal) areaModal.innerText = ideias[faixa];
     }
 
     function cadastrarAtividadeManual() {
@@ -1883,6 +2286,7 @@
       document.getElementById("obsAtividadeManual").value = "";
 
       renderAtividadesManuais();
+      fecharModalAtividades();
     }
 
     function renderAtividadesManuais() {
@@ -1930,6 +2334,7 @@
       document.getElementById("pedidoApoio").value = "";
 
       renderApoios();
+      fecharModalApoio();
     }
 
     function renderApoios() {
@@ -1969,6 +2374,7 @@
       alimentacoes.push(`${bebe}\n${refeicao}\n${cardapio}`);
       salvarDados();
       document.getElementById("listaAlimentacao").innerText = alimentacoes.join("\n\n");
+      fecharModalAlimentacao();
     }
 
     function adicionarAgenda() {
@@ -1980,6 +2386,7 @@
       agenda.push(`${titulo}\nData: ${formatarDataBR(data)}\nHora: ${hora}\nObs: ${obs}`);
       salvarDados();
       document.getElementById("listaAgenda").innerText = agenda.join("\n\n");
+      fecharModalAgenda();
     }
 
     function atualizarListasBasicas() {
@@ -1988,9 +2395,168 @@
       document.getElementById("listaAgenda").innerText = agenda.length ? agenda.join("\n\n") : "Nenhum compromisso salvo.";
     }
 
-    carregarDados();
+    document.addEventListener("click", function(event) {
+      const box = document.getElementById("userPopover");
+      const avatar = document.querySelector(".avatar");
+      if (box && box.classList.contains("show") && !box.contains(event.target) && !avatar.contains(event.target)) {
+        fecharPerfilUsuario();
+      }
+    });
 
-    // ETAPA 4.1 - anúncios e regras em modal
+    window.addEventListener("scroll", fecharPerfilUsuario, { passive: true });
+
+
+    // ETAPA 3 SEGURA - funções novas sem quebrar o APP
+    function abrirModalTroca() {
+      if (!usuarioAtual) {
+        abrirModal("Cadastro necessário", "Antes de cadastrar um item, faça login.", () => mostrarLogin(true));
+        return;
+      }
+      const modal = document.getElementById("trocaModal");
+      if (modal) modal.classList.add("show");
+    }
+
+    function fecharModalTroca() {
+      const modal = document.getElementById("trocaModal");
+      if (modal) modal.classList.remove("show");
+    }
+
+    function atualizarResumoTrocas() {
+      const resumo = document.getElementById("resumoMeusItens");
+      if (resumo) resumo.innerText = "Meus itens cadastrados: " + (publicacoes ? publicacoes.length : 0);
+    }
+
+    function alternarMeusItens() {
+      const lista = document.getElementById("listaTrocas");
+      if (!lista) return;
+      const escondido = lista.style.display === "none" || !lista.style.display;
+      lista.style.display = escondido ? "grid" : "none";
+      if (escondido) carregarMeusItensServidor();
+    }
+
+    const regrasPititico = {
+      seguranca: { titulo: "🛡️ Segurança", texto: "<p>Use o PiTiTiCo com responsabilidade. Combine trocas em locais seguros, evite passar dados sensíveis e prefira contato claro pelo WhatsApp.</p>" },
+      trocas: { titulo: "👕 Regras do Troca-Troca", texto: "<p>Os itens ficam ativos por 5 dias. É proibido cadastrar remédios, alimentos abertos, itens vencidos, quebrados ou perigosos.</p><p>Cada usuária deve cadastrar informações verdadeiras sobre estado, local e contato.</p>" },
+      privacidade: { titulo: "🔒 Privacidade", texto: "<p>Os dados pessoais devem ser usados apenas para funcionamento do APP e contato entre usuárias interessadas nos itens.</p>" },
+      penalidades: { titulo: "🚫 Penalidades", texto: "<p>Usuários com comportamento inadequado, anúncios falsos ou itens proibidos podem ser removidos ou banidos pelo administrador.</p>" },
+      duvidas: { titulo: "❓ Dúvidas", texto: "<p>Em caso de dúvida, use o botão de suporte do PiTiTiCo ou fale com o administrador do APP.</p>" }
+    };
+
+    function abrirRegra(tipo) {
+      const regra = regrasPititico[tipo] || regrasPititico.duvidas;
+      document.getElementById("regraTitulo").innerText = regra.titulo;
+      document.getElementById("regraTexto").innerHTML = regra.texto;
+      document.getElementById("regraModal").classList.add("show");
+    }
+
+    function fecharRegra() {
+      document.getElementById("regraModal").classList.remove("show");
+    }
+
+    async function carregarAnunciosPititico() {
+      const area = document.getElementById("adsAreaPititico");
+      const track = document.getElementById("adsTrackPititico");
+      if (!area || !track) return;
+      try {
+        const resposta = await fetch(API_PITITICO + "/anuncios", { cache: "no-store" });
+        if (!resposta.ok) throw new Error("Sem anúncios");
+        const dados = await resposta.json();
+        const ativos = (Array.isArray(dados) ? dados : []).filter(a => (a.status || "ativo") === "ativo");
+        if (!ativos.length) { area.style.display = "none"; return; }
+        track.innerHTML = ativos.map(a => {
+          const titulo = String(a.titulo || "Anúncio PiTiTiCo");
+          const texto = String(a.texto || "");
+          const link = String(a.link || "#");
+          const imagem = String(a.imagem || "");
+          const img = imagem ? `<img src="${imagem}" alt="">` : "<span>🍼</span>";
+          return `<a class="ad-pill" href="${link}" target="_blank">${img}<span>${titulo}${texto ? " - " + texto : ""}</span></a>`;
+        }).join("");
+        area.style.display = "block";
+      } catch (erro) {
+        area.style.display = "none";
+      }
+    }
+
+    document.addEventListener("click", function(e) {
+      const troca = document.getElementById("trocaModal");
+      const regra = document.getElementById("regraModal");
+      if (troca && e.target === troca) fecharModalTroca();
+      if (regra && e.target === regra) fecharRegra();
+    });
+
+
+    // ETAPA 6.1 - controles de telas flutuantes
+    function abrirModalRotina() { document.getElementById("rotinaModal").classList.add("show"); }
+    function fecharModalRotina() { document.getElementById("rotinaModal").classList.remove("show"); }
+
+    function abrirModalAtividades() {
+      document.getElementById("atividadesModal").classList.add("show");
+      mostrarAtividades();
+    }
+    function fecharModalAtividades() { document.getElementById("atividadesModal").classList.remove("show"); }
+
+    function abrirModalApoio() { document.getElementById("apoioModal").classList.add("show"); }
+    function fecharModalApoio() { document.getElementById("apoioModal").classList.remove("show"); }
+
+    function abrirModalAlimentacao() { document.getElementById("alimentacaoModal").classList.add("show"); }
+    function fecharModalAlimentacao() { document.getElementById("alimentacaoModal").classList.remove("show"); }
+
+    function abrirModalAgenda() { document.getElementById("agendaModal").classList.add("show"); }
+    function fecharModalAgenda() { document.getElementById("agendaModal").classList.remove("show"); }
+
+    function mesesDoBebe(data) {
+      if (!data) return null;
+      const nascimento = new Date(data + "T00:00:00");
+      const hoje = new Date();
+      if (nascimento > hoje) return null;
+      let meses = (hoje.getFullYear() - nascimento.getFullYear()) * 12 + hoje.getMonth() - nascimento.getMonth();
+      if (hoje.getDate() < nascimento.getDate()) meses -= 1;
+      return Math.max(0, meses);
+    }
+
+    function estimarCrescimentoBebe(data) {
+      const meses = mesesDoBebe(data);
+      if (meses === null) {
+        return {
+          peso: "",
+          altura: "",
+          texto: "Informe uma data de nascimento válida para calcular a estimativa aproximada."
+        };
+      }
+
+      let pesoMin, pesoMax, alturaMin, alturaMax;
+
+      if (meses <= 1) { pesoMin = 3.2; pesoMax = 4.8; alturaMin = 50; alturaMax = 56; }
+      else if (meses <= 3) { pesoMin = 4.8; pesoMax = 6.8; alturaMin = 56; alturaMax = 63; }
+      else if (meses <= 6) { pesoMin = 6.2; pesoMax = 8.5; alturaMin = 62; alturaMax = 70; }
+      else if (meses <= 9) { pesoMin = 7.2; pesoMax = 9.8; alturaMin = 67; alturaMax = 74; }
+      else if (meses <= 12) { pesoMin = 8.0; pesoMax = 10.8; alturaMin = 71; alturaMax = 79; }
+      else if (meses <= 24) { pesoMin = 9.5; pesoMax = 13.5; alturaMin = 80; alturaMax = 92; }
+      else if (meses <= 36) { pesoMin = 11.5; pesoMax = 16.5; alturaMin = 88; alturaMax = 101; }
+      else if (meses <= 60) { pesoMin = 14.0; pesoMax = 22.0; alturaMin = 98; alturaMax = 116; }
+      else { pesoMin = 18.0; pesoMax = 32.0; alturaMin = 110; alturaMax = 135; }
+
+      const peso = `${pesoMin.toFixed(1).replace(".", ",")} a ${pesoMax.toFixed(1).replace(".", ",")} kg`;
+      const altura = `${alturaMin} a ${alturaMax} cm`;
+
+      return {
+        peso,
+        altura,
+        texto: `<strong>Estimativa para ${meses} mês(es):</strong><br>Peso aproximado: <strong>${peso}</strong><br>Altura aproximada: <strong>${altura}</strong><br><small>Estimativa geral. Para avaliação real, consulte o pediatra.</small>`
+      };
+    }
+
+    function atualizarEstimativaBebe() {
+      const nasc = document.getElementById("nascimentoBebe").value;
+      const est = estimarCrescimentoBebe(nasc);
+
+      document.getElementById("pesoBebe").value = est.peso;
+      document.getElementById("alturaBebe").value = est.altura;
+
+      const area = document.getElementById("estimativaBebe");
+      if (area) area.innerHTML = est.texto;
+    }
+
     async function carregarAnunciosPititico() {
       const box = document.getElementById("pititicoAdsBox");
       const track = document.getElementById("pititicoAdsTrack");
@@ -2007,8 +2573,7 @@
         if (!resposta.ok) throw new Error("Erro ao buscar anúncios");
 
         const dados = await resposta.json();
-        const lista = (Array.isArray(dados) ? dados : [])
-          .filter(a => (a.status || "ativo") === "ativo");
+        const lista = (Array.isArray(dados) ? dados : []).filter(a => (a.status || "ativo") === "ativo");
 
         if (!lista.length) {
           box.style.display = "none";
@@ -2017,10 +2582,8 @@
         }
 
         const montarCard = (a) => {
-          const tituloCompleto = limpar(a.titulo || "Anúncio PiTiTiCo");
-          const textoCompleto = limpar(a.texto || "");
-          const titulo = encurtar(tituloCompleto, 30);
-          const texto = encurtar(textoCompleto, 34);
+          const titulo = encurtar(a.titulo || "Anúncio PiTiTiCo", 30);
+          const texto = encurtar(a.texto || "", 34);
           const link = limpar(a.link || "#") || "#";
           const imagem = limpar(a.imagem || "");
 
@@ -2047,54 +2610,22 @@
       }
     }
 
-    const regrasPititico = {
-      seguranca: {
-        titulo: "🛡️ Segurança",
-        texto: "<p>Use o PiTiTiCo com responsabilidade. Combine trocas em locais seguros, evite passar dados sensíveis e prefira contato claro pelo WhatsApp.</p>"
-      },
-      trocas: {
-        titulo: "👕 Regras do Troca-Troca",
-        texto: "<p>Os itens do Troca-Troca ficam disponíveis por 5 dias.</p><p>Cada usuária pode remover apenas seus próprios itens.</p><p>É proibido cadastrar remédios, alimentos abertos, itens vencidos, quebrados ou perigosos.</p>"
-      },
-      privacidade: {
-        titulo: "🔒 Privacidade",
-        texto: "<p>Os dados pessoais devem ser usados apenas para funcionamento do APP e contato entre usuárias interessadas nos itens.</p>"
-      },
-      penalidades: {
-        titulo: "🚫 Penalidades",
-        texto: "<p>Usuários com comportamento inadequado, anúncios falsos ou itens proibidos podem ser removidos ou banidos pelo administrador.</p>"
-      },
-      duvidas: {
-        titulo: "❓ Dúvidas",
-        texto: "<p>Em caso de dúvida, use o botão de suporte do PiTiTiCo ou fale com o administrador do APP.</p>"
-      }
-    };
-
-    function abrirRegra(tipo) {
-      const regra = regrasPititico[tipo] || regrasPititico.duvidas;
-      document.getElementById("regraTitulo").innerText = regra.titulo;
-      document.getElementById("regraTexto").innerHTML = regra.texto;
-      document.getElementById("regraModal").classList.add("show");
-    }
-
-    function fecharRegra() {
-      document.getElementById("regraModal").classList.remove("show");
-    }
-
     document.addEventListener("click", function(e) {
-      const regra = document.getElementById("regraModal");
-      if (regra && e.target === regra) fecharRegra();
+      ["rotinaModal","atividadesModal","apoioModal","alimentacaoModal","agendaModal"].forEach(id => {
+        const modal = document.getElementById(id);
+        if (modal && e.target === modal) modal.classList.remove("show");
+      });
     });
 
     carregarUsuarioLocal();
+    carregarDados();
     renderBebes();
-    renderTrocas();
+    carregarMeusItensServidor();
     carregarVitrineServidor();
     mostrarAtividades();
     renderAtividadesManuais();
     renderApoios();
     atualizarListasBasicas();
-    setTimeout(carregarAnunciosPititico, 600);
   </script>
 </body>
 </html>
