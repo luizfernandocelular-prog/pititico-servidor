@@ -1,0 +1,28 @@
+PiTiTiCo v6.4 - Browser e APP corrigidos
+
+IMPORTANTE:
+Este pacote tem os arquivos duplicados de propósito:
+
+1) Para o Render/GitHub:
+- public/index.html
+- public/app.html
+- public/admin.html
+
+2) Para WebIntoApp/APK:
+- index.html
+- app.html
+- admin.html
+
+O index.html e o app.html são IGUAIS e possuem:
+- menus em telas flutuantes
+- estimativa de peso/altura do bebê
+- anúncios profissionais rolando
+- regras em botões
+- troca-troca preservado
+- login e isolamento de usuário preservados
+
+Confirmação visual:
+No APP/Browser deve aparecer no canto inferior esquerdo:
+v6.3 • menus flutuantes + anúncios
+
+Se o selo não aparecer, o arquivo certo não foi publicado no lugar correto.
