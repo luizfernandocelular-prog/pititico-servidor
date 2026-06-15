@@ -1114,6 +1114,105 @@
       opacity: 1 !important;
     }
 
+  
+    /* v6.7 - anúncios corrigidos e forçados */
+    #pititicoAdsBox,
+    .pititico-ads-box {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      background: linear-gradient(135deg, #fff, #fff2f8) !important;
+      border-radius: 24px !important;
+      padding: 14px 16px !important;
+      margin: 0 auto 20px !important;
+      width: min(980px, 100%) !important;
+      box-shadow: 0 14px 34px rgba(149,76,126,.16) !important;
+      overflow: hidden !important;
+      border: 1px solid var(--soft) !important;
+    }
+    .pititico-ads-title {
+      color: var(--primary) !important;
+      font-weight: 900 !important;
+      margin-bottom: 10px !important;
+      font-size: 16px !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+    }
+    .pititico-ads-window {
+      overflow: hidden !important;
+      white-space: nowrap !important;
+      width: 100% !important;
+    }
+    .pititico-ads-track {
+      display: inline-flex !important;
+      gap: 18px !important;
+      width: max-content !important;
+      animation: pititicoAdsMoveV67 32s linear infinite !important;
+      will-change: transform !important;
+      min-height: 78px !important;
+      align-items: center !important;
+    }
+    .pititico-ads-window:hover .pititico-ads-track {
+      animation-play-state: paused !important;
+    }
+    .pititico-ad-item {
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 12px !important;
+      width: 340px !important;
+      min-width: 340px !important;
+      max-width: 340px !important;
+      background: #ffeaf4 !important;
+      border-radius: 999px !important;
+      padding: 10px 16px 10px 10px !important;
+      color: #2b2438 !important;
+      text-decoration: none !important;
+      font-weight: 900 !important;
+      font-size: 14px !important;
+      box-shadow: inset 0 0 0 1px rgba(235,79,160,.08) !important;
+    }
+    .pititico-ad-img,
+    .pititico-ad-fallback {
+      width: 58px !important;
+      height: 58px !important;
+      border-radius: 999px !important;
+      flex: 0 0 58px !important;
+      background: #fff !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      object-fit: cover !important;
+      font-size: 28px !important;
+    }
+    .pititico-ad-text {
+      display: flex !important;
+      flex-direction: column !important;
+      overflow: hidden !important;
+      line-height: 1.15 !important;
+    }
+    .pititico-ad-title {
+      color: #20182c !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      white-space: nowrap !important;
+      max-width: 235px !important;
+    }
+    .pititico-ad-desc {
+      color: #7a6072 !important;
+      font-weight: 700 !important;
+      font-size: 12px !important;
+      margin-top: 4px !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      white-space: nowrap !important;
+      max-width: 235px !important;
+    }
+    @keyframes pititicoAdsMoveV67 {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
   </style>
 </head>
 
@@ -1207,9 +1306,18 @@
     <div id="pititicoAdsBox" class="pititico-ads-box">
       <div class="pititico-ads-title">📢 Anúncios PiTiTiCo</div>
       <div class="pititico-ads-window">
-        <div id="pititicoAdsTrack" class="pititico-ads-track"></div>
+        <div id="pititicoAdsTrack" class="pititico-ads-track">
+          <span class="pititico-ad-item">
+            <span class="pititico-ad-fallback">🍼</span>
+            <span class="pititico-ad-text">
+              <span class="pititico-ad-title">Carregando anúncios...</span>
+              <span class="pititico-ad-desc">PiTiTiCo</span>
+            </span>
+          </span>
+        </div>
       </div>
     </div>
+
 
     <div id="adsAreaPititico" class="ads-marquee-wrap" style="display:none;">
       <div class="ads-title">📢 Anúncios PiTiTiCo</div>
@@ -1339,7 +1447,7 @@
   </div>
 
 
-  <div class="pititico-version-badge">v6.6 • corrigido real</div>
+  <div class="pititico-version-badge">v6.7 • anúncios corrigidos</div>
 
   <a class="support-whatsapp" href="https://wa.me/5521997180033?text=Olá,%20preciso%20de%20suporte%20no%20app%20PiTiTiCo." target="_blank">☘</a>
 
@@ -2130,10 +2238,11 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
       renderBebes();
       atualizarListasBasicas();
     carregarAnunciosPititico();
-    setTimeout(carregarAnunciosPititico, 400);
-    setTimeout(carregarAnunciosPititico, 1500);
+    setTimeout(carregarAnunciosPititico, 500);
+    setTimeout(carregarAnunciosPititico, 1800);
     window.addEventListener("load", carregarAnunciosPititico);
-    }
+setTimeout(carregarAnunciosPititico, 1500);
+}
 
     function adicionarRotina() {
       const bebe = document.getElementById("bebeRotina").value;
@@ -2684,14 +2793,16 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
     });
 
 
+
     async function carregarAnunciosPititico() {
+      const API_ANUNCIOS_PITITICO = "https://pititico-servidor.onrender.com/anuncios";
+
       let box = document.getElementById("pititicoAdsBox");
       let track = document.getElementById("pititicoAdsTrack");
 
       if (!box || !track) {
         const app = document.getElementById("app") || document.body;
         const header = app.querySelector(".topbar") || app.querySelector("header");
-
         box = document.createElement("div");
         box.id = "pititicoAdsBox";
         box.className = "pititico-ads-box";
@@ -2701,39 +2812,44 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
             <div id="pititicoAdsTrack" class="pititico-ads-track"></div>
           </div>
         `;
-
-        if (header && header.parentNode) {
-          header.insertAdjacentElement("afterend", box);
-        } else {
-          app.insertAdjacentElement("afterbegin", box);
-        }
-
+        if (header && header.parentNode) header.insertAdjacentElement("afterend", box);
+        else app.insertAdjacentElement("afterbegin", box);
         track = document.getElementById("pititicoAdsTrack");
       }
 
-      const limpar = (valor) => String(valor || "").replace(/[<>&]/g, "").trim();
-      const encurtar = (valor, limite = 32) => {
-        const txt = limpar(valor);
-        return txt.length > limite ? txt.slice(0, limite - 3) + "..." : txt;
+      box.style.display = "block";
+      box.style.visibility = "visible";
+      box.style.opacity = "1";
+
+      const limpar = (v) => String(v || "").replace(/[<>&]/g, "").trim();
+      const cortar = (v, n) => {
+        const t = limpar(v);
+        return t.length > n ? t.slice(0, n - 3) + "..." : t;
       };
 
       try {
-        const resposta = await fetch(API_PITITICO + "/anuncios", { cache: "no-store" });
-        if (!resposta.ok) throw new Error("Erro ao buscar anúncios");
-
+        console.log("PiTiTiCo anúncios: buscando...", API_ANUNCIOS_PITITICO);
+        const resposta = await fetch(API_ANUNCIOS_PITITICO, { cache: "no-store" });
         const dados = await resposta.json();
+        console.log("PiTiTiCo anúncios recebidos:", dados);
+
         const lista = (Array.isArray(dados) ? dados : []).filter(a => (a.status || "ativo") === "ativo");
 
         if (!lista.length) {
-          box.classList.remove("force-visible");
-          box.style.display = "none";
-          track.innerHTML = "";
+          track.innerHTML = `
+            <span class="pititico-ad-item">
+              <span class="pititico-ad-fallback">📢</span>
+              <span class="pititico-ad-text">
+                <span class="pititico-ad-title">Espaço para anúncios</span>
+                <span class="pititico-ad-desc">Cadastre no painel admin</span>
+              </span>
+            </span>`;
           return;
         }
 
-        const montarCard = (a) => {
-          const titulo = encurtar(a.titulo || "Anúncio PiTiTiCo", 32);
-          const texto = encurtar(a.texto || "", 38);
+        const cards = lista.map(a => {
+          const titulo = cortar(a.titulo || "Anúncio PiTiTiCo", 32);
+          const texto = cortar(a.texto || "", 38);
           const link = limpar(a.link || "#") || "#";
           const imagem = limpar(a.imagem || "");
 
@@ -2748,17 +2864,20 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
                 <span class="pititico-ad-title">${titulo}</span>
                 <span class="pititico-ad-desc">${texto || "Toque para saber mais"}</span>
               </span>
-            </a>
-          `;
-        };
+            </a>`;
+        }).join("");
 
-        const cards = lista.map(montarCard).join("");
         track.innerHTML = cards + cards;
-        box.classList.add("force-visible");
-        box.style.display = "block";
       } catch (erro) {
-        box.classList.remove("force-visible");
-        box.style.display = "none";
+        console.error("Erro PiTiTiCo anúncios:", erro);
+        track.innerHTML = `
+          <span class="pititico-ad-item">
+            <span class="pititico-ad-fallback">⚠️</span>
+            <span class="pititico-ad-text">
+              <span class="pititico-ad-title">Anúncios indisponíveis</span>
+              <span class="pititico-ad-desc">Verifique o servidor</span>
+            </span>
+          </span>`;
       }
     }
 
