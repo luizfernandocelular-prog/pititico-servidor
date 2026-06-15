@@ -1213,6 +1213,12 @@
       to { transform: translateX(-50%); }
     }
 
+  
+    /* v6.8 - anúncios somente no menu Regras */
+    #pititicoAdsBox.ads-hidden {
+      display: none !important;
+    }
+
   </style>
 </head>
 
@@ -1447,7 +1453,7 @@
   </div>
 
 
-  <div class="pititico-version-badge">v6.7 • anúncios corrigidos</div>
+  <div class="pititico-version-badge">v6.8 • anúncios só em regras</div>
 
   <a class="support-whatsapp" href="https://wa.me/5521997180033?text=Olá,%20preciso%20de%20suporte%20no%20app%20PiTiTiCo." target="_blank">☘</a>
 
@@ -2237,11 +2243,11 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
       salvarDados();
       renderBebes();
       atualizarListasBasicas();
-    carregarAnunciosPititico();
-    setTimeout(carregarAnunciosPititico, 500);
-    setTimeout(carregarAnunciosPititico, 1800);
-    window.addEventListener("load", carregarAnunciosPititico);
-setTimeout(carregarAnunciosPititico, 1500);
+    controlarAnunciosPorMenu();
+    setTimeout(controlarAnunciosPorMenu, 500);
+    setTimeout(controlarAnunciosPorMenu, 1800);
+    window.addEventListener("load", controlarAnunciosPorMenu);
+setTimeout(carregarAnunciosPititico, 1800);
 }
 
     function adicionarRotina() {
@@ -2706,6 +2712,7 @@ setTimeout(carregarAnunciosPititico, 1500);
     }
 
     document.addEventListener("click", function(e) {
+      setTimeout(controlarAnunciosPorMenu, 80);
       const troca = document.getElementById("trocaModal");
       const regra = document.getElementById("regraModal");
       if (troca && e.target === troca) fecharModalTroca();
@@ -2792,6 +2799,24 @@ setTimeout(carregarAnunciosPititico, 1500);
       });
     });
 
+
+
+
+    function controlarAnunciosPorMenu() {
+      const box = document.getElementById("pititicoAdsBox");
+      if (!box) return;
+
+      const regras = document.getElementById("regras");
+      const regrasAtiva = regras && regras.classList.contains("active");
+
+      if (regrasAtiva) {
+        box.classList.remove("ads-hidden");
+        box.style.display = "block";
+} else {
+        box.classList.add("ads-hidden");
+        box.style.display = "none";
+      }
+    }
 
 
     async function carregarAnunciosPititico() {
