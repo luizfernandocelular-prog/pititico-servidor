@@ -1220,28 +1220,29 @@
     }
 
   
-    /* v6.9 - Login/Cadastro com identidade visual PiTiTiCo */
+    /* v7.0 - Login/Cadastro ajustado para caber perfeito na tela */
     .login-screen {
       min-height: 100dvh !important;
       display: grid !important;
       place-items: center !important;
-      padding: 24px !important;
+      padding: 16px !important;
       background:
         radial-gradient(circle at 18% 18%, rgba(255,255,255,.9), transparent 28%),
         radial-gradient(circle at 82% 20%, rgba(255,255,255,.55), transparent 26%),
-        linear-gradient(135deg, #ffe7f2 0%, #ffeef7 45%, #f7ddff 100%) !important;
+        linear-gradient(135deg, #ffe7f2 0%, #fff2f8 48%, #f7ddff 100%) !important;
       overflow: auto !important;
     }
 
     .login-card {
-      width: min(450px, 94vw) !important;
-      background: rgba(255,255,255,.94) !important;
-      border-radius: 34px !important;
-      padding: 24px 24px 26px !important;
-      box-shadow: 0 25px 65px rgba(164, 73, 133, .22) !important;
-      border: 1px solid rgba(255,255,255,.75) !important;
+      width: min(430px, 94vw) !important;
+      max-height: calc(100dvh - 32px) !important;
+      overflow-y: auto !important;
+      background: rgba(255,255,255,.96) !important;
+      border-radius: 30px !important;
+      padding: 18px 22px 20px !important;
+      box-shadow: 0 22px 55px rgba(164, 73, 133, .20) !important;
+      border: 1px solid rgba(255,255,255,.78) !important;
       position: relative !important;
-      overflow: hidden !important;
       backdrop-filter: blur(10px) !important;
     }
 
@@ -1250,48 +1251,49 @@
       position: absolute;
       left: -18px;
       right: -18px;
-      top: 14px;
+      top: 10px;
       text-align: center;
-      font-size: 28px;
-      letter-spacing: 22px;
-      opacity: .13;
+      font-size: 25px;
+      letter-spacing: 20px;
+      opacity: .12;
       pointer-events: none;
       white-space: nowrap;
     }
 
     .auth-brand {
-      text-align: center;
-      margin-bottom: 16px;
-      position: relative;
-      z-index: 1;
+      text-align: center !important;
+      margin-bottom: 10px !important;
+      position: relative !important;
+      z-index: 1 !important;
     }
 
     .auth-hero-img {
-      width: 154px;
-      height: 154px;
-      object-fit: cover;
-      border-radius: 34px;
-      margin: 0 auto 12px;
-      display: block;
-      box-shadow: 0 16px 34px rgba(235,79,160,.25);
-      border: 5px solid #fff;
-      animation: pititicoFloat 3.2s ease-in-out infinite;
+      width: 112px !important;
+      height: 112px !important;
+      object-fit: cover !important;
+      object-position: center !important;
+      border-radius: 28px !important;
+      margin: 0 auto 8px !important;
+      display: block !important;
+      box-shadow: 0 13px 26px rgba(235,79,160,.22) !important;
+      border: 5px solid #fff !important;
+      animation: pititicoFloat 3.2s ease-in-out infinite !important;
     }
 
     .auth-brand h1 {
-      font-size: 44px !important;
+      font-size: 40px !important;
       line-height: 1 !important;
       margin: 0 !important;
       color: #eb4fa0 !important;
-      letter-spacing: .5px;
-      text-shadow: 0 3px 0 rgba(255,255,255,.9);
+      letter-spacing: .5px !important;
+      text-shadow: 0 3px 0 rgba(255,255,255,.9) !important;
     }
 
     .auth-brand p {
-      margin: 8px 0 0 !important;
-      color: #6a5570 !important;
-      font-size: 16px !important;
-      font-weight: 800 !important;
+      margin: 7px 0 0 !important;
+      color: #5d5068 !important;
+      font-size: 15px !important;
+      font-weight: 900 !important;
     }
 
     #authSubtitle {
@@ -1299,26 +1301,28 @@
       position: relative !important;
       z-index: 1 !important;
       color: #5d5068 !important;
-      font-weight: 700 !important;
-      margin-bottom: 14px !important;
+      font-weight: 800 !important;
+      font-size: 14px !important;
+      line-height: 1.25 !important;
+      margin: 10px 0 12px !important;
     }
 
     .login-card .auth-tabs {
-      position: relative;
-      z-index: 1;
+      position: relative !important;
+      z-index: 1 !important;
       display: grid !important;
       grid-template-columns: 1fr 1fr !important;
-      gap: 8px !important;
+      gap: 7px !important;
       background: #f3e8f2 !important;
       padding: 6px !important;
       border-radius: 18px !important;
-      margin: 14px 0 16px !important;
+      margin: 10px 0 13px !important;
     }
 
     .login-card .auth-tab {
       border: 0 !important;
-      border-radius: 15px !important;
-      padding: 13px 10px !important;
+      border-radius: 14px !important;
+      padding: 12px 10px !important;
       font-weight: 900 !important;
       cursor: pointer !important;
       background: transparent !important;
@@ -1332,23 +1336,23 @@
     }
 
     .login-card .auth-block {
-      position: relative;
-      z-index: 1;
+      position: relative !important;
+      z-index: 1 !important;
     }
 
     .login-card label {
-      display: block;
-      font-weight: 900;
-      color: #4d405b;
-      margin: 12px 0 7px;
-      font-size: 14px;
+      display: block !important;
+      font-weight: 900 !important;
+      color: #4d405b !important;
+      margin: 9px 0 6px !important;
+      font-size: 14px !important;
     }
 
     .login-card input {
       width: 100% !important;
       border: 1px solid #f2bdd9 !important;
-      border-radius: 18px !important;
-      padding: 15px 16px !important;
+      border-radius: 17px !important;
+      padding: 13px 15px !important;
       font-size: 15px !important;
       background: rgba(255,250,253,.92) !important;
       outline: none !important;
@@ -1361,70 +1365,86 @@
 
     .login-card .action {
       width: 100% !important;
-      margin-top: 16px !important;
+      margin-top: 14px !important;
       border: 0 !important;
-      border-radius: 20px !important;
-      padding: 16px !important;
+      border-radius: 19px !important;
+      padding: 15px !important;
       color: #fff !important;
       background: linear-gradient(135deg, #ef6eb8, #e84b9d) !important;
       font-weight: 1000 !important;
       font-size: 16px !important;
       cursor: pointer !important;
-      box-shadow: 0 16px 28px rgba(235,79,160,.26) !important;
+      box-shadow: 0 14px 26px rgba(235,79,160,.25) !important;
     }
 
     .auth-mini-row {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-      margin-top: 18px;
-      color: #5a4a68;
-      text-align: center;
-      font-size: 11px;
-      font-weight: 800;
-      position: relative;
-      z-index: 1;
+      display: grid !important;
+      grid-template-columns: repeat(4, 1fr) !important;
+      gap: 7px !important;
+      margin-top: 14px !important;
+      color: #5a4a68 !important;
+      text-align: center !important;
+      font-size: 10px !important;
+      font-weight: 800 !important;
+      position: relative !important;
+      z-index: 1 !important;
     }
 
     .auth-mini-row span {
-      background: #fff3fa;
-      border-radius: 16px;
-      padding: 10px 4px;
-      min-height: 58px;
-      display: grid;
-      place-items: center;
-      box-shadow: inset 0 0 0 1px rgba(235,79,160,.08);
+      background: #fff3fa !important;
+      border-radius: 15px !important;
+      padding: 8px 3px !important;
+      min-height: 50px !important;
+      display: grid !important;
+      place-items: center !important;
+      box-shadow: inset 0 0 0 1px rgba(235,79,160,.08) !important;
     }
 
     .auth-mini-row b {
-      display: block;
-      font-size: 19px;
-      margin-bottom: 2px;
+      display: block !important;
+      font-size: 17px !important;
+      margin-bottom: 1px !important;
     }
 
     .auth-footer-note {
-      text-align: center;
-      color: #eb4fa0;
-      font-weight: 900;
-      margin-top: 16px;
-      background: #fff0f8;
-      border-radius: 999px;
-      padding: 10px 12px;
-      position: relative;
-      z-index: 1;
+      text-align: center !important;
+      color: #eb4fa0 !important;
+      font-weight: 900 !important;
+      margin-top: 12px !important;
+      background: #fff0f8 !important;
+      border-radius: 999px !important;
+      padding: 9px 10px !important;
+      font-size: 13px !important;
+      position: relative !important;
+      z-index: 1 !important;
     }
 
     @keyframes pititicoFloat {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-6px); }
+      50% { transform: translateY(-5px); }
     }
 
     @media (max-width: 520px) {
-      .login-screen { padding: 14px !important; }
-      .login-card { border-radius: 28px !important; padding: 20px !important; }
-      .auth-hero-img { width: 128px; height: 128px; border-radius: 28px; }
-      .auth-brand h1 { font-size: 38px !important; }
-      .auth-mini-row { grid-template-columns: repeat(2, 1fr); }
+      .login-screen { padding: 10px !important; }
+      .login-card { width: min(390px, 96vw) !important; padding: 15px 16px 17px !important; border-radius: 26px !important; }
+      .auth-hero-img { width: 92px !important; height: 92px !important; border-radius: 23px !important; }
+      .auth-brand h1 { font-size: 34px !important; }
+      .auth-brand p { font-size: 13px !important; }
+      #authSubtitle { font-size: 13px !important; }
+      .login-card input { padding: 12px 14px !important; }
+      .login-card .action { padding: 14px !important; }
+      .auth-mini-row { grid-template-columns: repeat(2, 1fr) !important; }
+    }
+
+    @media (max-height: 760px) {
+      .auth-hero-img { width: 86px !important; height: 86px !important; border-radius: 22px !important; }
+      .auth-brand h1 { font-size: 34px !important; }
+      .auth-brand p { font-size: 13px !important; }
+      #authSubtitle { margin: 7px 0 9px !important; }
+      .login-card label { margin: 7px 0 5px !important; }
+      .login-card input { padding: 11px 13px !important; }
+      .login-card .auth-tabs { margin: 8px 0 10px !important; }
+      .auth-mini-row, .auth-footer-note { display: none !important; }
     }
 
   </style>
@@ -1666,7 +1686,7 @@
   </div>
 
 
-  <div class="pititico-version-badge">v6.9 • login visual</div>
+  <div class="pititico-version-badge">v7.0 • login ajustado</div>
 
   <a class="support-whatsapp" href="https://wa.me/5521997180033?text=Olá,%20preciso%20de%20suporte%20no%20app%20PiTiTiCo." target="_blank">☘</a>
 
