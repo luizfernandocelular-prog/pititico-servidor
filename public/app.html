@@ -983,6 +983,110 @@
       .modal-full-actions { flex-direction: column; }
     }
 
+  
+    /* ANÚNCIOS PROFISSIONAIS - restaurado */
+    .pititico-ads-box {
+      background: linear-gradient(135deg, #fff, #fff2f8);
+      border-radius: 24px;
+      padding: 14px 16px;
+      margin: 0 auto 20px;
+      width: min(980px, 100%);
+      box-shadow: 0 14px 34px rgba(149,76,126,.16);
+      overflow: hidden;
+      border: 1px solid var(--soft);
+      display: none;
+    }
+    .pititico-ads-title {
+      color: var(--primary);
+      font-weight: 900;
+      margin-bottom: 10px;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .pititico-ads-window {
+      overflow: hidden;
+      white-space: nowrap;
+      width: 100%;
+    }
+    .pititico-ads-track {
+      display: inline-flex;
+      gap: 18px;
+      width: max-content;
+      animation: pititicoAdsMovePro 32s linear infinite;
+      will-change: transform;
+    }
+    .pititico-ads-window:hover .pititico-ads-track {
+      animation-play-state: paused;
+    }
+    .pititico-ad-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      width: 340px;
+      min-width: 340px;
+      max-width: 340px;
+      background: #ffeaf4;
+      border-radius: 999px;
+      padding: 10px 16px 10px 10px;
+      color: #2b2438;
+      text-decoration: none;
+      font-weight: 900;
+      font-size: 14px;
+      box-shadow: inset 0 0 0 1px rgba(235,79,160,.08);
+    }
+    .pititico-ad-img, .pititico-ad-fallback {
+      width: 58px;
+      height: 58px;
+      border-radius: 999px;
+      flex: 0 0 58px;
+      background: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      object-fit: cover;
+      font-size: 28px;
+    }
+    .pititico-ad-text {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      line-height: 1.15;
+    }
+    .pititico-ad-title {
+      color: #20182c;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 235px;
+    }
+    .pititico-ad-desc {
+      color: #7a6072;
+      font-weight: 700;
+      font-size: 12px;
+      margin-top: 4px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 235px;
+    }
+    @keyframes pititicoAdsMovePro {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+    @media (max-width: 700px) {
+      .pititico-ad-item {
+        width: 285px;
+        min-width: 285px;
+        max-width: 285px;
+      }
+      .pititico-ad-title,
+      .pititico-ad-desc {
+        max-width: 180px;
+      }
+    }
+
   </style>
 </head>
 
@@ -2454,26 +2558,56 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
     }
 
     async function carregarAnunciosPititico() {
-      const area = document.getElementById("adsAreaPititico");
-      const track = document.getElementById("adsTrackPititico");
-      if (!area || !track) return;
+      const box = document.getElementById("pititicoAdsBox");
+      const track = document.getElementById("pititicoAdsTrack");
+      if (!box || !track) return;
+
+      const limpar = (valor) => String(valor || "").replace(/[<>&]/g, "").trim();
+      const encurtar = (valor, limite = 30) => {
+        const txt = limpar(valor);
+        return txt.length > limite ? txt.slice(0, limite - 3) + "..." : txt;
+      };
+
       try {
         const resposta = await fetch(API_PITITICO + "/anuncios", { cache: "no-store" });
-        if (!resposta.ok) throw new Error("Sem anúncios");
+        if (!resposta.ok) throw new Error("Erro ao buscar anúncios");
+
         const dados = await resposta.json();
-        const ativos = (Array.isArray(dados) ? dados : []).filter(a => (a.status || "ativo") === "ativo");
-        if (!ativos.length) { area.style.display = "none"; return; }
-        track.innerHTML = ativos.map(a => {
-          const titulo = String(a.titulo || "Anúncio PiTiTiCo");
-          const texto = String(a.texto || "");
-          const link = String(a.link || "#");
-          const imagem = String(a.imagem || "");
-          const img = imagem ? `<img src="${imagem}" alt="">` : "<span>🍼</span>";
-          return `<a class="ad-pill" href="${link}" target="_blank">${img}<span>${titulo}${texto ? " - " + texto : ""}</span></a>`;
-        }).join("");
-        area.style.display = "block";
+        const lista = (Array.isArray(dados) ? dados : [])
+          .filter(a => (a.status || "ativo") === "ativo");
+
+        if (!lista.length) {
+          box.style.display = "none";
+          track.innerHTML = "";
+          return;
+        }
+
+        const montarCard = (a) => {
+          const titulo = encurtar(a.titulo || "Anúncio PiTiTiCo", 30);
+          const texto = encurtar(a.texto || "", 34);
+          const link = limpar(a.link || "#") || "#";
+          const imagem = limpar(a.imagem || "");
+
+          const midia = imagem
+            ? `<img class="pititico-ad-img" src="${imagem}" alt="" loading="lazy" onerror="this.outerHTML='<span class=&quot;pititico-ad-fallback&quot;>🍼</span>'">`
+            : `<span class="pititico-ad-fallback">🍼</span>`;
+
+          return `
+            <a class="pititico-ad-item" href="${link}" target="_blank" rel="noopener">
+              ${midia}
+              <span class="pititico-ad-text">
+                <span class="pititico-ad-title">${titulo}</span>
+                <span class="pititico-ad-desc">${texto || "Toque para saber mais"}</span>
+              </span>
+            </a>
+          `;
+        };
+
+        const cards = lista.map(montarCard).join("");
+        track.innerHTML = cards + cards;
+        box.style.display = "block";
       } catch (erro) {
-        area.style.display = "none";
+        box.style.display = "none";
       }
     }
 
