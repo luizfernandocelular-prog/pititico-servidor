@@ -1220,231 +1220,310 @@
     }
 
   
-    /* v7.0 - Login/Cadastro ajustado para caber perfeito na tela */
+    /* v7.3 - Login igual ao modelo enviado */
     .login-screen {
       min-height: 100dvh !important;
-      display: grid !important;
-      place-items: center !important;
-      padding: 16px !important;
+      display: flex !important;
+      justify-content: center !important;
+      align-items: flex-start !important;
+      padding: 34px 16px 28px !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
       background:
-        radial-gradient(circle at 18% 18%, rgba(255,255,255,.9), transparent 28%),
-        radial-gradient(circle at 82% 20%, rgba(255,255,255,.55), transparent 26%),
-        linear-gradient(135deg, #ffe7f2 0%, #fff2f8 48%, #f7ddff 100%) !important;
-      overflow: auto !important;
+        radial-gradient(circle at 50% 2%, rgba(255,255,255,.85), transparent 22%),
+        linear-gradient(180deg, #ffd7ec 0%, #ffeaf4 45%, #ffe2f3 100%) !important;
+      position: relative !important;
+    }
+
+    .login-screen::before {
+      content: "🍼";
+      position: fixed;
+      left: 7%;
+      top: 13%;
+      font-size: 64px;
+      opacity: .36;
+      transform: rotate(-12deg);
+      pointer-events: none;
+    }
+
+    .login-screen::after {
+      content: "🧸";
+      position: fixed;
+      right: 8%;
+      top: 11%;
+      font-size: 62px;
+      opacity: .34;
+      transform: rotate(10deg);
+      pointer-events: none;
     }
 
     .login-card {
-      width: min(430px, 94vw) !important;
-      max-height: calc(100dvh - 32px) !important;
-      overflow-y: auto !important;
-      background: rgba(255,255,255,.96) !important;
-      border-radius: 30px !important;
-      padding: 18px 22px 20px !important;
-      box-shadow: 0 22px 55px rgba(164, 73, 133, .20) !important;
-      border: 1px solid rgba(255,255,255,.78) !important;
+      width: min(640px, 94vw) !important;
+      min-height: auto !important;
+      background: transparent !important;
+      box-shadow: none !important;
+      border: none !important;
+      border-radius: 0 !important;
+      padding: 0 !important;
+      overflow: visible !important;
       position: relative !important;
-      backdrop-filter: blur(10px) !important;
     }
 
     .login-card::before {
-      content: "🍼  🧸  👕  📅  💗";
-      position: absolute;
-      left: -18px;
-      right: -18px;
-      top: 10px;
-      text-align: center;
-      font-size: 25px;
-      letter-spacing: 20px;
-      opacity: .12;
+      content: "📅";
+      position: fixed;
+      left: 8%;
+      bottom: 18%;
+      font-size: 58px;
+      opacity: .30;
+      transform: rotate(-7deg);
       pointer-events: none;
-      white-space: nowrap;
     }
 
-    .auth-brand {
+    .login-card::after {
+      content: "👕";
+      position: fixed;
+      right: 8%;
+      top: 30%;
+      font-size: 58px;
+      opacity: .30;
+      transform: rotate(10deg);
+      pointer-events: none;
+    }
+
+    .pititico-login-brand {
       text-align: center !important;
-      margin-bottom: 10px !important;
+      margin: 0 auto 18px !important;
       position: relative !important;
-      z-index: 1 !important;
+      z-index: 2 !important;
     }
 
-    .auth-hero-img {
-      width: 112px !important;
-      height: 112px !important;
-      object-fit: cover !important;
+    .pititico-login-logo {
+      width: min(520px, 92vw) !important;
+      height: auto !important;
+      max-height: 330px !important;
+      object-fit: contain !important;
       object-position: center !important;
-      border-radius: 28px !important;
-      margin: 0 auto 8px !important;
       display: block !important;
-      box-shadow: 0 13px 26px rgba(235,79,160,.22) !important;
-      border: 5px solid #fff !important;
-      animation: pititicoFloat 3.2s ease-in-out infinite !important;
+      margin: 0 auto !important;
+      filter: drop-shadow(0 16px 30px rgba(235,79,160,.16)) !important;
+      background: transparent !important;
+      border: none !important;
+      border-radius: 0 !important;
+      animation: none !important;
     }
 
-    .auth-brand h1 {
-      font-size: 40px !important;
-      line-height: 1 !important;
-      margin: 0 !important;
-      color: #eb4fa0 !important;
-      letter-spacing: .5px !important;
-      text-shadow: 0 3px 0 rgba(255,255,255,.9) !important;
-    }
-
-    .auth-brand p {
-      margin: 7px 0 0 !important;
-      color: #5d5068 !important;
-      font-size: 15px !important;
-      font-weight: 900 !important;
+    .pititico-login-title,
+    .pititico-login-slogan {
+      display: none !important;
     }
 
     #authSubtitle {
-      text-align: center !important;
+      display: none !important;
+    }
+
+    .pititico-form-card {
+      background: rgba(255,255,255,.96) !important;
+      border-radius: 34px !important;
+      padding: 30px 30px 32px !important;
+      box-shadow: 0 24px 58px rgba(170,67,130,.20) !important;
+      border: 1px solid rgba(255,255,255,.88) !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
       position: relative !important;
-      z-index: 1 !important;
-      color: #5d5068 !important;
-      font-weight: 800 !important;
-      font-size: 14px !important;
-      line-height: 1.25 !important;
-      margin: 10px 0 12px !important;
+      z-index: 2 !important;
     }
 
     .login-card .auth-tabs {
-      position: relative !important;
-      z-index: 1 !important;
       display: grid !important;
       grid-template-columns: 1fr 1fr !important;
-      gap: 7px !important;
-      background: #f3e8f2 !important;
-      padding: 6px !important;
-      border-radius: 18px !important;
-      margin: 10px 0 13px !important;
+      gap: 14px !important;
+      background: transparent !important;
+      padding: 0 !important;
+      margin: 0 0 25px !important;
+      border-radius: 0 !important;
     }
 
     .login-card .auth-tab {
       border: 0 !important;
-      border-radius: 14px !important;
-      padding: 12px 10px !important;
-      font-weight: 900 !important;
+      border-radius: 16px !important;
+      padding: 18px 10px !important;
+      font-weight: 1000 !important;
       cursor: pointer !important;
-      background: transparent !important;
-      color: #574765 !important;
+      background: #f3e8f2 !important;
+      color: #5a4a68 !important;
+      font-size: 18px !important;
+      box-shadow: inset 0 0 0 1px rgba(235,79,160,.04) !important;
+    }
+
+    .login-card .auth-tab:first-child::before {
+      content: "🔒 ";
+    }
+
+    .login-card .auth-tab:last-child::before {
+      content: "👥 ";
     }
 
     .login-card .auth-tab.active {
       background: linear-gradient(135deg, #ef6eb8, #e84b9d) !important;
       color: #fff !important;
-      box-shadow: 0 10px 22px rgba(235,79,160,.28) !important;
-    }
-
-    .login-card .auth-block {
-      position: relative !important;
-      z-index: 1 !important;
+      box-shadow: 0 12px 28px rgba(235,79,160,.30) !important;
     }
 
     .login-card label {
       display: block !important;
-      font-weight: 900 !important;
+      font-weight: 1000 !important;
       color: #4d405b !important;
-      margin: 9px 0 6px !important;
-      font-size: 14px !important;
+      margin: 17px 0 8px !important;
+      font-size: 18px !important;
     }
 
     .login-card input {
       width: 100% !important;
-      border: 1px solid #f2bdd9 !important;
+      border: 2px solid #f5b7d4 !important;
       border-radius: 17px !important;
-      padding: 13px 15px !important;
-      font-size: 15px !important;
-      background: rgba(255,250,253,.92) !important;
+      padding: 18px 20px !important;
+      font-size: 18px !important;
+      background: rgba(255,250,253,.98) !important;
       outline: none !important;
+      box-sizing: border-box !important;
+      color: #453850 !important;
+    }
+
+    .login-card input::placeholder {
+      color: #89818b !important;
     }
 
     .login-card input:focus {
       border-color: #eb4fa0 !important;
-      box-shadow: 0 0 0 4px rgba(235,79,160,.12) !important;
+      box-shadow: 0 0 0 5px rgba(235,79,160,.12) !important;
     }
 
     .login-card .action {
       width: 100% !important;
-      margin-top: 14px !important;
+      margin-top: 26px !important;
       border: 0 !important;
-      border-radius: 19px !important;
-      padding: 15px !important;
+      border-radius: 22px !important;
+      padding: 20px !important;
       color: #fff !important;
       background: linear-gradient(135deg, #ef6eb8, #e84b9d) !important;
       font-weight: 1000 !important;
-      font-size: 16px !important;
+      font-size: 24px !important;
       cursor: pointer !important;
-      box-shadow: 0 14px 26px rgba(235,79,160,.25) !important;
+      box-shadow: 0 16px 30px rgba(235,79,160,.28) !important;
+      box-sizing: border-box !important;
     }
 
-    .auth-mini-row {
+    .login-card .action::before {
+      content: "↪ ";
+      font-weight: 1000;
+    }
+
+    .pititico-remember-row {
+      display: flex !important;
+      align-items: center !important;
+      gap: 12px !important;
+      margin-top: 18px !important;
+      font-size: 17px !important;
+      font-weight: 800 !important;
+      color: #4d405b !important;
+    }
+
+    .pititico-remember-row input {
+      width: 24px !important;
+      height: 24px !important;
+      padding: 0 !important;
+      accent-color: #eb4fa0 !important;
+      box-shadow: none !important;
+    }
+
+    .pititico-login-benefits {
+      width: 100% !important;
       display: grid !important;
       grid-template-columns: repeat(4, 1fr) !important;
-      gap: 7px !important;
-      margin-top: 14px !important;
+      gap: 18px !important;
+      margin: 34px auto 18px !important;
       color: #5a4a68 !important;
       text-align: center !important;
-      font-size: 10px !important;
-      font-weight: 800 !important;
+      font-size: 16px !important;
+      font-weight: 900 !important;
       position: relative !important;
-      z-index: 1 !important;
+      z-index: 2 !important;
     }
 
-    .auth-mini-row span {
-      background: #fff3fa !important;
-      border-radius: 15px !important;
-      padding: 8px 3px !important;
-      min-height: 50px !important;
+    .pititico-login-benefits span {
+      min-height: 88px !important;
       display: grid !important;
       place-items: center !important;
-      box-shadow: inset 0 0 0 1px rgba(235,79,160,.08) !important;
+      border-right: 1px solid rgba(235,79,160,.18) !important;
+      padding: 0 8px !important;
     }
 
-    .auth-mini-row b {
+    .pititico-login-benefits span:last-child {
+      border-right: 0 !important;
+    }
+
+    .pititico-login-benefits b {
       display: block !important;
-      font-size: 17px !important;
-      margin-bottom: 1px !important;
+      font-size: 36px !important;
+      margin-bottom: 8px !important;
     }
 
-    .auth-footer-note {
+    .pititico-login-note {
+      width: max-content !important;
+      max-width: 92vw !important;
+      margin: 10px auto 0 !important;
       text-align: center !important;
       color: #eb4fa0 !important;
-      font-weight: 900 !important;
-      margin-top: 12px !important;
-      background: #fff0f8 !important;
+      font-weight: 1000 !important;
+      background: rgba(255,255,255,.42) !important;
       border-radius: 999px !important;
-      padding: 9px 10px !important;
-      font-size: 13px !important;
+      padding: 12px 26px !important;
+      font-size: 20px !important;
       position: relative !important;
-      z-index: 1 !important;
+      z-index: 2 !important;
     }
 
-    @keyframes pititicoFloat {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-5px); }
+    .login-screen .clouds-bottom {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: -5px;
+      height: 110px;
+      pointer-events: none;
+      opacity: .75;
+      background:
+        radial-gradient(circle at 4% 80%, white 0 75px, transparent 77px),
+        radial-gradient(circle at 12% 84%, white 0 55px, transparent 57px),
+        radial-gradient(circle at 88% 82%, white 0 70px, transparent 72px),
+        radial-gradient(circle at 98% 76%, white 0 65px, transparent 67px);
+      z-index: 1;
     }
 
-    @media (max-width: 520px) {
-      .login-screen { padding: 10px !important; }
-      .login-card { width: min(390px, 96vw) !important; padding: 15px 16px 17px !important; border-radius: 26px !important; }
-      .auth-hero-img { width: 92px !important; height: 92px !important; border-radius: 23px !important; }
-      .auth-brand h1 { font-size: 34px !important; }
-      .auth-brand p { font-size: 13px !important; }
-      #authSubtitle { font-size: 13px !important; }
-      .login-card input { padding: 12px 14px !important; }
-      .login-card .action { padding: 14px !important; }
-      .auth-mini-row { grid-template-columns: repeat(2, 1fr) !important; }
+    @media (max-width: 720px) {
+      .login-screen { padding: 22px 12px 22px !important; }
+      .pititico-login-logo { width: min(430px, 94vw) !important; max-height: 270px !important; }
+      .pititico-form-card { padding: 24px 20px 26px !important; border-radius: 30px !important; }
+      .login-card .auth-tab { font-size: 16px !important; padding: 15px 8px !important; }
+      .login-card label { font-size: 16px !important; }
+      .login-card input { font-size: 16px !important; padding: 15px 16px !important; }
+      .login-card .action { font-size: 20px !important; padding: 17px !important; }
+      .pititico-login-benefits { grid-template-columns: repeat(2, 1fr) !important; gap: 10px !important; margin-top: 22px !important; font-size: 14px !important; }
+      .pititico-login-benefits span { border-right: 0 !important; min-height: 70px !important; }
+      .pititico-login-benefits b { font-size: 28px !important; }
+      .pititico-login-note { font-size: 16px !important; }
+      .login-screen::before, .login-screen::after, .login-card::before, .login-card::after { display: none !important; }
     }
 
     @media (max-height: 760px) {
-      .auth-hero-img { width: 86px !important; height: 86px !important; border-radius: 22px !important; }
-      .auth-brand h1 { font-size: 34px !important; }
-      .auth-brand p { font-size: 13px !important; }
-      #authSubtitle { margin: 7px 0 9px !important; }
-      .login-card label { margin: 7px 0 5px !important; }
-      .login-card input { padding: 11px 13px !important; }
-      .login-card .auth-tabs { margin: 8px 0 10px !important; }
-      .auth-mini-row, .auth-footer-note { display: none !important; }
+      .login-screen { padding-top: 12px !important; }
+      .pititico-login-logo { width: min(330px, 88vw) !important; max-height: 190px !important; }
+      .pititico-form-card { padding: 18px 18px 20px !important; }
+      .login-card .auth-tabs { margin-bottom: 14px !important; }
+      .login-card label { margin: 9px 0 6px !important; }
+      .login-card input { padding: 12px 14px !important; }
+      .login-card .action { margin-top: 15px !important; padding: 14px !important; font-size: 18px !important; }
+      .pititico-remember-row, .pititico-login-benefits, .pititico-login-note { display: none !important; }
     }
 
   </style>
@@ -1453,13 +1532,13 @@
 <body>
   <div id="loginScreen" class="login-screen show">
     <div class="login-card">
-      <div class="auth-brand">
-        <img class="auth-hero-img" src="assets/pititico-login-logo.png" alt="Logo PiTiTiCo">
-        <h1>PiTiTiCo</h1>
-        <p>Para o melhor bebê do mundo.</p>
+      <div class="pititico-login-brand">
+        <img class="pititico-login-logo" src="assets/pititico-login-logo.png" alt="Logo PiTiTiCo">
+        <div class="pititico-login-title">PiTiTiCo</div>
+        <div class="pititico-login-slogan">Para o melhor bebê do mundo.</div>
       </div>
+      <p id="authSubtitle">Entre com seu e-mail e senha de 4 números.</p>
 
-      <p id="authSubtitle">Entre com e-mail e senha ou faça seu cadastro.</p>
 
       <div class="auth-tabs">
         <button id="tabLogin" class="auth-tab active" onclick="mostrarAuth('login')">Login</button>
@@ -1468,10 +1547,10 @@
 
       <div id="authLogin" class="auth-block active">
         <label>E-mail</label>
-        <input id="loginEmailEntrar" type="email" placeholder="Ex: ana@email.com" />
+        <input id="loginEmailEntrar" type="email" placeholder="Digite seu e-mail" />
 
         <label>Senha de 4 números</label>
-        <input id="loginSenhaEntrar" type="password" inputmode="numeric" maxlength="4" placeholder="Ex: 1234" />
+        <input id="loginSenhaEntrar" type="password" inputmode="numeric" maxlength="4" placeholder="Digite sua senha" />
 
         <button class="action" onclick="entrarUsuario()">Entrar</button>
       </div>
@@ -1481,13 +1560,13 @@
         <input id="loginNome" placeholder="Ex: Ana Paula" />
 
         <label>E-mail</label>
-        <input id="loginEmail" type="email" placeholder="Ex: ana@email.com" />
+        <input id="loginEmail" type="email" placeholder="Digite seu e-mail" />
 
         <label>WhatsApp</label>
         <input id="loginWhatsapp" placeholder="Ex: 21999999999" />
 
         <label>Senha de 4 números</label>
-        <input id="loginSenha" type="password" inputmode="numeric" maxlength="4" placeholder="Ex: 1234" />
+        <input id="loginSenha" type="password" inputmode="numeric" maxlength="4" placeholder="Digite sua senha" />
 
         <button class="action" onclick="salvarUsuarioInicial()">Cadastrar e entrar</button>
       </div>
@@ -1686,7 +1765,7 @@
   </div>
 
 
-  <div class="pititico-version-badge">v7.0 • login ajustado</div>
+  <div class="pititico-version-badge">v7.3 • login modelo</div>
 
   <a class="support-whatsapp" href="https://wa.me/5521997180033?text=Olá,%20preciso%20de%20suporte%20no%20app%20PiTiTiCo." target="_blank">☘</a>
 
