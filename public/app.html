@@ -1106,6 +1106,14 @@
       .pititico-version-badge { left: 72px; bottom: 10px; }
     }
 
+  
+    /* v6.5 - anúncio sempre visível quando houver dados */
+    .pititico-ads-box.force-visible {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+
   </style>
 </head>
 
@@ -1324,7 +1332,7 @@
   </div>
 
 
-  <div class="pititico-version-badge">v6.3 • menus flutuantes + anúncios</div>
+  <div class="pititico-version-badge">v6.5 • browser/app sincronizados</div>
 
   <a class="support-whatsapp" href="https://wa.me/5521997180033?text=Olá,%20preciso%20de%20suporte%20no%20app%20PiTiTiCo." target="_blank">☘</a>
 
@@ -2037,8 +2045,8 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
             <strong>Idade:</strong> ${calcularIdadePorNascimento(bebe.nascimento)}
           </div>
           <div class="baby-info-grid">
-            <div class="baby-info">Peso<strong>${bebe.peso || "-"}</strong></div>
-            <div class="baby-info">Altura<strong>${bebe.altura || "-"}</strong></div>
+            <div class="baby-info">Peso estimado<strong>${bebe.peso || "-"}</strong></div>
+            <div class="baby-info">Altura estimada<strong>${bebe.altura || "-"}</strong></div>
             <div class="baby-info">Sangue<strong>${bebe.sangue || "-"}</strong></div>
             <div class="baby-info">Rotinas<strong>${contarRotinasDoBebe(bebe.nome)}</strong></div>
           </div>
@@ -2114,6 +2122,9 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
       salvarDados();
       renderBebes();
       atualizarListasBasicas();
+    setTimeout(carregarAnunciosPititico, 300);
+    setTimeout(carregarAnunciosPititico, 1200);
+    window.addEventListener("load", carregarAnunciosPititico);
     setTimeout(carregarAnunciosPititico, 600);
     carregarAnunciosPititico();
     }
@@ -2580,8 +2591,30 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
     }
 
     async function carregarAnunciosPititico() {
-      const box = document.getElementById("pititicoAdsBox");
-      const track = document.getElementById("pititicoAdsTrack");
+      let box = document.getElementById("pititicoAdsBox");
+      let track = document.getElementById("pititicoAdsTrack");
+
+      if (!box || !track) {
+        const app = document.getElementById("app") || document.body;
+        const header = app.querySelector(".topbar") || app.querySelector("header");
+        const novoBox = document.createElement("div");
+        novoBox.id = "pititicoAdsBox";
+        novoBox.className = "pititico-ads-box";
+        novoBox.innerHTML = `
+          <div class="pititico-ads-title">📢 Anúncios PiTiTiCo</div>
+          <div class="pititico-ads-window">
+            <div id="pititicoAdsTrack" class="pititico-ads-track"></div>
+          </div>
+        `;
+        if (header && header.parentNode) {
+          header.insertAdjacentElement("afterend", novoBox);
+        } else {
+          app.insertAdjacentElement("afterbegin", novoBox);
+        }
+        box = document.getElementById("pititicoAdsBox");
+        track = document.getElementById("pititicoAdsTrack");
+      }
+
       if (!box || !track) return;
 
       const limpar = (valor) => String(valor || "").replace(/[<>&]/g, "").trim();
@@ -2599,6 +2632,7 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
           .filter(a => (a.status || "ativo") === "ativo");
 
         if (!lista.length) {
+          box.classList.remove("force-visible");
           box.style.display = "none";
           track.innerHTML = "";
           return;
@@ -2627,8 +2661,10 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
 
         const cards = lista.map(montarCard).join("");
         track.innerHTML = cards + cards;
+        box.classList.add("force-visible");
         box.style.display = "block";
       } catch (erro) {
+        box.classList.remove("force-visible");
         box.style.display = "none";
       }
     }
