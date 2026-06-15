@@ -1087,6 +1087,25 @@
       }
     }
 
+  
+    .pititico-version-badge {
+      position: fixed;
+      left: 82px;
+      bottom: 12px;
+      z-index: 350;
+      background: rgba(255,255,255,.92);
+      color: var(--primary);
+      border: 1px solid var(--soft2);
+      border-radius: 999px;
+      padding: 7px 11px;
+      font-size: 11px;
+      font-weight: 900;
+      box-shadow: 0 8px 20px rgba(149,76,126,.14);
+    }
+    @media (max-width: 540px) {
+      .pititico-version-badge { left: 72px; bottom: 10px; }
+    }
+
   </style>
 </head>
 
@@ -1303,6 +1322,9 @@
     <button class="edit-user-btn" onclick="editarUsuario()">Editar cadastro</button>
     <button class="logout-user-btn" onclick="trocarUsuario()">Trocar usuária</button>
   </div>
+
+
+  <div class="pititico-version-badge">v6.3 • menus flutuantes + anúncios</div>
 
   <a class="support-whatsapp" href="https://wa.me/5521997180033?text=Olá,%20preciso%20de%20suporte%20no%20app%20PiTiTiCo." target="_blank">☘</a>
 
