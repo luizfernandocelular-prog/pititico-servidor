@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Painel Admin PiTiTiCo</title>
+<style>
+body{font-family:Arial;background:#fff4f9;padding:24px;color:#222}h1{color:#e85aa4}button{background:#e85aa4;color:white;border:none;padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:bold}.card{background:white;padding:16px;margin-bottom:15px;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.1)}.status{font-weight:bold;padding:4px 8px;border-radius:999px}.ativo{background:#e8fff0;color:#17964e}.expirado{background:#fff3d8;color:#a16b00}.removido{background:#ffe8ef;color:#d9275b}pre{background:#f7f7f7;padding:12px;border-radius:10px;overflow:auto}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.stat{background:white;border-radius:14px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.08)}.stat strong{display:block;font-size:24px;color:#e85aa4}
+</style>
+</head>
+<body>
+<h1>👶 Painel Admin PiTiTiCo</h1>
+<button onclick="carregar()">Atualizar painel</button>
+<div class="grid"><div class="stat">Ativos<strong id="ativos">0</strong></div><div class="stat">Expirados<strong id="expirados">0</strong></div><div class="stat">Removidos<strong id="removidos">0</strong></div><div class="stat">Total<strong id="total">0</strong></div></div>
+<div id="lista"></div>
+<script>
+async function carregar(){
+ const lista=document.getElementById('lista');
+ lista.innerHTML='Carregando...';
+ try{
+  const resposta=await fetch('/admin/publicacoes');
+  const dados=await resposta.json();
+  document.getElementById('total').innerText=dados.length;
+  document.getElementById('ativos').innerText=dados.filter(i=>i.status==='ativo').length;
+  document.getElementById('expirados').innerText=dados.filter(i=>i.status==='expirado').length;
+  document.getElementById('removidos').innerText=dados.filter(i=>i.status==='removido').length;
+  if(!dados.length){lista.innerHTML='<div class="card">Nenhum item cadastrado.</div>';return;}
+  lista.innerHTML=dados.slice().reverse().map(item=>`<div class="card"><h3>${item.item||'Sem nome'}</h3><p>Status: <span class="status ${item.status}">${item.status}</span></p><p><b>Tipo:</b> ${item.tipo||'-'}</p><p><b>Categoria:</b> ${item.categoria||'-'}</p><p><b>Local:</b> ${item.local||item.cidade||'-'}</p><p><b>Mamãe:</b> ${item.usuario?.nome||item.nomeUsuario||'-'}</p><p><b>WhatsApp:</b> ${item.usuario?.whatsapp||item.whats||'-'}</p><p><b>Criado:</b> ${item.criadoEm?new Date(item.criadoEm).toLocaleString():'-'}</p><p><b>Expira:</b> ${item.expiraEm?new Date(item.expiraEm).toLocaleString():'-'}</p><details><summary>Dados completos</summary><pre>${JSON.stringify(item,null,2)}</pre></details></div>`).join('');
+ }catch(e){lista.innerHTML='<div class="card">Erro: '+e.message+'</div>'}
+}
+carregar();setInterval(carregar,15000);
+</script>
+</body>
+</html>
