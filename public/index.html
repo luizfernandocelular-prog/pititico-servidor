@@ -1556,6 +1556,91 @@
       display: block !important;
     }
 
+  
+    /* v7.6 - Atualização automática */
+    .pititico-update-modal {
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 99999 !important;
+      display: none !important;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 20px !important;
+      background: rgba(60, 28, 56, .38) !important;
+      backdrop-filter: blur(6px) !important;
+    }
+
+    .pititico-update-modal.show {
+      display: flex !important;
+    }
+
+    .pititico-update-card {
+      width: min(420px, 94vw) !important;
+      background: #fff !important;
+      border-radius: 28px !important;
+      padding: 26px 22px !important;
+      box-shadow: 0 24px 60px rgba(75, 31, 66, .28) !important;
+      text-align: center !important;
+      border: 1px solid rgba(255,255,255,.75) !important;
+    }
+
+    .pititico-update-icon {
+      width: 72px !important;
+      height: 72px !important;
+      margin: 0 auto 12px !important;
+      border-radius: 999px !important;
+      display: grid !important;
+      place-items: center !important;
+      font-size: 34px !important;
+      background: linear-gradient(135deg, #ffe1f0, #f2dcff) !important;
+    }
+
+    .pititico-update-card h2 {
+      margin: 0 0 8px !important;
+      color: #eb4fa0 !important;
+      font-size: 25px !important;
+      font-weight: 1000 !important;
+    }
+
+    .pititico-update-card p {
+      color: #5d5068 !important;
+      font-weight: 700 !important;
+      line-height: 1.35 !important;
+      margin: 7px 0 !important;
+    }
+
+    .pititico-update-actions {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      gap: 10px !important;
+      margin-top: 18px !important;
+    }
+
+    .pititico-update-btn {
+      border: 0 !important;
+      border-radius: 16px !important;
+      padding: 14px 12px !important;
+      font-weight: 1000 !important;
+      cursor: pointer !important;
+    }
+
+    .pititico-update-btn.primary {
+      color: #fff !important;
+      background: linear-gradient(135deg, #ef6eb8, #e84b9d) !important;
+      box-shadow: 0 12px 24px rgba(235,79,160,.24) !important;
+    }
+
+    .pititico-update-btn.secondary {
+      color: #5d5068 !important;
+      background: #f3e8f2 !important;
+    }
+
+    @media (max-width: 420px) {
+      .pititico-update-actions {
+        grid-template-columns: 1fr !important;
+      }
+    }
+
   </style>
 </head>
 
@@ -1637,6 +1722,20 @@
       </button>
     </div>
   </aside>
+
+  
+  <div id="pititicoUpdateModal" class="pititico-update-modal">
+    <div class="pititico-update-card">
+      <div class="pititico-update-icon">🔄</div>
+      <h2>Nova atualização</h2>
+      <p id="pititicoUpdateText">Existe uma nova versão do PiTiTiCo disponível.</p>
+      <p><strong id="pititicoUpdateVersion"></strong></p>
+      <div class="pititico-update-actions">
+        <button id="pititicoUpdateLater" class="pititico-update-btn secondary" type="button">Depois</button>
+        <button id="pititicoUpdateNow" class="pititico-update-btn primary" type="button">Atualizar agora</button>
+      </div>
+    </div>
+  </div>
 
   <div id="app" class="app">
     <header class="topbar">
@@ -1795,7 +1894,7 @@
   </div>
 
 
-  <div class="pititico-version-badge">v7.5 • sessão corrigida</div>
+  <div class="pititico-version-badge">v7.6 • atualização automática</div>
 
   <a class="support-whatsapp" href="https://wa.me/5521997180033?text=Olá,%20preciso%20de%20suporte%20no%20app%20PiTiTiCo." target="_blank">☘</a>
 
@@ -2043,6 +2142,87 @@
 
   <script>
     const STORAGE_BASE_KEY = "pititico_dados_usuario_v1";
+
+    const PITITICO_APP_VERSION = "7.6";
+    const PITITICO_APP_CODE = 76;
+    const PITITICO_VERSION_URL = "https://pititico-servidor.onrender.com/versao.json";
+
+    function pititicoVersaoNumero(v) {
+      if (typeof v === "number") return v;
+      return Number(String(v || "0").replace(/\D/g, "")) || 0;
+    }
+
+    function pititicoForcarAtualizacao() {
+      try {
+        localStorage.setItem("pititicoLastVersion", String(PITITICO_APP_CODE));
+      } catch (e) {}
+
+      if ("caches" in window) {
+        caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k)))).finally(() => {
+          window.location.href = window.location.pathname + "?v=" + Date.now();
+        });
+      } else {
+        window.location.href = window.location.pathname + "?v=" + Date.now();
+      }
+    }
+
+    function pititicoMostrarAtualizacao(info) {
+      const modal = document.getElementById("pititicoUpdateModal");
+      const texto = document.getElementById("pititicoUpdateText");
+      const versao = document.getElementById("pititicoUpdateVersion");
+      const depois = document.getElementById("pititicoUpdateLater");
+      const agora = document.getElementById("pititicoUpdateNow");
+
+      if (!modal) return;
+
+      if (texto) texto.textContent = info.mensagem || "Existe uma nova versão do PiTiTiCo disponível.";
+      if (versao) versao.textContent = "Versão nova: " + (info.versao || "");
+
+      if (depois) {
+        depois.style.display = info.obrigatoria ? "none" : "block";
+        depois.onclick = function() {
+          modal.classList.remove("show");
+          try {
+            sessionStorage.setItem("pititicoUpdateIgnoredCode", String(info.codigo || pititicoVersaoNumero(info.versao)));
+          } catch (e) {}
+        };
+      }
+
+      if (agora) {
+        agora.onclick = pititicoForcarAtualizacao;
+      }
+
+      modal.classList.add("show");
+
+      if (info.obrigatoria) {
+        setTimeout(pititicoForcarAtualizacao, 2500);
+      }
+    }
+
+    async function pititicoVerificarAtualizacao(silencioso = true) {
+      try {
+        const resposta = await fetch(PITITICO_VERSION_URL + "?t=" + Date.now(), { cache: "no-store" });
+        if (!resposta.ok) return;
+
+        const info = await resposta.json();
+        const codigoNovo = Number(info.codigo || pititicoVersaoNumero(info.versao));
+        const ignorado = Number(sessionStorage.getItem("pititicoUpdateIgnoredCode") || 0);
+
+        if (codigoNovo > PITITICO_APP_CODE && codigoNovo !== ignorado) {
+          pititicoMostrarAtualizacao(info);
+        } else if (!silencioso) {
+          alert("Seu PiTiTiCo já está atualizado.");
+        }
+      } catch (erro) {
+        console.log("PiTiTiCo atualização: não foi possível verificar agora.", erro);
+      }
+    }
+
+    window.addEventListener("load", function() {
+      setTimeout(() => pititicoVerificarAtualizacao(true), 1200);
+    });
+
+
     const API_PITITICO = "https://pititico-servidor.onrender.com";
 
     let acaoConfirmada = null;
