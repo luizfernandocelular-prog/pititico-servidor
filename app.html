@@ -1526,6 +1526,40 @@
       .pititico-remember-row, .pititico-login-benefits, .pititico-login-note { display: none !important; }
     }
 
+  
+    /* v7.4 - correção login separado do app */
+    .login-screen {
+      display: none !important;
+    }
+
+    .login-screen.show {
+      min-height: 100dvh !important;
+      display: flex !important;
+      justify-content: center !important;
+      align-items: flex-start !important;
+      padding: 34px 16px 28px !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      background:
+        radial-gradient(circle at 50% 2%, rgba(255,255,255,.85), transparent 22%),
+        linear-gradient(180deg, #ffd7ec 0%, #ffeaf4 45%, #ffe2f3 100%) !important;
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 9999 !important;
+    }
+
+    .login-screen.show ~ #app {
+      display: none !important;
+    }
+
+    .login-screen:not(.show) ~ #app {
+      display: block !important;
+    }
+
+    body:has(.login-screen.show) {
+      overflow: hidden !important;
+    }
+
   </style>
 </head>
 
@@ -1765,7 +1799,7 @@
   </div>
 
 
-  <div class="pititico-version-badge">v7.3 • login modelo</div>
+  <div class="pititico-version-badge">v7.4 • login corrigido</div>
 
   <a class="support-whatsapp" href="https://wa.me/5521997180033?text=Olá,%20preciso%20de%20suporte%20no%20app%20PiTiTiCo." target="_blank">☘</a>
 
@@ -2013,6 +2047,35 @@
 
   <script>
     const STORAGE_BASE_KEY = "pititico_dados_usuario_v1";
+
+    function pititicoMostrarAppSeguro() {
+      const loginScreen = document.getElementById("loginScreen");
+      const appEl = document.getElementById("app");
+      if (loginScreen) {
+        loginScreen.classList.remove("show");
+      pititicoMostrarAppSeguro();
+        loginScreen.style.display = "none";
+      }
+      if (appEl) {
+        appEl.style.display = "block";
+      }
+      document.body.style.overflow = "";
+    }
+
+    function pititicoMostrarLoginSeguro() {
+      const loginScreen = document.getElementById("loginScreen");
+      const appEl = document.getElementById("app");
+      if (loginScreen) {
+        loginScreen.classList.add("show");
+        loginScreen.style.display = "flex";
+      }
+      if (appEl) {
+        appEl.style.display = "none";
+      }
+      document.body.style.overflow = "hidden";
+    }
+
+
     const API_PITITICO = "https://pititico-servidor.onrender.com";
 
     let acaoConfirmada = null;
@@ -3228,6 +3291,16 @@ setTimeout(carregarAnunciosPititico, 1800);
     renderAtividadesManuais();
     renderApoios();
     atualizarListasBasicas();
+  
+    window.addEventListener("DOMContentLoaded", function() {
+      const usuarioSalvo = localStorage.getItem("pititicoUser") || localStorage.getItem("pititicoUsuario") || localStorage.getItem("usuarioAtual");
+      if (usuarioSalvo) {
+        pititicoMostrarAppSeguro();
+      } else {
+        pititicoMostrarLoginSeguro();
+      }
+    });
+
   </script>
 </body>
 </html>
