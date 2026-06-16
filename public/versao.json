@@ -1,9 +1,0 @@
-{
-  "app": "PiTiTiCo",
-  "versao": "7.7",
-  "codigo": 77,
-  "mensagem": "Nova versão disponível para o PiTiTiCo.",
-  "obrigatoria": false,
-  "url": "https://pititico-servidor.onrender.com/index.html",
-  "atualizadoEm": "2026-06-16"
-}
