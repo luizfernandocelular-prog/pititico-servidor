@@ -1662,7 +1662,13 @@
       overflow: hidden !important;
     }
 
-  </style>
+  
+/* v7.9 - anuncios final */
+#pititicoRulesAdsBox{display:none!important}
+#pititicoAdsBox.ads-hidden{display:none!important}
+#pititicoAdsBox:not(.ads-hidden){display:block!important;visibility:visible!important;opacity:1!important}
+
+</style>
 </head>
 
 <body>
@@ -1915,7 +1921,7 @@
   </div>
 
 
-  <div class="pititico-version-badge">v7.8 • anúncios regras</div>
+  <div class="pititico-version-badge">v7.9 • anúncios final</div>
 
   <a class="support-whatsapp" href="https://wa.me/5521997180033?text=Olá,%20preciso%20de%20suporte%20no%20app%20PiTiTiCo." target="_blank">☘</a>
 
@@ -2164,8 +2170,8 @@
   <script>
     const STORAGE_BASE_KEY = "pititico_dados_usuario_v1";
 
-    const PITITICO_APP_VERSION = "7.8";
-    const PITITICO_APP_CODE = 78;
+    const PITITICO_APP_VERSION = "7.9";
+    const PITITICO_APP_CODE = 79;
     const PITITICO_VERSION_URL = "https://pititico-servidor.onrender.com/versao.json";
 
     function pititicoVersaoNumero(v) {
@@ -3702,6 +3708,14 @@ setTimeout(carregarAnunciosPititico, 1800);
       setTimeout(pititicoGarantirAdsNasRegras, 150);
     });
 
-  </script>
+  
+/* v7.9 - anuncios final sem duplicidade e com API fixa */
+const PITITICO_API_ANUNCIOS_FIXA_V79 = "https://pititico-servidor.onrender.com/anuncios";
+function pititicoLimparAdsDuplicadosV79(){document.querySelectorAll("#pititicoRulesAdsBox").forEach(e=>e.remove());const boxes=[...document.querySelectorAll("#pititicoAdsBox")];boxes.slice(1).forEach(e=>e.remove());}
+window.carregarAnunciosPititico=async function(){pititicoLimparAdsDuplicadosV79();let box=document.getElementById("pititicoAdsBox");let track=document.getElementById("pititicoAdsTrack");if(!box||!track){const app=document.getElementById("app")||document.body;const header=app.querySelector(".topbar")||app.querySelector("header");box=document.createElement("div");box.id="pititicoAdsBox";box.className="pititico-ads-box";box.innerHTML='<div class="pititico-ads-title">📢 Anúncios PiTiTiCo</div><div class="pititico-ads-window"><div id="pititicoAdsTrack" class="pititico-ads-track"></div></div>';if(header&&header.parentNode)header.insertAdjacentElement("afterend",box);else app.insertAdjacentElement("afterbegin",box);track=document.getElementById("pititicoAdsTrack");}const limpar=v=>String(v||"").replace(/[<>&"]/g,"").trim();const cortar=(v,n)=>{const t=limpar(v);return t.length>n?t.slice(0,n-3)+"...":t};try{const r=await fetch(PITITICO_API_ANUNCIOS_FIXA_V79+"?t="+Date.now(),{cache:"no-store"});if(!r.ok)throw new Error("HTTP "+r.status);const dados=await r.json();const lista=(Array.isArray(dados)?dados:[]).filter(a=>String(a.status||"ativo").toLowerCase()==="ativo");if(!lista.length){track.innerHTML='<span class="pititico-ad-item"><span class="pititico-ad-fallback">📢</span><span class="pititico-ad-text"><span class="pititico-ad-title">Espaço para anúncios</span><span class="pititico-ad-desc">Cadastre no painel admin</span></span></span>';return;}const cards=lista.map(a=>{let link=String(a.link||"").trim();if(!link||link==="#")link="javascript:void(0)";if(link!=="javascript:void(0)"&&!/^https?:\/\//i.test(link))link="https://"+link;const img=String(a.imagem||"").trim();const midia=img?'<img class="pititico-ad-img" src="'+limpar(img)+'" alt="" loading="lazy" onerror="this.outerHTML=&quot;<span class=\\&quot;pititico-ad-fallback\\&quot;>🍼</span>&quot;">':'<span class="pititico-ad-fallback">🍼</span>';const target=link==="javascript:void(0)"?"":' target="_blank" rel="noopener"';return '<a class="pititico-ad-item" href="'+limpar(link)+'"'+target+'>'+midia+'<span class="pititico-ad-text"><span class="pititico-ad-title">'+cortar(a.titulo||"Anúncio PiTiTiCo",32)+'</span><span class="pititico-ad-desc">'+(cortar(a.texto||"",38)||"Toque para saber mais")+'</span></span></a>';}).join("");track.innerHTML=cards+cards;}catch(e){console.error("Erro anúncios v7.9:",e);track.innerHTML='<span class="pititico-ad-item"><span class="pititico-ad-fallback">⚠️</span><span class="pititico-ad-text"><span class="pititico-ad-title">Não foi possível carregar</span><span class="pititico-ad-desc">Verifique a conexão</span></span></span>';}};
+window.controlarAnunciosPorMenu=function(){pititicoLimparAdsDuplicadosV79();const regras=document.getElementById("regras");const ativa=regras&&regras.classList.contains("active");let box=document.getElementById("pititicoAdsBox");if(ativa){if(box){box.classList.remove("ads-hidden");box.style.display="block";}window.carregarAnunciosPititico();}else if(box){box.classList.add("ads-hidden");box.style.display="none";}};
+window.addEventListener("load",()=>{setTimeout(controlarAnunciosPorMenu,500);setTimeout(controlarAnunciosPorMenu,1600);setTimeout(controlarAnunciosPorMenu,3200);});document.addEventListener("click",()=>setTimeout(controlarAnunciosPorMenu,150));
+
+</script>
 </body>
 </html>
