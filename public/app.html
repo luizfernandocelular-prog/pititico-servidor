@@ -1527,7 +1527,7 @@
     }
 
   
-    /* v7.4 - correção login separado do app */
+    /* v7.5 - Login separado e sessão persistente */
     .login-screen {
       display: none !important;
     }
@@ -1554,10 +1554,6 @@
 
     .login-screen:not(.show) ~ #app {
       display: block !important;
-    }
-
-    body:has(.login-screen.show) {
-      overflow: hidden !important;
     }
 
   </style>
@@ -1799,7 +1795,7 @@
   </div>
 
 
-  <div class="pititico-version-badge">v7.4 • login corrigido</div>
+  <div class="pititico-version-badge">v7.5 • sessão corrigida</div>
 
   <a class="support-whatsapp" href="https://wa.me/5521997180033?text=Olá,%20preciso%20de%20suporte%20no%20app%20PiTiTiCo." target="_blank">☘</a>
 
@@ -2047,35 +2043,6 @@
 
   <script>
     const STORAGE_BASE_KEY = "pititico_dados_usuario_v1";
-
-    function pititicoMostrarAppSeguro() {
-      const loginScreen = document.getElementById("loginScreen");
-      const appEl = document.getElementById("app");
-      if (loginScreen) {
-        loginScreen.classList.remove("show");
-      pititicoMostrarAppSeguro();
-        loginScreen.style.display = "none";
-      }
-      if (appEl) {
-        appEl.style.display = "block";
-      }
-      document.body.style.overflow = "";
-    }
-
-    function pititicoMostrarLoginSeguro() {
-      const loginScreen = document.getElementById("loginScreen");
-      const appEl = document.getElementById("app");
-      if (loginScreen) {
-        loginScreen.classList.add("show");
-        loginScreen.style.display = "flex";
-      }
-      if (appEl) {
-        appEl.style.display = "none";
-      }
-      document.body.style.overflow = "hidden";
-    }
-
-
     const API_PITITICO = "https://pititico-servidor.onrender.com";
 
     let acaoConfirmada = null;
@@ -2284,12 +2251,16 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
 
     function mostrarLogin(forcar = false, modo = "login") {
       const tela = document.getElementById("loginScreen");
+      const appEl = document.getElementById("app");
       if (!tela) return;
 
       mostrarAuth(modo);
 
       if (usuarioAtual && !forcar) {
         tela.classList.remove("show");
+        tela.style.display = "none";
+        if (appEl) appEl.style.display = "block";
+        document.body.style.overflow = "";
         return;
       }
 
@@ -2301,11 +2272,20 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
       }
 
       tela.classList.add("show");
+      tela.style.display = "flex";
+      if (appEl) appEl.style.display = "none";
+      document.body.style.overflow = "hidden";
     }
 
     function esconderLogin() {
       const tela = document.getElementById("loginScreen");
-      if (tela) tela.classList.remove("show");
+      const appEl = document.getElementById("app");
+      if (tela) {
+        tela.classList.remove("show");
+        tela.style.display = "none";
+      }
+      if (appEl) appEl.style.display = "block";
+      document.body.style.overflow = "";
     }
 
     function renderPerfilSuperior() {
@@ -2382,7 +2362,7 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
         return;
       }
 
-      usuarioAtual = { ...usuario, deviceId: usuario.deviceId || gerarDeviceId() };
+      usuarioAtual = { ...usuario, email: usuario.email || email, senha: usuario.senha || senha, deviceId: usuario.deviceId || gerarDeviceId() };
       localStorage.setItem("pititico_usuario", JSON.stringify(usuarioAtual));
       renderPerfilSuperior();
       esconderLogin();
@@ -3291,16 +3271,6 @@ setTimeout(carregarAnunciosPititico, 1800);
     renderAtividadesManuais();
     renderApoios();
     atualizarListasBasicas();
-  
-    window.addEventListener("DOMContentLoaded", function() {
-      const usuarioSalvo = localStorage.getItem("pititicoUser") || localStorage.getItem("pititicoUsuario") || localStorage.getItem("usuarioAtual");
-      if (usuarioSalvo) {
-        pititicoMostrarAppSeguro();
-      } else {
-        pititicoMostrarLoginSeguro();
-      }
-    });
-
   </script>
 </body>
 </html>
