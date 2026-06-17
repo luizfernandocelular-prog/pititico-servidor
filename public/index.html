@@ -1668,6 +1668,31 @@
 #pititicoAdsBox.ads-hidden{display:none!important}
 #pititicoAdsBox:not(.ads-hidden){display:block!important;visibility:visible!important;opacity:1!important}
 
+
+/* v1.0 - limpeza visual */
+.info-box,
+.alert-info,
+.help-box,
+.notice,
+.tip-box,
+.blue-info,
+.form-hint,
+.hint-box,
+.pititico-info,
+.pititico-alert,
+.pititico-help,
+.pititico-message,
+[class*="info"],
+[class*="hint"],
+[class*="aviso"] {
+  display: none !important;
+}
+.pititico-ad-info,
+.user-info,
+.item-info {
+  display: initial !important;
+}
+
 </style>
 </head>
 
@@ -1805,7 +1830,7 @@
         <div class="section-head-row">
           <div>
             <h2>👶 Meus Bebês</h2>
-            <p class="small">Aqui ficam todos os bebês cadastrados no aplicativo.</p>
+            <p class="small"></p>
           </div>
           <button class="action" onclick="abrirModalBebe()">+ Adicionar bebê</button>
         </div>
@@ -1815,7 +1840,7 @@
 
       <section id="rotina" class="card">
         <h2>🍼 Rotina do Bebê</h2>
-        <div class="notice">Cadastre novas rotinas em tela flutuante para deixar o menu mais limpo.</div>
+        <div class="notice"></div>
         <div class="floating-actions">
           <button class="action" onclick="abrirModalRotina()">+ Adicionar rotina</button>
         </div>
@@ -1845,7 +1870,7 @@
 
       <section id="atividades" class="card">
         <h2>🧩 Atividades por Faixa Etária</h2>
-        <div class="notice">Abra a tela flutuante para consultar atividades por idade ou cadastrar uma atividade manual.</div>
+        <div class="notice"></div>
         <div class="floating-actions">
           <button class="action" onclick="abrirModalAtividades()">Ver / cadastrar atividades</button>
         </div>
@@ -1894,7 +1919,7 @@
         <h2>📋 Regras do PiTiTiCo</h2>
 
         <div class="notice">
-          Toque em cada botão para abrir as regras em uma tela flutuante.
+          
         </div>
 
         <div class="rule-buttons">
@@ -1921,7 +1946,7 @@
   </div>
 
 
-  <div class="pititico-version-badge">v7.9 • anúncios final</div>
+  <div class="pititico-version-badge">v1.0</div>
 
   <a class="support-whatsapp" href="https://wa.me/5521997180033?text=Olá,%20preciso%20de%20suporte%20no%20app%20PiTiTiCo." target="_blank">☘</a>
 
@@ -2170,8 +2195,8 @@
   <script>
     const STORAGE_BASE_KEY = "pititico_dados_usuario_v1";
 
-    const PITITICO_APP_VERSION = "7.9";
-    const PITITICO_APP_CODE = 79;
+    const PITITICO_APP_VERSION = "1.0";
+    const PITITICO_APP_CODE = 10;
     const PITITICO_VERSION_URL = "https://pititico-servidor.onrender.com/versao.json";
 
     function pititicoVersaoNumero(v) {
