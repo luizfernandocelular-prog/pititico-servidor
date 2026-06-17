@@ -41,9 +41,24 @@ pre{white-space:pre-wrap;background:#f8f4f8;border-radius:14px;padding:12px;over
 .preview{display:flex;gap:12px;align-items:center;background:#ffeaf4;border-radius:999px;padding:10px;margin-top:12px}
 .preview img,.preview .fallback{width:58px;height:58px;border-radius:999px;background:#fff;object-fit:cover;display:grid;place-items:center;font-size:28px;flex:0 0 58px}
 @media(max-width:980px){.layout{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}h1{font-size:32px}.wrap{padding:18px}}
+
+.admin-lock{position:fixed;inset:0;z-index:999999;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#fff4fa,#ffeaf5,#f7ddff);padding:20px}
+.admin-lock-card{width:min(420px,94vw);background:#fff;border-radius:28px;padding:28px;box-shadow:0 25px 70px rgba(100,45,90,.25)}
+.admin-lock-card h2{margin:0 0 8px;color:#eb4fa0;font-size:30px}.admin-lock-card p{color:#665a72;font-weight:700}.admin-lock-card input{margin:10px 0 14px}.admin-lock-card button{width:100%}.admin-lock-error{color:#b91c1c;font-weight:900;margin-top:10px;display:none}
 </style>
 </head>
 <body>
+<div id="adminLock" class="admin-lock">
+  <div class="admin-lock-card">
+    <h2>🔒 Admin PiTiTiCo</h2>
+    <p>Digite a senha do administrador para acessar o painel.</p>
+    <label>Senha admin</label>
+    <input id="adminPasswordInput" type="password" placeholder="Digite a senha">
+    <button onclick="adminEntrar()">Entrar no painel</button>
+    <div id="adminLockError" class="admin-lock-error">Senha incorreta ou servidor recusou acesso.</div>
+    <p style="font-size:13px;margin-top:14px">Senha padrão: 1234. Depois você pode mudar no Render.</p>
+  </div>
+</div>
 <div class="wrap">
   <div class="header">
     <div class="logo">👶</div>
@@ -59,7 +74,7 @@ pre{white-space:pre-wrap;background:#f8f4f8;border-radius:14px;padding:12px;over
     <button class="blue" onclick="filtrarItens('todos')">Todos os itens</button>
     <button class="gray" onclick="filtrarItens('ativo')">Itens ativos</button>
     <button class="gray" onclick="filtrarItens('removido')">Itens removidos</button>
-    <button class="green" onclick="abrirModalAnuncio()">+ Novo anúncio</button>
+    <button class="green" onclick="abrirModalAnuncio()">+ Novo anúncio</button><button class="gray" onclick="adminSair()">Sair do Admin</button>
   </div>
 
   <div class="stats">
@@ -119,6 +134,39 @@ pre{white-space:pre-wrap;background:#f8f4f8;border-radius:14px;padding:12px;over
 <div id="modalDados" class="modal"><div class="modal-box"><div class="modal-head"><h2>Dados completos</h2><button class="close" onclick="fecharDados()">Fechar</button></div><pre id="dadosPre"></pre></div></div>
 
 <script>
+
+const ADMIN_STORAGE_KEY = "pititico_admin_password";
+let ADMIN_PASSWORD = localStorage.getItem(ADMIN_STORAGE_KEY) || "";
+
+function adminMostrarBloqueio() {
+  const lock = document.getElementById("adminLock");
+  if (lock) lock.style.display = "flex";
+}
+function adminLiberarPainel() {
+  const lock = document.getElementById("adminLock");
+  if (lock) lock.style.display = "none";
+}
+async function adminEntrar() {
+  const input = document.getElementById("adminPasswordInput");
+  const erro = document.getElementById("adminLockError");
+  ADMIN_PASSWORD = (input?.value || "").trim();
+  if (!ADMIN_PASSWORD) {
+    if (erro) { erro.textContent = "Digite a senha."; erro.style.display = "block"; }
+    return;
+  }
+  localStorage.setItem(ADMIN_STORAGE_KEY, ADMIN_PASSWORD);
+  adminLiberarPainel();
+  await carregarTudo();
+}
+function adminSair() {
+  localStorage.removeItem(ADMIN_STORAGE_KEY);
+  ADMIN_PASSWORD = "";
+  adminMostrarBloqueio();
+}
+function adminHeaders() {
+  return {"Content-Type":"application/json", "x-admin-password": ADMIN_PASSWORD || ""};
+}
+
 const API = location.origin;
 document.getElementById("apiUrl").textContent = API;
 
@@ -132,7 +180,12 @@ function statusBadge(s){ const st=txt(s||"ativo"); return `<span class="badge ${
 async function apiGet(rotas){
   let erro;
   for(const rota of rotas){
-    try{ const r=await fetch(rota,{cache:"no-store"}); if(r.ok)return await r.json(); erro=new Error(rota+" retornou "+r.status); }catch(e){erro=e;}
+    try{
+      const r=await fetch(rota,{cache:"no-store",headers:adminHeaders()});
+      if(r.status===401){adminMostrarBloqueio();throw new Error("Acesso admin não autorizado.");}
+      if(r.ok)return await r.json();
+      erro=new Error(rota+" retornou "+r.status);
+    }catch(e){erro=e;}
   }
   throw erro || new Error("Rota não encontrada");
 }
@@ -140,7 +193,8 @@ async function apiSend(rotas, metodo, body){
   let erro;
   for(const rota of rotas){
     try{
-      const r=await fetch(rota,{method:metodo,headers:{"Content-Type":"application/json"},body:body?JSON.stringify(body):undefined});
+      const r=await fetch(rota,{method:metodo,headers:adminHeaders(),body:body?JSON.stringify(body):undefined});
+      if(r.status===401){adminMostrarBloqueio();throw new Error("Acesso admin não autorizado.");}
       if(r.ok){try{return await r.json()}catch(e){return {ok:true}}}
       erro=new Error(rota+" retornou "+r.status);
     }catch(e){erro=e;}
@@ -149,12 +203,13 @@ async function apiSend(rotas, metodo, body){
 }
 
 async function carregarTudo(){
+  if(!ADMIN_PASSWORD){adminMostrarBloqueio();return;}
   document.getElementById("status").textContent="carregando...";
   try{
     const [u,i,a]=await Promise.all([
-      apiGet(["/usuarios","/admin/usuarios"]),
-      apiGet(["/publicacoes","/admin/publicacoes"]),
-      apiGet(["/anuncios","/admin/anuncios"])
+      apiGet(["/admin/usuarios"]),
+      apiGet(["/admin/publicacoes","/publicacoes"]),
+      apiGet(["/admin/anuncios","/anuncios"])
     ]);
     usuarios=Array.isArray(u)?u:(u.usuarios||[]);
     itens=Array.isArray(i)?i:(i.publicacoes||i.itens||[]);
@@ -197,13 +252,34 @@ function renderAnuncios(){
 function abrirModalAnuncio(){modalTitulo.textContent="Cadastrar anúncio";adId.value="";adTitulo.value="";adTexto.value="";adImagem.value="";adLink.value="";adStatus.value="ativo";modalAnuncio.classList.add("show");}
 function fecharModalAnuncio(){modalAnuncio.classList.remove("show");}
 function editarAnuncio(raw){const a=JSON.parse(raw);modalTitulo.textContent="Editar anúncio";adId.value=idOf(a);adTitulo.value=a.titulo||"";adTexto.value=a.texto||"";adImagem.value=a.imagem||"";adLink.value=a.link||"";adStatus.value=a.status||"ativo";modalAnuncio.classList.add("show");}
-async function salvarAnuncio(){const id=adId.value;const payload={titulo:adTitulo.value.trim(),texto:adTexto.value.trim(),imagem:adImagem.value.trim(),link:adLink.value.trim(),status:adStatus.value};if(!payload.titulo){alert("Informe o título.");return;}try{if(id)await apiSend([`/anuncios/${id}`,`/admin/anuncios/${id}`],"PUT",payload);else await apiSend(["/anuncios","/admin/anuncios"],"POST",payload);fecharModalAnuncio();await carregarTudo();alert("Anúncio salvo.");}catch(e){alert("Erro ao salvar anúncio: "+e.message);}}
-async function excluirAnuncio(id){if(!id){alert("ID não encontrado.");return;}if(!confirm("Excluir este anúncio?"))return;try{await apiSend([`/anuncios/${id}`,`/admin/anuncios/${id}`],"DELETE");await carregarTudo();}catch(e){alert("Erro ao excluir anúncio: "+e.message);}}
-async function alterarStatusUsuario(id,status){if(!id){alert("ID não encontrado.");return;}try{await apiSend([`/usuarios/${id}`,`/admin/usuarios/${id}`],"PUT",{status});await carregarTudo();}catch(e){alert("Erro ao alterar usuário: "+e.message);}}
-async function removerItem(id){if(!id){alert("ID não encontrado.");return;}if(!confirm("Remover este item?"))return;try{await apiSend([`/publicacoes/${id}`,`/admin/publicacoes/${id}`],"DELETE");await carregarTudo();}catch(e){alert("Erro ao remover item: "+e.message);}}
+async function salvarAnuncio(){const id=adId.value;const payload={titulo:adTitulo.value.trim(),texto:adTexto.value.trim(),imagem:adImagem.value.trim(),link:adLink.value.trim(),status:adStatus.value};if(!payload.titulo){alert("Informe o título.");return;}try{if(id)await apiSend([`/admin/anuncios/${id}`],"PUT",payload);else await apiSend(["/admin/anuncios"],"POST",payload);fecharModalAnuncio();await carregarTudo();alert("Anúncio salvo.");}catch(e){alert("Erro ao salvar anúncio: "+e.message);}}
+async function excluirAnuncio(id){if(!id){alert("ID não encontrado.");return;}if(!confirm("Excluir este anúncio?"))return;try{await apiSend([`/admin/anuncios/${id}`],"DELETE");await carregarTudo();}catch(e){alert("Erro ao excluir anúncio: "+e.message);}}
+async function alterarStatusUsuario(id,status){
+  const usuario = usuarios.find(u => String(idOf(u)) === String(id));
+  const email = String(usuario?.email || "").trim().toLowerCase();
+  if(!email){alert("E-mail do usuário não encontrado.");return;}
+  try{
+    if(status === "banido"){
+      if(!confirm("Banir este usuário? Ele não conseguirá acessar o app.")) return;
+      await apiSend(["/admin/usuarios/banir"],"POST",{email});
+    }else{
+      await apiSend(["/admin/usuarios/reativar"],"POST",{email});
+    }
+    await carregarTudo();
+  }catch(e){alert("Erro ao alterar usuário: "+e.message);}
+}
+async function removerItem(id){
+  if(!id){alert("ID não encontrado.");return;}
+  if(!confirm("Remover este item?"))return;
+  try{
+    await apiSend([`/admin/publicacoes/${id}/remover`, `/publicacoes/${id}`],"POST");
+    await carregarTudo();
+  }catch(e){alert("Erro ao remover item: "+e.message);}
+}
 function abrirDados(raw){dadosPre.textContent=JSON.stringify(JSON.parse(raw),null,2);modalDados.classList.add("show");}
 function fecharDados(){modalDados.classList.remove("show");}
-carregarTudo(); setInterval(carregarTudo,30000);
+if(ADMIN_PASSWORD){adminLiberarPainel();carregarTudo();}else{adminMostrarBloqueio();}
+setInterval(function(){if(ADMIN_PASSWORD)carregarTudo();},30000);
 </script>
 </body>
 </html>

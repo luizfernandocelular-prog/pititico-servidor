@@ -1641,7 +1641,59 @@
       }
     }
 
-  </style>
+  
+    /* v7.7 - Correção anúncios carregando */
+    #pititicoAdsBox.ads-hidden { display: none !important; }
+    #pititicoAdsBox:not(.ads-hidden) {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+    #pititicoAdsTrack { min-height: 78px !important; }
+
+  
+    /* v7.8 - anúncios garantidos dentro de Regras */
+    .pititico-rules-ads-fix {
+      margin: 0 auto 18px auto !important;
+      width: min(100%, 980px) !important;
+      display: block !important;
+    }
+    .pititico-rules-ads-fix .pititico-ads-window {
+      overflow: hidden !important;
+    }
+
+  
+/* v7.9 - anuncios final */
+#pititicoRulesAdsBox{display:none!important}
+#pititicoAdsBox.ads-hidden{display:none!important}
+#pititicoAdsBox:not(.ads-hidden){display:block!important;visibility:visible!important;opacity:1!important}
+
+
+/* v1.0 - limpeza visual */
+.info-box,
+.alert-info,
+.help-box,
+.notice,
+.tip-box,
+.blue-info,
+.form-hint,
+.hint-box,
+.pititico-info,
+.pititico-alert,
+.pititico-help,
+.pititico-message,
+[class*="info"],
+[class*="hint"],
+[class*="aviso"] {
+  display: none !important;
+}
+.pititico-ad-info,
+.user-info,
+.item-info {
+  display: initial !important;
+}
+
+</style>
 </head>
 
 <body>
@@ -1778,7 +1830,7 @@
         <div class="section-head-row">
           <div>
             <h2>👶 Meus Bebês</h2>
-            <p class="small">Aqui ficam todos os bebês cadastrados no aplicativo.</p>
+            <p class="small"></p>
           </div>
           <button class="action" onclick="abrirModalBebe()">+ Adicionar bebê</button>
         </div>
@@ -1788,7 +1840,7 @@
 
       <section id="rotina" class="card">
         <h2>🍼 Rotina do Bebê</h2>
-        <div class="notice">Cadastre novas rotinas em tela flutuante para deixar o menu mais limpo.</div>
+        <div class="notice"></div>
         <div class="floating-actions">
           <button class="action" onclick="abrirModalRotina()">+ Adicionar rotina</button>
         </div>
@@ -1818,7 +1870,7 @@
 
       <section id="atividades" class="card">
         <h2>🧩 Atividades por Faixa Etária</h2>
-        <div class="notice">Abra a tela flutuante para consultar atividades por idade ou cadastrar uma atividade manual.</div>
+        <div class="notice"></div>
         <div class="floating-actions">
           <button class="action" onclick="abrirModalAtividades()">Ver / cadastrar atividades</button>
         </div>
@@ -1867,7 +1919,7 @@
         <h2>📋 Regras do PiTiTiCo</h2>
 
         <div class="notice">
-          Toque em cada botão para abrir as regras em uma tela flutuante.
+          
         </div>
 
         <div class="rule-buttons">
@@ -1894,7 +1946,7 @@
   </div>
 
 
-  <div class="pititico-version-badge">v7.6 • atualização automática</div>
+  <div class="pititico-version-badge">v1.0</div>
 
   <a class="support-whatsapp" href="https://wa.me/5521997180033?text=Olá,%20preciso%20de%20suporte%20no%20app%20PiTiTiCo." target="_blank">☘</a>
 
@@ -2143,8 +2195,8 @@
   <script>
     const STORAGE_BASE_KEY = "pititico_dados_usuario_v1";
 
-    const PITITICO_APP_VERSION = "7.6";
-    const PITITICO_APP_CODE = 76;
+    const PITITICO_APP_VERSION = "1.0";
+    const PITITICO_APP_CODE = 10;
     const PITITICO_VERSION_URL = "https://pititico-servidor.onrender.com/versao.json";
 
     function pititicoVersaoNumero(v) {
@@ -3451,6 +3503,244 @@ setTimeout(carregarAnunciosPititico, 1800);
     renderAtividadesManuais();
     renderApoios();
     atualizarListasBasicas();
-  </script>
+  
+    /* v7.7 - override definitivo dos anúncios */
+    window.pititicoAdsCarregadoV77 = false;
+
+    window.carregarAnunciosPititico = async function carregarAnunciosPititicoV77() {
+      const API_ANUNCIOS_PITITICO = (location.origin || "https://pititico-servidor.onrender.com") + "/anuncios";
+
+      let box = document.getElementById("pititicoAdsBox");
+      let track = document.getElementById("pititicoAdsTrack");
+
+      if (!box || !track) {
+        const app = document.getElementById("app") || document.body;
+        const header = app.querySelector(".topbar") || app.querySelector("header");
+        box = document.createElement("div");
+        box.id = "pititicoAdsBox";
+        box.className = "pititico-ads-box";
+        box.innerHTML = `
+          <div class="pititico-ads-title">📢 Anúncios PiTiTiCo</div>
+          <div class="pititico-ads-window">
+            <div id="pititicoAdsTrack" class="pititico-ads-track"></div>
+          </div>
+        `;
+        if (header && header.parentNode) header.insertAdjacentElement("afterend", box);
+        else app.insertAdjacentElement("afterbegin", box);
+        track = document.getElementById("pititicoAdsTrack");
+      }
+
+      box.classList.remove("ads-hidden");
+      box.style.visibility = "visible";
+      box.style.opacity = "1";
+
+      const limpar = (v) => String(v || "").replace(/[<>&"]/g, "").trim();
+      const cortar = (v, n) => {
+        const t = limpar(v);
+        return t.length > n ? t.slice(0, n - 3) + "..." : t;
+      };
+
+      try {
+        const resposta = await fetch(API_ANUNCIOS_PITITICO + "?t=" + Date.now(), { cache: "no-store" });
+        if (!resposta.ok) throw new Error("HTTP " + resposta.status);
+
+        const dados = await resposta.json();
+        const lista = (Array.isArray(dados) ? dados : [])
+          .filter(a => String(a.status || "ativo").toLowerCase() === "ativo");
+
+        if (!lista.length) {
+          track.innerHTML = `
+            <span class="pititico-ad-item">
+              <span class="pititico-ad-fallback">📢</span>
+              <span class="pititico-ad-text">
+                <span class="pititico-ad-title">Espaço para anúncios</span>
+                <span class="pititico-ad-desc">Cadastre no painel admin</span>
+              </span>
+            </span>`;
+          return;
+        }
+
+        const cards = lista.map(a => {
+          const titulo = cortar(a.titulo || "Anúncio PiTiTiCo", 32);
+          const texto = cortar(a.texto || "", 38);
+          let link = String(a.link || "").trim();
+          if (!link || link === "#") link = "javascript:void(0)";
+          if (link !== "javascript:void(0)" && !/^https?:\/\//i.test(link)) link = "https://" + link;
+
+          const imagem = String(a.imagem || "").trim();
+
+          const midia = imagem
+            ? `<img class="pititico-ad-img" src="${limpar(imagem)}" alt="" loading="lazy" onerror="this.outerHTML='<span class=&quot;pititico-ad-fallback&quot;>🍼</span>'">`
+            : `<span class="pititico-ad-fallback">🍼</span>`;
+
+          const target = link === "javascript:void(0)" ? "" : ` target="_blank" rel="noopener"`;
+
+          return `
+            <a class="pititico-ad-item" href="${limpar(link)}"${target}>
+              ${midia}
+              <span class="pititico-ad-text">
+                <span class="pititico-ad-title">${titulo}</span>
+                <span class="pititico-ad-desc">${texto || "Toque para saber mais"}</span>
+              </span>
+            </a>`;
+        }).join("");
+
+        track.innerHTML = cards + cards;
+        window.pititicoAdsCarregadoV77 = true;
+      } catch (erro) {
+        console.error("Erro ao carregar anúncios PiTiTiCo v7.7:", erro);
+        track.innerHTML = `
+          <span class="pititico-ad-item">
+            <span class="pititico-ad-fallback">⚠️</span>
+            <span class="pititico-ad-text">
+              <span class="pititico-ad-title">Não foi possível carregar</span>
+              <span class="pititico-ad-desc">Verifique a conexão</span>
+            </span>
+          </span>`;
+      }
+    };
+
+    window.controlarAnunciosPorMenu = function controlarAnunciosPorMenuV77() {
+      const box = document.getElementById("pititicoAdsBox");
+      if (!box) return;
+
+      const regras = document.getElementById("regras");
+      const bebes = document.getElementById("bebes");
+      const regrasAtiva = regras && regras.classList.contains("active");
+      const bebesAtiva = bebes && bebes.classList.contains("active");
+
+      if (regrasAtiva || bebesAtiva) {
+        box.classList.remove("ads-hidden");
+        box.style.display = "block";
+        window.carregarAnunciosPititico();
+      } else {
+        box.classList.add("ads-hidden");
+        box.style.display = "none";
+      }
+    };
+
+    window.addEventListener("load", function() {
+      setTimeout(window.controlarAnunciosPorMenu, 500);
+      setTimeout(window.controlarAnunciosPorMenu, 1600);
+      setTimeout(window.controlarAnunciosPorMenu, 3200);
+    });
+
+    document.addEventListener("click", function() {
+      setTimeout(window.controlarAnunciosPorMenu, 150);
+    });
+
+  
+    /* v7.8 - anúncios aparecem dentro da página Regras */
+    function pititicoGarantirAdsNasRegras() {
+      const regras = document.getElementById("regras");
+      if (!regras) return;
+
+      let rulesBox = document.getElementById("pititicoRulesAdsBox");
+      if (!rulesBox) {
+        rulesBox = document.createElement("div");
+        rulesBox.id = "pititicoRulesAdsBox";
+        rulesBox.className = "pititico-ads-box pititico-rules-ads-fix";
+        rulesBox.innerHTML =
+          '<div class="pititico-ads-title">📢 Anúncios PiTiTiCo</div>' +
+          '<div class="pititico-ads-window">' +
+          '<div id="pititicoRulesAdsTrack" class="pititico-ads-track">' +
+          '<span class="pititico-ad-item">' +
+          '<span class="pititico-ad-fallback">🍼</span>' +
+          '<span class="pititico-ad-text">' +
+          '<span class="pititico-ad-title">Carregando anúncios...</span>' +
+          '<span class="pititico-ad-desc">PiTiTiCo</span>' +
+          '</span></span></div></div>';
+
+        const primeiroCard = regras.querySelector(".card, .painel, section, .content-card");
+        if (primeiroCard) primeiroCard.insertAdjacentElement("beforebegin", rulesBox);
+        else regras.insertAdjacentElement("afterbegin", rulesBox);
+      }
+
+      const ativa = regras.classList.contains("active");
+      rulesBox.style.display = ativa ? "block" : "none";
+      if (ativa) pititicoCarregarAdsTrack("pititicoRulesAdsTrack");
+    }
+
+    async function pititicoCarregarAdsTrack(trackId) {
+      const track = document.getElementById(trackId);
+      if (!track) return;
+
+      const limpar = (v) => String(v || "").replace(/[<>&"]/g, "").trim();
+      const cortar = (v, n) => {
+        const t = limpar(v);
+        return t.length > n ? t.slice(0, n - 3) + "..." : t;
+      };
+
+      try {
+        const resposta = await fetch((location.origin || "https://pititico-servidor.onrender.com") + "/anuncios?t=" + Date.now(), { cache: "no-store" });
+        if (!resposta.ok) throw new Error("HTTP " + resposta.status);
+
+        const dados = await resposta.json();
+        const lista = (Array.isArray(dados) ? dados : []).filter(a => String(a.status || "ativo").toLowerCase() === "ativo");
+
+        if (!lista.length) {
+          track.innerHTML =
+            '<span class="pititico-ad-item">' +
+            '<span class="pititico-ad-fallback">📢</span>' +
+            '<span class="pititico-ad-text">' +
+            '<span class="pititico-ad-title">Espaço para anúncios</span>' +
+            '<span class="pititico-ad-desc">Cadastre no painel admin</span>' +
+            '</span></span>';
+          return;
+        }
+
+        const cards = lista.map(a => {
+          const titulo = cortar(a.titulo || "Anúncio PiTiTiCo", 32);
+          const texto = cortar(a.texto || "", 38);
+          let link = String(a.link || "").trim();
+          if (!link || link === "#") link = "javascript:void(0)";
+          if (link !== "javascript:void(0)" && !/^https?:\/\//i.test(link)) link = "https://" + link;
+
+          const imagem = String(a.imagem || "").trim();
+          const midia = imagem
+            ? '<img class="pititico-ad-img" src="' + limpar(imagem) + '" alt="" loading="lazy" onerror="this.outerHTML=&quot;<span class=\\&quot;pititico-ad-fallback\\&quot;>🍼</span>&quot;">'
+            : '<span class="pititico-ad-fallback">🍼</span>';
+
+          const target = link === "javascript:void(0)" ? "" : ' target="_blank" rel="noopener"';
+
+          return '<a class="pititico-ad-item" href="' + limpar(link) + '"' + target + '>' +
+            midia +
+            '<span class="pititico-ad-text">' +
+            '<span class="pititico-ad-title">' + titulo + '</span>' +
+            '<span class="pititico-ad-desc">' + (texto || "Toque para saber mais") + '</span>' +
+            '</span></a>';
+        }).join("");
+
+        track.innerHTML = cards + cards;
+      } catch (erro) {
+        console.error("Erro nos anúncios da página Regras:", erro);
+        track.innerHTML =
+          '<span class="pititico-ad-item">' +
+          '<span class="pititico-ad-fallback">⚠️</span>' +
+          '<span class="pititico-ad-text">' +
+          '<span class="pititico-ad-title">Não foi possível carregar</span>' +
+          '<span class="pititico-ad-desc">Verifique a conexão</span>' +
+          '</span></span>';
+      }
+    }
+
+    window.addEventListener("load", function() {
+      setTimeout(pititicoGarantirAdsNasRegras, 700);
+      setTimeout(pititicoGarantirAdsNasRegras, 1800);
+    });
+
+    document.addEventListener("click", function() {
+      setTimeout(pititicoGarantirAdsNasRegras, 150);
+    });
+
+  
+/* v7.9 - anuncios final sem duplicidade e com API fixa */
+const PITITICO_API_ANUNCIOS_FIXA_V79 = "https://pititico-servidor.onrender.com/anuncios";
+function pititicoLimparAdsDuplicadosV79(){document.querySelectorAll("#pititicoRulesAdsBox").forEach(e=>e.remove());const boxes=[...document.querySelectorAll("#pititicoAdsBox")];boxes.slice(1).forEach(e=>e.remove());}
+window.carregarAnunciosPititico=async function(){pititicoLimparAdsDuplicadosV79();let box=document.getElementById("pititicoAdsBox");let track=document.getElementById("pititicoAdsTrack");if(!box||!track){const app=document.getElementById("app")||document.body;const header=app.querySelector(".topbar")||app.querySelector("header");box=document.createElement("div");box.id="pititicoAdsBox";box.className="pititico-ads-box";box.innerHTML='<div class="pititico-ads-title">📢 Anúncios PiTiTiCo</div><div class="pititico-ads-window"><div id="pititicoAdsTrack" class="pititico-ads-track"></div></div>';if(header&&header.parentNode)header.insertAdjacentElement("afterend",box);else app.insertAdjacentElement("afterbegin",box);track=document.getElementById("pititicoAdsTrack");}const limpar=v=>String(v||"").replace(/[<>&"]/g,"").trim();const cortar=(v,n)=>{const t=limpar(v);return t.length>n?t.slice(0,n-3)+"...":t};try{const r=await fetch(PITITICO_API_ANUNCIOS_FIXA_V79+"?t="+Date.now(),{cache:"no-store"});if(!r.ok)throw new Error("HTTP "+r.status);const dados=await r.json();const lista=(Array.isArray(dados)?dados:[]).filter(a=>String(a.status||"ativo").toLowerCase()==="ativo");if(!lista.length){track.innerHTML='<span class="pititico-ad-item"><span class="pititico-ad-fallback">📢</span><span class="pititico-ad-text"><span class="pititico-ad-title">Espaço para anúncios</span><span class="pititico-ad-desc">Cadastre no painel admin</span></span></span>';return;}const cards=lista.map(a=>{let link=String(a.link||"").trim();if(!link||link==="#")link="javascript:void(0)";if(link!=="javascript:void(0)"&&!/^https?:\/\//i.test(link))link="https://"+link;const img=String(a.imagem||"").trim();const midia=img?'<img class="pititico-ad-img" src="'+limpar(img)+'" alt="" loading="lazy" onerror="this.outerHTML=&quot;<span class=\\&quot;pititico-ad-fallback\\&quot;>🍼</span>&quot;">':'<span class="pititico-ad-fallback">🍼</span>';const target=link==="javascript:void(0)"?"":' target="_blank" rel="noopener"';return '<a class="pititico-ad-item" href="'+limpar(link)+'"'+target+'>'+midia+'<span class="pititico-ad-text"><span class="pititico-ad-title">'+cortar(a.titulo||"Anúncio PiTiTiCo",32)+'</span><span class="pititico-ad-desc">'+(cortar(a.texto||"",38)||"Toque para saber mais")+'</span></span></a>';}).join("");track.innerHTML=cards+cards;}catch(e){console.error("Erro anúncios v7.9:",e);track.innerHTML='<span class="pititico-ad-item"><span class="pititico-ad-fallback">⚠️</span><span class="pititico-ad-text"><span class="pititico-ad-title">Não foi possível carregar</span><span class="pititico-ad-desc">Verifique a conexão</span></span></span>';}};
+window.controlarAnunciosPorMenu=function(){pititicoLimparAdsDuplicadosV79();const regras=document.getElementById("regras");const ativa=regras&&regras.classList.contains("active");let box=document.getElementById("pititicoAdsBox");if(ativa){if(box){box.classList.remove("ads-hidden");box.style.display="block";}window.carregarAnunciosPititico();}else if(box){box.classList.add("ads-hidden");box.style.display="none";}};
+window.addEventListener("load",()=>{setTimeout(controlarAnunciosPorMenu,500);setTimeout(controlarAnunciosPorMenu,1600);setTimeout(controlarAnunciosPorMenu,3200);});document.addEventListener("click",()=>setTimeout(controlarAnunciosPorMenu,150));
+
+</script>
 </body>
 </html>

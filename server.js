@@ -10,6 +10,18 @@ const app = express();
 
 app.use(cors());
 app.use(express.json({ limit: "10mb" }));
+
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "1234";
+
+function obterSenhaAdmin(req) {
+  return String(req.headers["x-admin-password"] || req.query.adminSenha || req.body?.adminSenha || "").trim();
+}
+
+function adminProtegido(req, res, next) {
+  if (obterSenhaAdmin(req) === ADMIN_PASSWORD) return next();
+  return res.status(401).json({ sucesso:false, mensagem:"Acesso admin não autorizado." });
+}
+
 app.use(express.static("public"));
 
 const PORTA = process.env.PORT || 3000;
@@ -281,38 +293,7 @@ app.get("/usuarios", async (req, res) => {
   }
 });
 
-
-// ROTA RESUMO DO ADMIN - necessária para o painel admin.html
-app.get("/admin", async (req, res) => {
-  try {
-    await limparExpirados();
-
-    const usuarios = await usuariosCollection.find({}).toArray();
-    const publicacoes = await publicacoesCollection.find({}).toArray();
-
-    res.json({
-      sucesso: true,
-      usuarios,
-      publicacoes,
-      itens: publicacoes,
-      totais: {
-        usuarios: usuarios.length,
-        usuariosAtivos: usuarios.filter(u => (u.status || "ativo") === "ativo").length,
-        usuariosBanidos: usuarios.filter(u => (u.status || "ativo") === "banido").length,
-        publicacoes: publicacoes.length,
-        publicacoesAtivas: publicacoes.filter(p => (p.status || "ativo") === "ativo").length
-      }
-    });
-  } catch (erro) {
-    res.status(500).json({
-      sucesso: false,
-      mensagem: "Erro ao carregar resumo do admin.",
-      detalhe: erro.message
-    });
-  }
-});
-
-app.get("/admin/usuarios", async (req, res) => {
+app.get("/admin/usuarios", adminProtegido, async (req, res) => {
   try {
     await limparExpirados();
 
@@ -341,7 +322,30 @@ app.get("/admin/usuarios", async (req, res) => {
   }
 });
 
-app.delete("/admin/usuarios/:id", async (req, res) => {
+
+app.put("/admin/usuarios/:id", adminProtegido, async (req, res) => {
+  try {
+    const idParam = String(req.params.id || "");
+    const status = req.body.status || "ativo";
+    const filtros = [];
+    if (!isNaN(Number(idParam))) filtros.push({ id: Number(idParam) });
+    if (ObjectId.isValid(idParam)) filtros.push({ _id: new ObjectId(idParam) });
+    if (idParam.includes("@")) filtros.push({ emailLower: idParam.toLowerCase() }, { email: idParam.toLowerCase() });
+
+    const filtro = filtros.length ? { $or: filtros } : { id: -1 };
+    const dados = status === "banido"
+      ? { status: "banido", banidoEm: agoraISO() }
+      : { status: "ativo", reativadoEm: agoraISO() };
+
+    const r = await usuariosCollection.updateOne(filtro, { $set: dados });
+    if (!r.matchedCount) return res.status(404).json({ sucesso:false, mensagem:"Usuário não encontrado." });
+    res.json({ sucesso:true, mensagem: status === "banido" ? "Usuário banido." : "Usuário reativado." });
+  } catch (erro) {
+    res.status(500).json({ sucesso:false, mensagem:"Erro ao alterar usuário.", detalhe:erro.message });
+  }
+});
+
+app.delete("/admin/usuarios/:id", adminProtegido, async (req, res) => {
   try {
     const id = Number(req.params.id);
     const usuario = await usuariosCollection.findOne({ id });
@@ -399,7 +403,7 @@ app.delete("/admin/usuarios/:id", async (req, res) => {
   }
 });
 
-app.post("/admin/usuarios/:id/reativar", async (req, res) => {
+app.post("/admin/usuarios/:id/reativar", adminProtegido, async (req, res) => {
   try {
     const id = Number(req.params.id);
     const usuario = await usuariosCollection.findOne({ id });
@@ -564,7 +568,7 @@ app.get("/minhas-publicacoes", async (req, res) => {
   }
 });
 
-app.get("/admin/publicacoes", async (req, res) => {
+app.get("/admin/publicacoes", adminProtegido, async (req, res) => {
   try {
     await limparExpirados();
 
@@ -726,7 +730,7 @@ app.delete("/dados-pessoais/:tipo/:id", async (req, res) => {
 
 
 // ETAPA 2 - ROTAS ADMIN, USUÁRIOS, ITENS E ANÚNCIOS
-app.get("/admin/anuncios", async (req, res) => {
+app.get("/admin/anuncios", adminProtegido, async (req, res) => {
   try {
     const anuncios = await db.collection("anuncios").find({}).sort({ criadoEm: -1 }).toArray();
     res.json(anuncios);
@@ -744,7 +748,7 @@ app.get("/anuncios", async (req, res) => {
   }
 });
 
-app.post("/admin/anuncios", async (req, res) => {
+app.post("/admin/anuncios", adminProtegido, async (req, res) => {
   try {
     const anuncio = {
       id: Date.now(),
@@ -763,7 +767,7 @@ app.post("/admin/anuncios", async (req, res) => {
   }
 });
 
-app.put("/admin/anuncios/:id", async (req, res) => {
+app.put("/admin/anuncios/:id", adminProtegido, async (req, res) => {
   try {
     const id = req.params.id;
     const filtro = isNaN(Number(id)) ? { _id: new ObjectId(id) } : { id:Number(id) };
@@ -777,7 +781,7 @@ app.put("/admin/anuncios/:id", async (req, res) => {
   }
 });
 
-app.delete("/admin/anuncios/:id", async (req, res) => {
+app.delete("/admin/anuncios/:id", adminProtegido, async (req, res) => {
   try {
     const id = req.params.id;
     const filtro = isNaN(Number(id)) ? { _id: new ObjectId(id) } : { id:Number(id) };
@@ -789,11 +793,11 @@ app.delete("/admin/anuncios/:id", async (req, res) => {
   }
 });
 
-app.post("/admin/usuarios/banir", async (req, res) => {
+app.post("/admin/usuarios/banir", adminProtegido, async (req, res) => {
   try {
     const email = String(req.body.email || "").trim().toLowerCase();
     if (!email) return res.status(400).json({ sucesso:false, mensagem:"E-mail obrigatório." });
-    const r = await db.collection("usuarios").updateOne({ $or: [{ email }, { emailLower: email }] }, { $set:{ status:"banido", banidoEm:agoraISO() } });
+    const r = await db.collection("usuarios").updateOne({ $or:[{ emailLower: email }, { email }] }, { $set:{ status:"banido", banidoEm:agoraISO() } });
     if (!r.matchedCount) return res.status(404).json({ sucesso:false, mensagem:"Usuário não encontrado." });
     res.json({ sucesso:true });
   } catch (erro) {
@@ -801,11 +805,11 @@ app.post("/admin/usuarios/banir", async (req, res) => {
   }
 });
 
-app.post("/admin/usuarios/reativar", async (req, res) => {
+app.post("/admin/usuarios/reativar", adminProtegido, async (req, res) => {
   try {
     const email = String(req.body.email || "").trim().toLowerCase();
     if (!email) return res.status(400).json({ sucesso:false, mensagem:"E-mail obrigatório." });
-    const r = await db.collection("usuarios").updateOne({ $or: [{ email }, { emailLower: email }] }, { $set:{ status:"ativo", reativadoEm:agoraISO() }, $unset:{ banidoEm:"" } });
+    const r = await db.collection("usuarios").updateOne({ $or:[{ emailLower: email }, { email }] }, { $set:{ status:"ativo", reativadoEm:agoraISO() }, $unset:{ banidoEm:"" } });
     if (!r.matchedCount) return res.status(404).json({ sucesso:false, mensagem:"Usuário não encontrado." });
     res.json({ sucesso:true });
   } catch (erro) {
@@ -813,7 +817,7 @@ app.post("/admin/usuarios/reativar", async (req, res) => {
   }
 });
 
-app.post("/admin/publicacoes/:id/remover", async (req, res) => {
+app.post("/admin/publicacoes/:id/remover", adminProtegido, async (req, res) => {
   try {
     const id = req.params.id;
     const filtro = isNaN(Number(id)) ? { _id: new ObjectId(id) } : { id:Number(id) };
