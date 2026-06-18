@@ -51,6 +51,13 @@ pre{white-space:pre-wrap;background:#f8f4f8;border-radius:14px;padding:12px;over
 button.premiumBtn{background:#6b3cc9;color:white}
 button.freeBtn{background:#f5d8ea;color:#9a2969}
 
+
+/* v2.1 - controle Premium no Admin */
+.premiumTag{display:inline-block;background:#efe4ff;color:#6b3cc9;border-radius:999px;padding:5px 9px;font-weight:900;font-size:12px;margin-left:6px}
+.freeTag{display:inline-block;background:#fff0f7;color:#e84b9d;border-radius:999px;padding:5px 9px;font-weight:900;font-size:12px;margin-left:6px}
+button.premiumBtn{background:#6b3cc9!important;color:white!important}
+button.freeBtn{background:#f5d8ea!important;color:#9a2969!important}
+
 </style>
 </head>
 <body>
@@ -260,37 +267,37 @@ async function alterarPlanoUsuario(email, plano){
 }
 
 function renderUsuarios(){
-  setUserTabs(); 
-  const box=usuariosBox; 
-  let lista=usuarios.slice();
+  setUserTabs();
+  const box = usuariosBox;
+  let lista = usuarios.slice();
 
-  if(filtroUsuario==="ativo") lista=lista.filter(u=>(u.status||"ativo")!=="banido");
-  if(filtroUsuario==="banido") lista=lista.filter(u=>(u.status||"")==="banido");
+  if(filtroUsuario === "ativo") lista = lista.filter(u => (u.status || "ativo") !== "banido");
+  if(filtroUsuario === "banido") lista = lista.filter(u => (u.status || "") === "banido");
 
   if(!lista.length){
-    box.innerHTML='<div class="empty">Nenhum usuário encontrado.</div>';
+    box.innerHTML = '<div class="empty">Nenhum usuário encontrado.</div>';
     return;
   }
 
-  box.innerHTML=lista.map(u=>{
-    const uid=idOf(u);
-    const banido=(u.status||"")==="banido";
-    const email=txt(u.email||"");
-    const plano=String(u.plano||"gratis").toLowerCase();
-    const assinatura=String(u.assinaturaStatus||"").toLowerCase();
-    const premium=(u.premiumAtivo===true || plano==="premium" || assinatura==="ativo");
-    const tagPlano=premium?'<span class="premiumTag">Premium</span>':'<span class="freeTag">Gratuito</span>';
+  box.innerHTML = lista.map(u => {
+    const uid = idOf(u);
+    const banido = (u.status || "") === "banido";
+    const email = txt(u.email || "");
+    const plano = String(u.plano || "gratis").toLowerCase();
+    const assinatura = String(u.assinaturaStatus || "").toLowerCase();
+    const premium = (u.premiumAtivo === true || plano === "premium" || assinatura === "ativo");
+    const tagPlano = premium ? '<span class="premiumTag">Premium</span>' : '<span class="freeTag">Gratuito</span>';
     const dias = u.trialDiasRestantes ?? "-";
 
     return `<div class="user">
-      <h3>${txt(u.nome||u.name||"Usuário sem nome")} ${tagPlano}</h3>
-      <p><b>E-mail:</b> ${email||"-"}</p>
-      <p><b>WhatsApp:</b> ${txt(u.whatsapp||u.whats||"-")}</p>
-      <p><b>Status:</b> ${statusBadge(u.status||"ativo")}</p>
-      <p><b>Plano:</b> ${premium?"Premium ativo":"Gratuito"} ${premium?"":`<br><b>Dias grátis restantes:</b> ${txt(dias)}`}</p>
+      <h3>${txt(u.nome || u.name || "Usuário sem nome")} ${tagPlano}</h3>
+      <p><b>E-mail:</b> ${email || "-"}</p>
+      <p><b>WhatsApp:</b> ${txt(u.whatsapp || u.whats || "-")}</p>
+      <p><b>Status:</b> ${statusBadge(u.status || "ativo")}</p>
+      <p><b>Plano:</b> ${premium ? "Premium ativo" : "Gratuito"}${premium ? "" : `<br><b>Dias grátis restantes:</b> ${txt(dias)}`}</p>
 
-      <button class="small ${banido?"green":"red"}" onclick="alterarStatusUsuario('${uid}','${banido?"ativo":"banido"}')">
-        ${banido?"Reativar":"Banir"} usuário
+      <button class="small ${banido ? "green" : "red"}" onclick="alterarStatusUsuario('${uid}','${banido ? "ativo" : "banido"}')">
+        ${banido ? "Reativar" : "Banir"} usuário
       </button>
 
       ${premium
