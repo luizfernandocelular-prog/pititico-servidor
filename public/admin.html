@@ -71,6 +71,12 @@ button.partnerBtn{background:#0ea5e9!important;color:white!important}
 #parceiroAnunciosBox .card img{width:80px;height:80px;border-radius:999px;object-fit:cover;background:#fff0f7}
 @media(max-width:900px){#parceiroAnunciosBox{grid-template-columns:1fr}}
 
+
+/* v3.2 - usuários/parceiros na lateral */
+#parceirosLateralBox .user h3{color:#0ea5e9}
+#buscaLateral:focus{outline:2px solid #eb4fa0}
+.viewActive{background:#eb4fa0!important;color:white!important}
+
 </style>
 </head>
 <body>
@@ -116,6 +122,8 @@ button.partnerBtn{background:#0ea5e9!important;color:white!important}
 
   <div class="actions">
     <button onclick="carregarTudo()">Atualizar painel</button>
+    <button class="blue" id="btnViewUsuarios" onclick="selecionarPainelLateral('usuarios')">Usuários</button>
+    <button class="gray" id="btnViewParceiros" onclick="selecionarPainelLateral('parceiros')">Parceiros</button>
     <button class="blue" onclick="filtrarItens('todos')">Todos os itens</button>
     <button class="gray" onclick="filtrarItens('ativo')">Itens ativos</button>
     <button class="gray" onclick="filtrarItens('removido')">Itens removidos</button>
@@ -134,14 +142,25 @@ button.partnerBtn{background:#0ea5e9!important;color:white!important}
   <div class="layout">
     <aside>
       <div class="card">
-        <h2>Usuários</h2>
-        <p class="help">Controle usuários cadastrados.</p>
-        <div class="tabs">
+        <h2 id="lateralTitulo">Usuários</h2>
+        <p class="help" id="lateralHelp">Controle usuários cadastrados.</p>
+
+        <div class="tabs" id="usuariosTabs">
           <button class="tab active" id="btnUserAtivos" onclick="filtrarUsuarios('ativo')">Ativos</button>
           <button class="tab" id="btnUserBanidos" onclick="filtrarUsuarios('banido')">Banidos</button>
           <button class="tab" id="btnUserTodos" onclick="filtrarUsuarios('todos')">Todos</button>
         </div>
+
+        <div class="tabs" id="parceirosTabs" style="display:none">
+          <button class="tab active" id="btnParceirosAtivos" onclick="filtrarParceiros('ativo')">Ativos</button>
+          <button class="tab" id="btnParceirosBloqueados" onclick="filtrarParceiros('bloqueado')">Bloqueados</button>
+          <button class="tab" id="btnParceirosTodos" onclick="filtrarParceiros('todos')">Todos</button>
+        </div>
+
+        <input id="buscaLateral" placeholder="Buscar por nome, e-mail ou WhatsApp" oninput="renderListaLateral()" style="width:100%;margin:12px 0;padding:13px;border-radius:14px;border:1px solid #f2bddb">
+
         <div id="usuariosBox"></div>
+        <div id="parceirosLateralBox" style="display:none"></div>
       </div>
     </aside>
 
@@ -159,12 +178,7 @@ button.partnerBtn{background:#0ea5e9!important;color:white!important}
       </div>
       <div id="anunciosBox"></div>
     
-<section class="panel" id="parceirosPanel">
-  <h2>🤝 Parceiros Anunciantes</h2>
-  <p>Controle dos parceiros e quantidade de anúncios cadastrados.</p>
-  <button class="green" onclick="abrirModalParceiro()">+ Novo parceiro</button>
-  <div id="parceirosBox" class="cards"></div>
-</section>
+
 
 <div id="modalParceiro" class="modal">
   <div class="modal-content">
@@ -517,7 +531,7 @@ function parceiroSair(){
 const API = location.origin;
 document.getElementById("apiUrl").textContent = API;
 
-let usuarios=[], itens=[], anuncios=[], parceiros=[], filtroUsuario="ativo", filtroItem="ativo";
+let usuarios=[], itens=[], anuncios=[], parceiros=[], filtroUsuario="ativo", filtroParceiro="ativo", filtroItem="ativo", painelLateral="usuarios";
 
 function idOf(obj){ return obj?._id || obj?.id || obj?.codigo || ""; }
 function txt(v){ return String(v ?? "").replace(/[<>&]/g, ""); }
@@ -565,7 +579,7 @@ async function carregarTudo(){
     parceiros=Array.isArray(p)?p:(p.parceiros||[]);
     document.getElementById("status").textContent="conectado";
     document.getElementById("status").style.color="#15803d";
-    atualizarStats(); renderUsuarios(); renderItens(); renderAnuncios(); renderParceiros();
+    atualizarStats(); renderListaLateral(); renderItens(); renderAnuncios();
   }catch(e){
     document.getElementById("status").textContent="erro: "+e.message;
     document.getElementById("status").style.color="#b91c1c";
@@ -603,12 +617,21 @@ async function alterarPlanoUsuario(email, plano){
 }
 
 function renderUsuarios(){
-  setUserTabs();
   const box = usuariosBox;
   let lista = usuarios.slice();
 
   if(filtroUsuario === "ativo") lista = lista.filter(u => (u.status || "ativo") !== "banido");
   if(filtroUsuario === "banido") lista = lista.filter(u => (u.status || "") === "banido");
+
+  const busca = (document.getElementById("buscaLateral")?.value || "").trim().toLowerCase();
+  if(busca){
+    lista = lista.filter(u => {
+      const alvo = `${u.nome||""} ${u.name||""} ${u.email||""} ${u.whatsapp||u.whats||""}`.toLowerCase();
+      return alvo.includes(busca);
+    });
+  }
+
+  setUserTabs();
 
   if(!lista.length){
     box.innerHTML = '<div class="empty">Nenhum usuário encontrado.</div>';
@@ -765,6 +788,7 @@ async function salvarParceiro(){
     else await apiSend(["/admin/parceiros"],"POST",payload);
     fecharModalParceiro();
     await carregarTudo();
+    selecionarPainelLateral('parceiros');
     alert("Parceiro salvo.");
   }catch(e){
     alert("Erro ao salvar parceiro: "+e.message);
@@ -795,6 +819,104 @@ window.addEventListener("load", async function(){
     adminMostrarBloqueio();
   }
 });
+
+
+function selecionarPainelLateral(tipo){
+  painelLateral = tipo;
+  const userBox = document.getElementById("usuariosBox");
+  const parceiroBox = document.getElementById("parceirosLateralBox");
+  const userTabs = document.getElementById("usuariosTabs");
+  const parceiroTabs = document.getElementById("parceirosTabs");
+  const titulo = document.getElementById("lateralTitulo");
+  const help = document.getElementById("lateralHelp");
+  const busca = document.getElementById("buscaLateral");
+
+  if(busca) busca.value = "";
+
+  if(tipo === "parceiros"){
+    if(userBox) userBox.style.display = "none";
+    if(parceiroBox) parceiroBox.style.display = "block";
+    if(userTabs) userTabs.style.display = "none";
+    if(parceiroTabs) parceiroTabs.style.display = "flex";
+    if(titulo) titulo.textContent = "Parceiros";
+    if(help) help.textContent = "Controle parceiros anunciantes.";
+    btnViewUsuarios.classList.remove("viewActive");
+    btnViewUsuarios.classList.add("gray");
+    btnViewParceiros.classList.add("viewActive");
+    renderParceirosLateral();
+  } else {
+    if(userBox) userBox.style.display = "block";
+    if(parceiroBox) parceiroBox.style.display = "none";
+    if(userTabs) userTabs.style.display = "flex";
+    if(parceiroTabs) parceiroTabs.style.display = "none";
+    if(titulo) titulo.textContent = "Usuários";
+    if(help) help.textContent = "Controle usuários cadastrados.";
+    btnViewParceiros.classList.remove("viewActive");
+    btnViewParceiros.classList.add("gray");
+    btnViewUsuarios.classList.add("viewActive");
+    renderUsuarios();
+  }
+}
+
+function renderListaLateral(){
+  if(painelLateral === "parceiros") renderParceirosLateral();
+  else renderUsuarios();
+}
+
+function setParceiroTabs(){
+  btnParceirosAtivos.classList.toggle("active", filtroParceiro === "ativo");
+  btnParceirosBloqueados.classList.toggle("active", filtroParceiro === "bloqueado");
+  btnParceirosTodos.classList.toggle("active", filtroParceiro === "todos");
+}
+
+function filtrarParceiros(tipo){
+  filtroParceiro = tipo;
+  renderParceirosLateral();
+}
+
+function renderParceirosLateral(){
+  const box = document.getElementById("parceirosLateralBox");
+  if(!box) return;
+
+  let lista = parceiros.slice();
+
+  if(filtroParceiro === "ativo") lista = lista.filter(p => (p.status || "ativo") !== "bloqueado");
+  if(filtroParceiro === "bloqueado") lista = lista.filter(p => (p.status || "") === "bloqueado");
+
+  const busca = (document.getElementById("buscaLateral")?.value || "").trim().toLowerCase();
+  if(busca){
+    lista = lista.filter(p => {
+      const alvo = `${p.nome||""} ${p.email||""} ${p.whatsapp||""}`.toLowerCase();
+      return alvo.includes(busca);
+    });
+  }
+
+  setParceiroTabs();
+
+  if(!lista.length){
+    box.innerHTML = '<div class="empty">Nenhum parceiro encontrado.</div>';
+    return;
+  }
+
+  box.innerHTML = lista.map(p => {
+    const ads = p.anuncios || [];
+    const listaAds = ads.length
+      ? ads.slice(0,3).map(a => `<div>• ${txt(a.titulo || "Anúncio")} — ${statusBadge(a.status || "ativo")}</div>`).join("")
+      : "<div>Nenhum anúncio deste parceiro.</div>";
+
+    return `<div class="user">
+      <h3>${txt(p.nome || "Parceiro")} <span class="partnerTag">${txt(p.status || "ativo")}</span></h3>
+      <p><b>E-mail:</b> ${txt(p.email || "-")}</p>
+      <p><b>WhatsApp:</b> ${txt(p.whatsapp || "-")}</p>
+      <p><b>Plano:</b> ${txt(p.plano || "basico")}</p>
+      <p><b>Anúncios:</b> ${txt(p.anunciosTotal || 0)} total / ${txt(p.anunciosAtivos || 0)} ativos</p>
+      <p><b>Limite:</b> ${txt(p.limiteAnunciosMes || 3)} anúncios/mês<br><b>Trocas:</b> ${txt(p.limiteTrocasImagemMes || 1)} imagem/mês</p>
+      <div class="partnerAdsList">${listaAds}</div>
+      <button class="small partnerBtn" onclick='editarParceiro(${JSON.stringify(JSON.stringify(p))})'>Editar parceiro</button>
+      <button class="small gray" onclick='abrirDados(${JSON.stringify(JSON.stringify(p))})'>Dados</button>
+    </div>`;
+  }).join("");
+}
 
 </script>
 </body>
