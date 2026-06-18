@@ -1693,7 +1693,224 @@
   display: initial !important;
 }
 
+
+/* v1.2 - ícones decorativos visíveis no Android/WebIntoApp */
+@media (max-width: 720px) {
+  .login-screen::before,
+  .login-screen::after,
+  .login-card::before,
+  .login-card::after {
+    display: block !important;
+    visibility: visible !important;
+    opacity: .18 !important;
+    z-index: 1 !important;
+  }
+  .login-screen::before { content: "🍼" !important; left: 4% !important; top: 9% !important; font-size: 42px !important; }
+  .login-screen::after { content: "🧸" !important; right: 4% !important; top: 9% !important; font-size: 42px !important; }
+  .login-card::before { content: "📅" !important; left: 5% !important; bottom: 16% !important; font-size: 40px !important; }
+  .login-card::after { content: "👕" !important; right: 5% !important; top: 30% !important; font-size: 40px !important; }
+}
+
+
+/* v1.3 - anúncio flutuante e plano gratuito 90 dias */
+.pititico-login-ad-modal {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 100000 !important;
+  display: none !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 18px !important;
+  background: rgba(47, 20, 45, .42) !important;
+  backdrop-filter: blur(5px) !important;
+}
+.pititico-login-ad-modal.show { display: flex !important; }
+.pititico-login-ad-card {
+  width: min(430px, 94vw) !important;
+  background: #fff !important;
+  border-radius: 28px !important;
+  padding: 22px !important;
+  box-shadow: 0 24px 70px rgba(60, 24, 55, .28) !important;
+  text-align: center !important;
+  border: 1px solid rgba(255,255,255,.75) !important;
+}
+.pititico-login-ad-img {
+  width: 92px !important;
+  height: 92px !important;
+  border-radius: 999px !important;
+  object-fit: cover !important;
+  background: #ffeaf4 !important;
+  display: grid !important;
+  place-items: center !important;
+  margin: 0 auto 12px !important;
+  font-size: 44px !important;
+}
+.pititico-login-ad-card h2 {
+  color: #f0529f !important;
+  margin: 0 0 8px !important;
+  font-size: 25px !important;
+}
+.pititico-login-ad-card p {
+  color: #5d5068 !important;
+  line-height: 1.45 !important;
+  font-weight: 700 !important;
+}
+.pititico-login-ad-actions {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 10px !important;
+  margin-top: 16px !important;
+}
+.pititico-login-ad-actions button,
+.pititico-login-ad-actions a {
+  border: 0 !important;
+  border-radius: 16px !important;
+  padding: 13px 12px !important;
+  font-weight: 1000 !important;
+  cursor: pointer !important;
+  text-decoration: none !important;
+  display: grid !important;
+  place-items: center !important;
+}
+.pititico-ad-close { background: #f3e8f2 !important; color: #5d5068 !important; }
+.pititico-ad-open { background: linear-gradient(135deg,#ef6eb8,#e84b9d) !important; color: #fff !important; }
+.pititico-trial-box {
+  margin: 10px 0 0 !important;
+  padding: 10px 12px !important;
+  border-radius: 16px !important;
+  background: #fff0f7 !important;
+  color: #6a4e61 !important;
+  font-weight: 900 !important;
+  font-size: 13px !important;
+  line-height: 1.35 !important;
+}
+.pititico-app-locked {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 100001 !important;
+  background: linear-gradient(135deg,#fff4fa,#ffe0f0,#f3ddff) !important;
+  display: none !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 20px !important;
+}
+.pititico-app-locked.show { display: flex !important; }
+.pititico-app-locked-card {
+  background: white !important;
+  border-radius: 30px !important;
+  padding: 26px !important;
+  width: min(440px, 94vw) !important;
+  text-align: center !important;
+  box-shadow: 0 24px 70px rgba(60, 24, 55, .25) !important;
+}
+.pititico-app-locked-card h2 { color:#f0529f !important; margin:0 0 10px !important; }
+@media (max-width: 420px) {
+  .pititico-login-ad-actions { grid-template-columns: 1fr !important; }
+}
+
 </style>
+
+<script data-pititico="v1.2-cache-clean-before-load">
+(function(){
+  try {
+    localStorage.removeItem("pititico_usuario");
+    localStorage.removeItem("pititico_usuarios_cadastrados");
+    Object.keys(localStorage).forEach(function(k){
+      var kl = String(k).toLowerCase();
+      if (kl.includes("usuario") || kl.includes("user") || kl.includes("login") || kl.includes("sessao") || kl.includes("session") || kl.includes("auth")) {
+        localStorage.removeItem(k);
+      }
+    });
+    sessionStorage.clear();
+  } catch(e) {}
+})();
+
+/* v1.3 - anúncio no login + 90 dias grátis */
+async function pititicoMostrarAnuncioLogin() {
+  const modal = document.getElementById("pititicoLoginAdModal");
+  if (!modal) return;
+
+  const hoje = new Date().toISOString().slice(0,10);
+  const visto = sessionStorage.getItem("pititico_login_ad_visto");
+  if (visto === hoje) return;
+
+  const titulo = document.getElementById("pititicoLoginAdTitle");
+  const texto = document.getElementById("pititicoLoginAdText");
+  const imgBox = document.getElementById("pititicoLoginAdImage");
+  const link = document.getElementById("pititicoLoginAdLink");
+
+  try {
+    const r = await fetch("https://pititico-servidor.onrender.com/anuncios?t=" + Date.now(), { cache: "no-store" });
+    if (r.ok) {
+      const dados = await r.json();
+      const lista = (Array.isArray(dados) ? dados : []).filter(a => String(a.status || "ativo").toLowerCase() === "ativo");
+      if (lista.length) {
+        const ad = lista[0];
+        if (titulo) titulo.textContent = ad.titulo || "Anúncio PiTiTiCo";
+        if (texto) texto.textContent = ad.texto || "Oferta especial para famílias.";
+        if (link) {
+          let href = String(ad.link || "#").trim();
+          if (href && href !== "#" && !/^https?:\/\//i.test(href)) href = "https://" + href;
+          link.href = href || "#";
+          link.style.display = href && href !== "#" ? "grid" : "none";
+        }
+        if (imgBox && ad.imagem) {
+          imgBox.innerHTML = '<img src="' + String(ad.imagem).replace(/[<>&"]/g,"") + '" style="width:92px;height:92px;border-radius:999px;object-fit:cover" onerror="this.parentNode.innerHTML=\'🍼\'">';
+        }
+      }
+    }
+  } catch(e) {}
+
+  modal.classList.add("show");
+  sessionStorage.setItem("pititico_login_ad_visto", hoje);
+}
+
+function pititicoFecharAnuncioLogin() {
+  const modal = document.getElementById("pititicoLoginAdModal");
+  if (modal) modal.classList.remove("show");
+}
+
+function pititicoAvisoTrial(usuario) {
+  if (!usuario) return;
+
+  const dias = Number(usuario.trialDiasRestantes ?? 90);
+  let box = document.getElementById("pititicoTrialBox");
+
+  if (!box) {
+    box = document.createElement("div");
+    box.id = "pititicoTrialBox";
+    box.className = "pititico-trial-box";
+    const pop = document.getElementById("perfilDados");
+    if (pop && pop.parentNode) pop.insertAdjacentElement("afterend", box);
+  }
+
+  if (usuario.premiumAtivo || usuario.plano === "premium") {
+    box.innerHTML = "Plano Premium ativo.";
+  } else {
+    box.innerHTML = "Plano gratuito: " + Math.max(0, dias) + " dia(s) restantes dos 90 dias.";
+  }
+}
+
+function pititicoBloquearApp(mensagem) {
+  const lock = document.getElementById("pititicoAppLocked");
+  if (lock) {
+    const p = lock.querySelector("p");
+    if (p && mensagem) p.textContent = mensagem;
+    lock.classList.add("show");
+  } else {
+    alert(mensagem || "Acesso gratuito expirado.");
+  }
+}
+
+window.addEventListener("load", function() {
+  setTimeout(function() {
+    const login = document.getElementById("loginScreen");
+    if (login && login.classList.contains("show")) pititicoMostrarAnuncioLogin();
+  }, 900);
+});
+
+</script>
+
 </head>
 
 <body>
@@ -1739,6 +1956,28 @@
       </div>
     </div>
   </div>
+
+  
+<div id="pititicoLoginAdModal" class="pititico-login-ad-modal">
+  <div class="pititico-login-ad-card">
+    <div id="pititicoLoginAdImage" class="pititico-login-ad-img">🍼</div>
+    <h2 id="pititicoLoginAdTitle">PiTiTiCo</h2>
+    <p id="pititicoLoginAdText">Conheça ofertas e novidades para mães e bebês.</p>
+    <div class="pititico-login-ad-actions">
+      <button class="pititico-ad-close" type="button" onclick="pititicoFecharAnuncioLogin()">Continuar</button>
+      <a id="pititicoLoginAdLink" class="pititico-ad-open" href="#" target="_blank" rel="noopener">Ver anúncio</a>
+    </div>
+  </div>
+</div>
+
+<div id="pititicoAppLocked" class="pititico-app-locked">
+  <div class="pititico-app-locked-card">
+    <h2>Acesso gratuito expirado</h2>
+    <p>Seu período gratuito de 90 dias terminou. Em breve você poderá ativar o Premium para continuar usando todos os recursos.</p>
+    <button class="action" onclick="trocarUsuario()">Entrar com outra conta</button>
+  </div>
+</div>
+
 
   <div class="splash">
     <div class="splash-baby">👶</div>
@@ -1946,7 +2185,7 @@
   </div>
 
 
-  <div class="pititico-version-badge">v1.0</div>
+  <div class="pititico-version-badge">v1.3</div>
 
   <a class="support-whatsapp" href="https://wa.me/5521997180033?text=Olá,%20preciso%20de%20suporte%20no%20app%20PiTiTiCo." target="_blank">☘</a>
 
@@ -2290,17 +2529,7 @@
 
     function dadosPadrao() {
       return {
-        bebes: [
-          {
-            nome: "Maria Clara",
-            peso: "",
-            altura: "",
-            nascimento: "2026-01-22",
-            sangue: "Não informado",
-            obs: "Exemplo para teste.",
-            emoji: "👶"
-          }
-        ],
+        bebes: [],
         rotinas: [],
         publicacoes: [],
         apoios: [],
@@ -2389,15 +2618,11 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
     }
 
     function getUsuariosCadastrados() {
-      try {
-        return JSON.parse(localStorage.getItem("pititico_usuarios_cadastrados") || "[]");
-      } catch (e) {
-        return [];
-      }
+      return [];
     }
 
     function salvarUsuariosCadastrados(lista) {
-      localStorage.setItem("pititico_usuarios_cadastrados", JSON.stringify(lista));
+      return;
     }
 
     function senhaValida4Numeros(senha) {
@@ -2417,20 +2642,22 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
 
     function carregarUsuarioLocal() {
       try {
-        usuarioAtual = JSON.parse(localStorage.getItem("pititico_usuario") || "null");
-      } catch (e) {
-        usuarioAtual = null;
-      }
-
-      renderPerfilSuperior();
-
-      if (!usuarioAtual || !usuarioAtual.email || !usuarioAtual.senha) {
-        usuarioAtual = null;
         localStorage.removeItem("pititico_usuario");
-        mostrarLogin(true, "login");
-      } else {
-        esconderLogin();
-      }
+        localStorage.removeItem("pititico_usuarios_cadastrados");
+        Object.keys(localStorage).forEach(function(k) {
+          const kl = String(k).toLowerCase();
+          if (kl.includes("usuario") || kl.includes("user") || kl.includes("login") || kl.includes("sessao") || kl.includes("session") || kl.includes("auth")) {
+            localStorage.removeItem(k);
+          }
+        });
+        sessionStorage.clear();
+      } catch (e) {}
+
+      usuarioAtual = null;
+      limparDadosDaSessaoVisual();
+      renderPerfilSuperior();
+      mostrarLogin(true, "login");
+      return null;
     }
 
 
@@ -2472,7 +2699,7 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
           deviceId: resultado.usuario?.deviceId || usuarioAtual.deviceId || gerarDeviceId()
         };
 
-        localStorage.setItem("pititico_usuario", JSON.stringify(usuarioAtual));
+        sessionStorage.setItem("pititico_usuario_sessao", JSON.stringify(usuarioAtual));
         if (typeof renderPerfilSuperior === "function") renderPerfilSuperior();
         return true;
 
@@ -2556,7 +2783,18 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
     }
 
     function trocarUsuario() {
-      localStorage.removeItem("pititico_usuario");
+      try {
+        localStorage.removeItem("pititico_usuario");
+        localStorage.removeItem("pititico_usuarios_cadastrados");
+        Object.keys(localStorage).forEach(function(k) {
+          const kl = String(k).toLowerCase();
+          if (kl.includes("usuario") || kl.includes("user") || kl.includes("login") || kl.includes("sessao") || kl.includes("session") || kl.includes("auth")) {
+            localStorage.removeItem(k);
+          }
+        });
+        sessionStorage.clear();
+      } catch (e) {}
+
       usuarioAtual = null;
       limparDadosDaSessaoVisual();
       renderTudoUsuario();
@@ -2574,30 +2812,42 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
         return;
       }
 
-      let usuarios = getUsuariosCadastrados();
-      let usuario = usuarios.find(u => (u.email || "").toLowerCase() === email && u.senha === senha);
+      try {
+        const resposta = await fetch(API_PITITICO + "/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, senha, deviceId: gerarDeviceId() })
+        });
 
-      if (!usuario) {
-        try {
-          const resposta = await fetch(API_PITITICO + "/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, senha, deviceId: gerarDeviceId() })
-          });
-          const resultado = await resposta.json();
-          if (resposta.ok && resultado.usuario) usuario = resultado.usuario;
-        } catch (erro) {}
+        const resultado = await resposta.json().catch(() => ({}));
+
+        if (!resposta.ok || resultado.sucesso === false || !resultado.usuario) {
+          if (resultado.usuario && resultado.usuario.trialExpirado) { pititicoBloquearApp(resultado.mensagem); } else { abrirModal("Login não autorizado", resultado.mensagem || "Usuário não encontrado, senha incorreta, conta excluída ou banida.", () => {}); }
+          return;
+        }
+
+        if (String(resultado.usuario.status || "ativo").toLowerCase() === "banido") {
+          abrirModal("Acesso bloqueado", "Este usuário foi banido e não pode acessar o aplicativo.", () => {});
+          return;
+        }
+
+        usuarioAtual = {
+          ...resultado.usuario,
+          email: resultado.usuario.email || email,
+          senha: senha,
+          deviceId: resultado.usuario.deviceId || gerarDeviceId()
+        };
+
+        sessionStorage.setItem("pititico_usuario_sessao", JSON.stringify(usuarioAtual));
+
+        renderPerfilSuperior();
+        esconderLogin();
+        carregarDados();
+        renderTudoUsuario();
+
+      } catch (erro) {
+        abrirModal("Servidor indisponível", "Não foi possível validar seu login no servidor. Tente novamente com internet.", () => {});
       }
-
-      if (!usuario) {
-        abrirModal("Login não encontrado", "Confira seu e-mail e senha ou faça um novo cadastro.", () => mostrarAuth("cadastro"));
-        return;
-      }
-
-      usuarioAtual = { ...usuario, email: usuario.email || email, senha: usuario.senha || senha, deviceId: usuario.deviceId || gerarDeviceId() };
-      localStorage.setItem("pititico_usuario", JSON.stringify(usuarioAtual));
-      renderPerfilSuperior();
-      esconderLogin();
     }
 
     async function salvarUsuarioInicial() {
@@ -2627,6 +2877,7 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
           localStorage.removeItem("pititico_usuario");
           usuarioAtual = null;
           if (typeof renderPerfilSuperior === "function") renderPerfilSuperior();
+          if (resultado.usuario && resultado.usuario.trialExpirado) { pititicoBloquearApp(resultado.mensagem); return; }
           abrirModal("Acesso bloqueado", resultado.mensagem || "Não foi possível acessar o aplicativo.", () => {
             mostrarLogin(true);
           });
@@ -2639,9 +2890,10 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
           deviceId: deviceId
         };
 
-        localStorage.setItem("pititico_usuario", JSON.stringify(usuarioAtual));
+        sessionStorage.setItem("pititico_usuario_sessao", JSON.stringify(usuarioAtual));
 
         if (typeof renderPerfilSuperior === "function") renderPerfilSuperior();
+        pititicoAvisoTrial(usuarioAtual);
         if (typeof esconderLogin === "function") esconderLogin();
         limparDadosDaSessaoVisual();
         carregarDados();

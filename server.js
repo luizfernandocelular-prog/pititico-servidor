@@ -52,6 +52,61 @@ function calcularExpiracao() {
   return data.toISOString();
 }
 
+
+const DIAS_GRATIS_APP = Number(process.env.DIAS_GRATIS_APP || 90);
+
+function adicionarDiasISO(dataBase, dias) {
+  const data = new Date(dataBase || agoraISO());
+  data.setDate(data.getDate() + dias);
+  return data.toISOString();
+}
+
+function normalizarUsuarioPlano(usuario) {
+  if (!usuario) return null;
+
+  const inicio = usuario.trialInicio || usuario.criadoEm || agoraISO();
+  const expira = usuario.trialExpiraEm || adicionarDiasISO(inicio, DIAS_GRATIS_APP);
+
+  const agora = new Date();
+  const fim = new Date(expira);
+  const diasRestantes = Math.ceil((fim - agora) / (1000 * 60 * 60 * 24));
+
+  const assinaturaAtiva =
+    usuario.plano === "premium" ||
+    usuario.premiumAtivo === true ||
+    usuario.assinaturaStatus === "ativo";
+
+  return {
+    ...usuario,
+    plano: usuario.plano || "gratis",
+    trialInicio: inicio,
+    trialExpiraEm: expira,
+    trialDiasRestantes: Math.max(0, diasRestantes),
+    trialExpirado: !assinaturaAtiva && diasRestantes <= 0,
+    premiumAtivo: assinaturaAtiva
+  };
+}
+
+function acessoUsuarioBloqueado(usuario) {
+  if (!usuario) return { bloqueado: true, motivo: "Usuário não encontrado." };
+
+  const normalizado = normalizarUsuarioPlano(usuario);
+
+  if (normalizado.status === "banido") {
+    return { bloqueado: true, motivo: "Este usuário foi banido e não pode acessar o aplicativo." };
+  }
+
+  if (normalizado.trialExpirado) {
+    return {
+      bloqueado: true,
+      motivo: "Seu acesso gratuito de 90 dias expirou. Em breve será possível ativar o plano Premium.",
+      usuario: normalizado
+    };
+  }
+
+  return { bloqueado: false, usuario: normalizado };
+}
+
 function estaExpirado(item) {
   if (!item.expiraEm) return false;
   return new Date(item.expiraEm) < new Date();
@@ -194,14 +249,17 @@ app.post("/usuarios", async (req, res) => {
     const emailLower = String(email).toLowerCase();
 
     let usuario =
-      await usuariosCollection.findOne({ deviceId }) ||
-      await usuariosCollection.findOne({ emailLower });
+      await usuariosCollection.findOne({ emailLower }) ||
+      await usuariosCollection.findOne({ deviceId });
 
     if (usuario) {
-      if (usuario.status === "banido") {
+      const checagem = acessoUsuarioBloqueado(usuario);
+
+      if (checagem.bloqueado) {
         return res.status(403).json({
           sucesso: false,
-          mensagem: "Este usuário foi removido/banido e não pode acessar o aplicativo."
+          mensagem: checagem.motivo,
+          usuario: checagem.usuario
         });
       }
 
@@ -216,6 +274,9 @@ app.post("/usuarios", async (req, res) => {
             deviceId,
             senha: senhaFinal,
             status: usuario.status || "ativo",
+            plano: usuario.plano || "gratis",
+            trialInicio: usuario.trialInicio || usuario.criadoEm || agoraISO(),
+            trialExpiraEm: usuario.trialExpiraEm || adicionarDiasISO(usuario.criadoEm || agoraISO(), DIAS_GRATIS_APP),
             atualizadoEm: agoraISO()
           }
         }
@@ -223,6 +284,8 @@ app.post("/usuarios", async (req, res) => {
 
       usuario = await usuariosCollection.findOne({ _id: usuario._id });
     } else {
+      const criadoEm = agoraISO();
+
       usuario = {
         id: Date.now(),
         deviceId,
@@ -232,17 +295,23 @@ app.post("/usuarios", async (req, res) => {
         whatsapp,
         senha: senhaFinal,
         status: "ativo",
-        criadoEm: agoraISO(),
-        atualizadoEm: agoraISO()
+        plano: "gratis",
+        trialInicio: criadoEm,
+        trialExpiraEm: adicionarDiasISO(criadoEm, DIAS_GRATIS_APP),
+        premiumAtivo: false,
+        criadoEm,
+        atualizadoEm: criadoEm
       };
 
       await usuariosCollection.insertOne(usuario);
     }
 
+    const usuarioFinal = normalizarUsuarioPlano(usuario);
+
     res.json({
       sucesso: true,
       mensagem: "Usuária salva com sucesso.",
-      usuario
+      usuario: usuarioFinal
     });
   } catch (erro) {
     res.status(500).json({
@@ -260,18 +329,41 @@ app.post("/login", async (req, res) => {
 
     const usuario = await usuariosCollection.findOne({
       emailLower,
-      senha,
-      status: { $ne: "banido" }
+      senha
     });
 
     if (!usuario) {
       return res.status(401).json({
         sucesso: false,
-        mensagem: "E-mail ou senha inválidos, ou usuário banido."
+        mensagem: "E-mail ou senha inválidos."
       });
     }
 
-    res.json({ sucesso: true, usuario });
+    const checagem = acessoUsuarioBloqueado(usuario);
+
+    if (checagem.bloqueado) {
+      return res.status(403).json({
+        sucesso: false,
+        mensagem: checagem.motivo,
+        usuario: checagem.usuario
+      });
+    }
+
+    const usuarioFinal = checagem.usuario;
+
+    await usuariosCollection.updateOne(
+      { _id: usuario._id },
+      {
+        $set: {
+          ultimoLoginEm: agoraISO(),
+          trialInicio: usuarioFinal.trialInicio,
+          trialExpiraEm: usuarioFinal.trialExpiraEm,
+          plano: usuarioFinal.plano || "gratis"
+        }
+      }
+    );
+
+    res.json({ sucesso: true, usuario: usuarioFinal });
   } catch (erro) {
     res.status(500).json({
       sucesso: false,
@@ -304,7 +396,7 @@ app.get("/admin/usuarios", adminProtegido, async (req, res) => {
       const itens = publicacoes.filter(item => itemPertenceAoUsuario(item, usuario));
 
       return {
-        ...usuario,
+        ...normalizarUsuarioPlano(usuario),
         totalItens: itens.length,
         itensAtivos: itens.filter(i => i.status === "ativo").length,
         itensRemovidos: itens.filter(i => i.status === "removido").length,
@@ -565,6 +657,37 @@ app.get("/minhas-publicacoes", async (req, res) => {
       erro: "Erro ao listar seus itens",
       detalhe: erro.message
     });
+  }
+});
+
+
+app.post("/admin/usuarios/plano", adminProtegido, async (req, res) => {
+  try {
+    const email = String(req.body.email || "").trim().toLowerCase();
+    const plano = String(req.body.plano || "gratis").trim().toLowerCase();
+
+    if (!email) {
+      return res.status(400).json({ sucesso:false, mensagem:"Informe o e-mail do usuário." });
+    }
+
+    const premium = plano === "premium";
+
+    const dados = premium
+      ? { plano:"premium", premiumAtivo:true, assinaturaStatus:"ativo", premiumAtivadoEm:agoraISO(), atualizadoEm:agoraISO() }
+      : { plano:"gratis", premiumAtivo:false, assinaturaStatus:"inativo", atualizadoEm:agoraISO() };
+
+    const r = await usuariosCollection.updateOne(
+      { $or:[{ emailLower: email }, { email }] },
+      { $set: dados }
+    );
+
+    if (!r.matchedCount) {
+      return res.status(404).json({ sucesso:false, mensagem:"Usuário não encontrado." });
+    }
+
+    res.json({ sucesso:true, mensagem: premium ? "Plano Premium ativado." : "Plano gratuito ativado." });
+  } catch (erro) {
+    res.status(500).json({ sucesso:false, mensagem:"Erro ao alterar plano.", detalhe:erro.message });
   }
 });
 
