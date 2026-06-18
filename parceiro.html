@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>PiTiTiCo - Área do Parceiro</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(135deg,#fff4fa,#ffe3f1,#f2ddff);color:#21172f;min-height:100vh}.wrap{max-width:1180px;margin:auto;padding:28px}.top{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:20px}.brand{display:flex;gap:12px;align-items:center}.logo{width:58px;height:58px;border-radius:20px;background:#fff;display:grid;place-items:center;font-size:34px;box-shadow:0 12px 28px rgba(100,40,90,.15)}h1{color:#f0529f;margin:0;font-size:38px}.card{background:#fff;border-radius:26px;padding:24px;box-shadow:0 18px 45px rgba(120,50,100,.14);margin-bottom:18px}.login{max-width:460px;margin:60px auto}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.stat{background:#fff0f7;border-radius:20px;padding:18px}.stat b{display:block;color:#f0529f;font-size:28px;margin-top:8px}.actions{display:flex;gap:10px;flex-wrap:wrap}button,a.btn{border:0;border-radius:16px;padding:13px 18px;font-weight:900;cursor:pointer;text-decoration:none;display:inline-flex;justify-content:center;align-items:center}.pink{background:#e84b9d;color:white}.green{background:#22c76a;color:white}.gray{background:#f0e7f0;color:#554764}.red{background:#ef4444;color:white}.blue{background:#5ec6ee;color:white}input,textarea,select{width:100%;border:1px solid #f2bddb;border-radius:16px;padding:13px;margin:7px 0 13px;font-size:16px;background:#fffaff}label{font-weight:900;color:#4a4057}.ads{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.ad img{width:74px;height:74px;border-radius:999px;object-fit:cover;background:#fff0f7}.badge{display:inline-block;border-radius:999px;padding:5px 10px;background:#dcfce7;color:#15803d;font-weight:900;font-size:12px}.bloqueado{background:#fee2e2;color:#b91c1c}.modal{position:fixed;inset:0;background:rgba(50,20,45,.45);display:none;align-items:center;justify-content:center;padding:16px;z-index:99}.modal.show{display:flex}.modal .box{width:min(560px,96vw);background:white;border-radius:28px;padding:24px;box-shadow:0 25px 70px rgba(0,0,0,.25)}.small{font-size:13px;color:#6d6077;font-weight:700;line-height:1.4}.hidden{display:none!important}@media(max-width:850px){.grid,.ads{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}h1{font-size:30px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><div class="logo">📢</div><div><h1>Área do Parceiro</h1><b>PiTiTiCo Anúncios</b></div></div>
+    <div class="actions"><button class="gray" onclick="sair()">Sair</button></div>
+  </div>
+
+  <section id="loginCard" class="card login">
+    <h2>Login do Parceiro</h2>
+    <p>Entre com o e-mail e senha fornecidos pelo administrador.</p>
+    <label>E-mail</label>
+    <input id="email" placeholder="parceiro@email.com">
+    <label>Senha</label>
+    <input id="senha" type="password" placeholder="Senha">
+    <button class="pink" style="width:100%" onclick="login()">Entrar</button>
+    <p class="small">Você terá acesso somente aos seus anúncios. Não existe acesso à área administrativa do PiTiTiCo.</p>
+  </section>
+
+  <section id="painel" class="hidden">
+    <div class="card">
+      <h2 id="nomeParceiro">Parceiro</h2>
+      <div class="grid">
+        <div class="stat">Plano<b id="plano">-</b></div>
+        <div class="stat">Anúncios do mês<b id="adsMes">0/3</b></div>
+        <div class="stat">Total de anúncios<b id="adsTotal">0</b></div>
+        <div class="stat">Trocas de imagem<b id="trocas">0/1</b></div>
+      </div>
+      <p class="small">
+        Regras: você pode cadastrar até 3 anúncios por mês. Pode editar o texto quando quiser.
+        A imagem só pode ser trocada após 15 dias do cadastro do anúncio e respeitando 1 substituição mensal.
+      </p>
+      <button class="green" onclick="abrirNovo()">+ Novo anúncio</button>
+    </div>
+
+    <div class="card">
+      <h2>Meus anúncios</h2>
+      <div id="lista" class="ads"></div>
+    </div>
+  </section>
+</div>
+
+<div id="modal" class="modal">
+  <div class="box">
+    <h2 id="modalTitulo">Novo anúncio</h2>
+    <input type="hidden" id="adId">
+    <label>Título</label>
+    <input id="adTitulo" maxlength="80">
+    <label>Texto</label>
+    <textarea id="adTexto" rows="4" maxlength="260"></textarea>
+    <label>Imagem URL</label>
+    <input id="adImagem" placeholder="https://...">
+    <p class="small">A imagem só pode ser trocada após 15 dias e apenas 1 vez por mês.</p>
+    <label>Link</label>
+    <input id="adLink" placeholder="https://...">
+    <label>Status</label>
+    <select id="adStatus"><option value="ativo">ativo</option><option value="pausado">pausado</option></select>
+    <div class="actions">
+      <button class="pink" onclick="salvar()">Salvar</button>
+      <button class="gray" onclick="fechar()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = location.origin;
+let parceiro=null, limites=null, anuncios=[];
+
+function headers(){
+  return {"Content-Type":"application/json","x-parceiro-email":parceiro?.email||localStorage.getItem("parceiroEmail")||"","x-parceiro-senha":localStorage.getItem("parceiroSenha")||""};
+}
+function txt(v){return String(v??"").replace(/[<>&]/g,"")}
+function idOf(o){return o?._id || o?.id || ""}
+
+async function login(){
+  const e=email.value.trim().toLowerCase(), s=senha.value.trim();
+  if(!e||!s){alert("Informe e-mail e senha.");return}
+  const r=await fetch(API+"/parceiros/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:e,senha:s})});
+  const d=await r.json().catch(()=>({}));
+  if(!r.ok){alert(d.mensagem||"Login não autorizado.");return}
+  parceiro=d.parceiro; localStorage.setItem("parceiroEmail",e); localStorage.setItem("parceiroSenha",s);
+  loginCard.classList.add("hidden"); painel.classList.remove("hidden"); await carregar();
+}
+async function carregar(){
+  const [meR, adsR]=await Promise.all([
+    fetch(API+"/parceiros/me",{headers:headers(),cache:"no-store"}),
+    fetch(API+"/parceiros/anuncios",{headers:headers(),cache:"no-store"})
+  ]);
+  if(meR.status===401||adsR.status===401){sair();return}
+  const me=await meR.json(); anuncios=await adsR.json();
+  parceiro=me.parceiro; limites=me.limites;
+  nomeParceiro.textContent=parceiro.nome||"Parceiro";
+  plano.textContent=parceiro.plano||"básico";
+  adsMes.textContent=(limites.anunciosMes||0)+"/"+(limites.limiteAnunciosMes||3);
+  adsTotal.textContent=limites.anunciosTotal||anuncios.length;
+  trocas.textContent=(limites.trocasImagemMes||0)+"/"+(limites.limiteTrocasImagemMes||1);
+  render();
+}
+function render(){
+  if(!anuncios.length){lista.innerHTML='<div class="card">Nenhum anúncio cadastrado.</div>';return}
+  lista.innerHTML=anuncios.map(a=>{
+    const img=a.imagem?`<img src="${txt(a.imagem)}" onerror="this.style.display='none'">`:"🍼";
+    const st=(a.status||"ativo");
+    return `<div class="card ad">
+      ${img}
+      <h3>${txt(a.titulo||"Anúncio")}</h3>
+      <p>${txt(a.texto||"-")}</p>
+      <p><span class="badge ${st==='ativo'?'':'bloqueado'}">${txt(st)}</span></p>
+      <p class="small"><b>Criado:</b> ${a.criadoEm?new Date(a.criadoEm).toLocaleDateString("pt-BR"):"-"}</p>
+      <button class="blue" onclick='editar(${JSON.stringify(JSON.stringify(a))})'>Editar</button>
+    </div>`
+  }).join("");
+}
+function abrirNovo(){adId.value="";adTitulo.value="";adTexto.value="";adImagem.value="";adImagem.disabled=false;adLink.value="";adStatus.value="ativo";modalTitulo.textContent="Novo anúncio";modal.classList.add("show")}
+function editar(raw){const a=JSON.parse(raw);adId.value=idOf(a);adTitulo.value=a.titulo||"";adTexto.value=a.texto||"";adImagem.value=a.imagem||"";adImagem.disabled=false;adLink.value=a.link||"";adStatus.value=a.status||"ativo";modalTitulo.textContent="Editar anúncio";modal.classList.add("show")}
+function fechar(){modal.classList.remove("show")}
+async function salvar(){
+  const id=adId.value;
+  const body={titulo:adTitulo.value.trim(),texto:adTexto.value.trim(),imagem:adImagem.value.trim(),link:adLink.value.trim(),status:adStatus.value};
+  if(!body.titulo||!body.texto||!body.imagem){alert("Título, texto e imagem são obrigatórios.");return}
+  const url=id?API+"/parceiros/anuncios/"+id:API+"/parceiros/anuncios";
+  const metodo=id?"PUT":"POST";
+  const r=await fetch(url,{method:metodo,headers:headers(),body:JSON.stringify(body)});
+  const d=await r.json().catch(()=>({}));
+  if(!r.ok){alert(d.mensagem||"Erro ao salvar.");return}
+  fechar(); await carregar(); alert("Anúncio salvo.");
+}
+function sair(){localStorage.removeItem("parceiroEmail");localStorage.removeItem("parceiroSenha");location.reload()}
+window.addEventListener("load",async()=>{
+  const e=localStorage.getItem("parceiroEmail"), s=localStorage.getItem("parceiroSenha");
+  if(e&&s){parceiro={email:e};loginCard.classList.add("hidden");painel.classList.remove("hidden");try{await carregar()}catch(err){sair()}}
+});
+</script>
+</body>
+</html>

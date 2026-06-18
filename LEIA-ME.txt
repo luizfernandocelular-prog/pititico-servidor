@@ -1,16 +1,19 @@
-PiTiTiCo v2.0 - Premium sem anúncios + Admin com controle de plano
+PiTiTiCo v3.0 - Área dos Parceiros
 
-Correções:
-1. Usuário Premium não vê anúncio após login.
-2. Usuário Premium não vê anúncios no menu Regras.
-3. Usuário gratuito continua vendo anúncios após login e no menu Regras.
-4. Admin agora tem botão para Ativar Premium manualmente.
-5. Admin agora tem botão para Desativar Premium manualmente.
-6. Admin mostra tag Premium/Gratuito e dias grátis restantes.
-7. Mantém gratuito 90 dias, sem popup de atualização e badge v1.0.
+Inclui:
+- Login exclusivo do parceiro em /parceiro.html
+- Parceiro só administra os próprios anúncios
+- Limite de 3 anúncios por mês
+- 1 troca de imagem por mês
+- Imagem só pode ser trocada após 15 dias
+- Texto/link/status podem ser editados
+- Parceiro não vê área Admin
+- Admin vê parceiros, quantidade de anúncios e anúncios de cada parceiro
+- Admin pode cadastrar/editar parceiros
 
 Substituir no Render/GitHub:
 server.js
+public/admin.html
+public/parceiro.html
 public/index.html
 public/app.html
-public/admin.html

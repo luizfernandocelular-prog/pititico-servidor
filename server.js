@@ -107,6 +107,54 @@ function acessoUsuarioBloqueado(usuario) {
   return { bloqueado: false, usuario: normalizado };
 }
 
+
+function mesAtual() {
+  return new Date().toISOString().slice(0, 7);
+}
+
+function diasEntre(dataISO) {
+  if (!dataISO) return 9999;
+  const data = new Date(dataISO);
+  if (isNaN(data.getTime())) return 9999;
+  return Math.floor((Date.now() - data.getTime()) / (1000 * 60 * 60 * 24));
+}
+
+function parceiroSeguro(p) {
+  if (!p) return null;
+  const { senha, ...limpo } = p;
+  return limpo;
+}
+
+async function obterParceiroPorCredenciais(req) {
+  const email = String(req.headers["x-parceiro-email"] || req.body?.email || req.query.email || "").trim().toLowerCase();
+  const senha = String(req.headers["x-parceiro-senha"] || req.body?.senha || req.query.senha || "").trim();
+
+  if (!email || !senha) return null;
+
+  return await db.collection("parceiros").findOne({
+    emailLower: email,
+    senha,
+    status: { $ne: "bloqueado" }
+  });
+}
+
+async function parceiroProtegido(req, res, next) {
+  try {
+    const parceiro = await obterParceiroPorCredenciais(req);
+    if (!parceiro) {
+      return res.status(401).json({ sucesso:false, mensagem:"Acesso do parceiro não autorizado." });
+    }
+    req.parceiro = parceiro;
+    next();
+  } catch (erro) {
+    res.status(500).json({ sucesso:false, mensagem:"Erro ao validar parceiro.", detalhe:erro.message });
+  }
+}
+
+function filtroIdAnuncio(id) {
+  return isNaN(Number(id)) ? { _id: new ObjectId(id) } : { id:Number(id) };
+}
+
 function estaExpirado(item) {
   if (!item.expiraEm) return false;
   return new Date(item.expiraEm) < new Date();
@@ -136,6 +184,9 @@ async function conectarMongo() {
   await publicacoesCollection.createIndex({ id: 1 }, { unique: true });
   await publicacoesCollection.createIndex({ status: 1 });
   await publicacoesCollection.createIndex({ donoDeviceId: 1 });
+  await db.collection("parceiros").createIndex({ emailLower: 1 }, { unique: true, sparse: true });
+  await db.collection("anuncios").createIndex({ parceiroId: 1 });
+  await db.collection("anuncios").createIndex({ parceiroEmail: 1 });
 
   console.log("MongoDB conectado:", DB_NAME);
 }
@@ -862,6 +913,295 @@ app.get("/admin/anuncios", adminProtegido, async (req, res) => {
   }
 });
 
+
+// =======================
+// PARCEIROS / ANUNCIANTES
+// =======================
+
+app.get("/admin/parceiros", adminProtegido, async (req, res) => {
+  try {
+    const parceiros = await db.collection("parceiros").find({}).sort({ criadoEm:-1 }).toArray();
+    const anuncios = await db.collection("anuncios").find({}).toArray();
+
+    const resultado = parceiros.map(p => {
+      const pid = String(p._id);
+      const ads = anuncios.filter(a =>
+        String(a.parceiroId || "") === pid ||
+        String(a.parceiroEmail || "").toLowerCase() === String(p.email || "").toLowerCase()
+      );
+
+      const ativos = ads.filter(a => String(a.status || "ativo").toLowerCase() === "ativo").length;
+
+      return {
+        ...parceiroSeguro(p),
+        anunciosTotal: ads.length,
+        anunciosAtivos: ativos,
+        anuncios: ads.map(a => ({
+          _id: a._id,
+          id: a.id,
+          titulo: a.titulo,
+          status: a.status || "ativo",
+          criadoEm: a.criadoEm,
+          atualizadoEm: a.atualizadoEm,
+          imagem: a.imagem,
+          link: a.link
+        }))
+      };
+    });
+
+    res.json(resultado);
+  } catch (erro) {
+    res.status(500).json({ sucesso:false, mensagem:"Erro ao listar parceiros.", detalhe:erro.message });
+  }
+});
+
+app.post("/admin/parceiros", adminProtegido, async (req, res) => {
+  try {
+    const nome = String(req.body.nome || "").trim();
+    const email = String(req.body.email || "").trim().toLowerCase();
+    const senha = String(req.body.senha || "").trim();
+    const whatsapp = String(req.body.whatsapp || "").trim();
+
+    if (!nome || !email || !senha) {
+      return res.status(400).json({ sucesso:false, mensagem:"Nome, e-mail e senha são obrigatórios." });
+    }
+
+    const parceiro = {
+      id: Date.now(),
+      nome,
+      email,
+      emailLower: email,
+      senha,
+      whatsapp,
+      status: req.body.status || "ativo",
+      plano: req.body.plano || "basico",
+      limiteAnunciosMes: Number(req.body.limiteAnunciosMes || 3),
+      limiteTrocasImagemMes: Number(req.body.limiteTrocasImagemMes || 1),
+      criadoEm: agoraISO(),
+      atualizadoEm: agoraISO()
+    };
+
+    await db.collection("parceiros").insertOne(parceiro);
+    res.json({ sucesso:true, parceiro: parceiroSeguro(parceiro) });
+  } catch (erro) {
+    if (String(erro.message).includes("duplicate")) {
+      return res.status(409).json({ sucesso:false, mensagem:"Parceiro já cadastrado com este e-mail." });
+    }
+    res.status(500).json({ sucesso:false, mensagem:"Erro ao cadastrar parceiro.", detalhe:erro.message });
+  }
+});
+
+app.put("/admin/parceiros/:id", adminProtegido, async (req, res) => {
+  try {
+    const id = req.params.id;
+    const filtro = isNaN(Number(id)) ? { _id: new ObjectId(id) } : { id:Number(id) };
+    const dados = {
+      ...req.body,
+      atualizadoEm: agoraISO()
+    };
+    delete dados._id;
+    if (dados.email) {
+      dados.email = String(dados.email).trim().toLowerCase();
+      dados.emailLower = dados.email;
+    }
+    if (dados.limiteAnunciosMes !== undefined) dados.limiteAnunciosMes = Number(dados.limiteAnunciosMes);
+    if (dados.limiteTrocasImagemMes !== undefined) dados.limiteTrocasImagemMes = Number(dados.limiteTrocasImagemMes);
+
+    const r = await db.collection("parceiros").updateOne(filtro, { $set:dados });
+    if (!r.matchedCount) return res.status(404).json({ sucesso:false, mensagem:"Parceiro não encontrado." });
+    res.json({ sucesso:true });
+  } catch (erro) {
+    res.status(500).json({ sucesso:false, mensagem:"Erro ao atualizar parceiro.", detalhe:erro.message });
+  }
+});
+
+app.post("/parceiros/login", async (req, res) => {
+  try {
+    const email = String(req.body.email || "").trim().toLowerCase();
+    const senha = String(req.body.senha || "").trim();
+
+    const parceiro = await db.collection("parceiros").findOne({
+      emailLower: email,
+      senha,
+      status: { $ne:"bloqueado" }
+    });
+
+    if (!parceiro) {
+      return res.status(401).json({ sucesso:false, mensagem:"E-mail ou senha inválidos, ou parceiro bloqueado." });
+    }
+
+    res.json({ sucesso:true, parceiro: parceiroSeguro(parceiro) });
+  } catch (erro) {
+    res.status(500).json({ sucesso:false, mensagem:"Erro ao fazer login do parceiro.", detalhe:erro.message });
+  }
+});
+
+app.get("/parceiros/me", parceiroProtegido, async (req, res) => {
+  try {
+    const parceiro = req.parceiro;
+    const mes = mesAtual();
+
+    const anunciosMes = await db.collection("anuncios").countDocuments({
+      parceiroId: String(parceiro._id),
+      mesCriacao: mes
+    });
+
+    const anunciosTotal = await db.collection("anuncios").countDocuments({
+      parceiroId: String(parceiro._id)
+    });
+
+    res.json({
+      sucesso:true,
+      parceiro: parceiroSeguro(parceiro),
+      limites: {
+        mes,
+        anunciosMes,
+        anunciosTotal,
+        limiteAnunciosMes: Number(parceiro.limiteAnunciosMes || 3),
+        trocasImagemMes: Number(parceiro.trocasImagemMes === mes ? parceiro.trocasImagemUsadasMes || 0 : 0),
+        limiteTrocasImagemMes: Number(parceiro.limiteTrocasImagemMes || 1)
+      }
+    });
+  } catch (erro) {
+    res.status(500).json({ sucesso:false, mensagem:"Erro ao carregar parceiro.", detalhe:erro.message });
+  }
+});
+
+app.get("/parceiros/anuncios", parceiroProtegido, async (req, res) => {
+  try {
+    const parceiro = req.parceiro;
+    const anuncios = await db.collection("anuncios")
+      .find({ parceiroId: String(parceiro._id) })
+      .sort({ criadoEm:-1 })
+      .toArray();
+
+    res.json(anuncios);
+  } catch (erro) {
+    res.status(500).json({ sucesso:false, mensagem:"Erro ao listar anúncios do parceiro.", detalhe:erro.message });
+  }
+});
+
+app.post("/parceiros/anuncios", parceiroProtegido, async (req, res) => {
+  try {
+    const parceiro = req.parceiro;
+    const mes = mesAtual();
+    const limite = Number(parceiro.limiteAnunciosMes || 3);
+
+    const criadosMes = await db.collection("anuncios").countDocuments({
+      parceiroId: String(parceiro._id),
+      mesCriacao: mes
+    });
+
+    if (criadosMes >= limite) {
+      return res.status(403).json({
+        sucesso:false,
+        mensagem:`Limite mensal atingido. Este plano permite ${limite} anúncios por mês.`
+      });
+    }
+
+    const titulo = String(req.body.titulo || "").trim();
+    const texto = String(req.body.texto || "").trim();
+    const imagem = String(req.body.imagem || "").trim();
+    const link = String(req.body.link || "").trim();
+
+    if (!titulo || !texto || !imagem) {
+      return res.status(400).json({ sucesso:false, mensagem:"Título, texto e imagem são obrigatórios." });
+    }
+
+    const anuncio = {
+      id: Date.now(),
+      parceiroId: String(parceiro._id),
+      parceiroNome: parceiro.nome,
+      parceiroEmail: parceiro.email,
+      mesCriacao: mes,
+      titulo,
+      texto,
+      imagem,
+      link,
+      status: "ativo",
+      origem: "parceiro",
+      trocasImagem: 0,
+      criadoEm: agoraISO(),
+      atualizadoEm: agoraISO(),
+      imagemCriadaEm: agoraISO(),
+      ultimaTrocaImagem: agoraISO()
+    };
+
+    await db.collection("anuncios").insertOne(anuncio);
+    res.json({ sucesso:true, anuncio });
+  } catch (erro) {
+    res.status(500).json({ sucesso:false, mensagem:"Erro ao cadastrar anúncio.", detalhe:erro.message });
+  }
+});
+
+app.put("/parceiros/anuncios/:id", parceiroProtegido, async (req, res) => {
+  try {
+    const parceiro = req.parceiro;
+    const id = req.params.id;
+    const filtro = filtroIdAnuncio(id);
+
+    const anuncio = await db.collection("anuncios").findOne({
+      ...filtro,
+      parceiroId: String(parceiro._id)
+    });
+
+    if (!anuncio) return res.status(404).json({ sucesso:false, mensagem:"Anúncio não encontrado." });
+
+    const dados = {
+      titulo: String(req.body.titulo || anuncio.titulo || "").trim(),
+      texto: String(req.body.texto || anuncio.texto || "").trim(),
+      link: String(req.body.link || anuncio.link || "").trim(),
+      status: String(req.body.status || anuncio.status || "ativo").trim(),
+      atualizadoEm: agoraISO()
+    };
+
+    const novaImagem = String(req.body.imagem || "").trim();
+    const imagemMudou = novaImagem && novaImagem !== String(anuncio.imagem || "");
+
+    if (imagemMudou) {
+      const idadeDias = diasEntre(anuncio.criadoEm || anuncio.imagemCriadaEm);
+      if (idadeDias < 15) {
+        return res.status(403).json({
+          sucesso:false,
+          mensagem:`A imagem só pode ser substituída após 15 dias. Faltam ${15 - idadeDias} dia(s). O texto pode ser editado normalmente.`
+        });
+      }
+
+      const mes = mesAtual();
+      const trocasUsadas = parceiro.trocasImagemMes === mes ? Number(parceiro.trocasImagemUsadasMes || 0) : 0;
+      const limiteTrocas = Number(parceiro.limiteTrocasImagemMes || 1);
+
+      if (trocasUsadas >= limiteTrocas) {
+        return res.status(403).json({
+          sucesso:false,
+          mensagem:`Limite de substituição de imagem atingido. Este plano permite ${limiteTrocas} troca por mês.`
+        });
+      }
+
+      dados.imagem = novaImagem;
+      dados.ultimaTrocaImagem = agoraISO();
+      dados.trocasImagem = Number(anuncio.trocasImagem || 0) + 1;
+
+      await db.collection("parceiros").updateOne(
+        { _id: parceiro._id },
+        {
+          $set: { trocasImagemMes: mes, atualizadoEm: agoraISO() },
+          $inc: { trocasImagemUsadasMes: 1 }
+        }
+      );
+    }
+
+    const r = await db.collection("anuncios").updateOne(
+      { _id: anuncio._id },
+      { $set: dados }
+    );
+
+    res.json({ sucesso:true });
+  } catch (erro) {
+    res.status(500).json({ sucesso:false, mensagem:"Erro ao atualizar anúncio.", detalhe:erro.message });
+  }
+});
+
 app.get("/anuncios", async (req, res) => {
   try {
     const anuncios = await db.collection("anuncios").find({ status:"ativo" }).sort({ criadoEm: -1 }).toArray();
@@ -880,6 +1220,10 @@ app.post("/admin/anuncios", adminProtegido, async (req, res) => {
       imagem: req.body.imagem || "",
       link: req.body.link || "",
       status: req.body.status || "ativo",
+      origem: req.body.origem || "admin",
+      parceiroId: req.body.parceiroId || "",
+      parceiroNome: req.body.parceiroNome || "",
+      parceiroEmail: req.body.parceiroEmail || "",
       criadoEm: agoraISO(),
       atualizadoEm: agoraISO()
     };

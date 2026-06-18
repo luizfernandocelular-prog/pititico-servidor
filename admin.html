@@ -51,6 +51,19 @@ pre{white-space:pre-wrap;background:#f8f4f8;border-radius:14px;padding:12px;over
 button.premiumBtn{background:#6b3cc9;color:white}
 button.freeBtn{background:#f5d8ea;color:#9a2969}
 
+
+/* v2.1 - controle Premium no Admin */
+.premiumTag{display:inline-block;background:#efe4ff;color:#6b3cc9;border-radius:999px;padding:5px 9px;font-weight:900;font-size:12px;margin-left:6px}
+.freeTag{display:inline-block;background:#fff0f7;color:#e84b9d;border-radius:999px;padding:5px 9px;font-weight:900;font-size:12px;margin-left:6px}
+button.premiumBtn{background:#6b3cc9!important;color:white!important}
+button.freeBtn{background:#f5d8ea!important;color:#9a2969!important}
+
+
+/* v3.0 - Parceiros */
+.partnerTag{display:inline-block;background:#e0f2fe;color:#0369a1;border-radius:999px;padding:5px 9px;font-weight:900;font-size:12px;margin-left:6px}
+button.partnerBtn{background:#0ea5e9!important;color:white!important}
+.partnerAdsList{background:#fff7fc;border-radius:16px;padding:10px;margin-top:10px;font-size:13px}
+
 </style>
 </head>
 <body>
@@ -119,7 +132,44 @@ button.freeBtn{background:#f5d8ea;color:#9a2969}
         <button class="green" onclick="abrirModalAnuncio()">+ Cadastrar anúncio</button>
       </div>
       <div id="anunciosBox"></div>
-    </main>
+    
+<section class="panel" id="parceirosPanel">
+  <h2>🤝 Parceiros Anunciantes</h2>
+  <p>Controle dos parceiros e quantidade de anúncios cadastrados.</p>
+  <button class="green" onclick="abrirModalParceiro()">+ Novo parceiro</button>
+  <a class="small gray" href="/parceiro.html" target="_blank" style="display:inline-block;text-decoration:none;padding:13px 16px;border-radius:16px;margin-left:8px;">Abrir login do parceiro</a>
+  <div id="parceirosBox" class="cards"></div>
+</section>
+
+<div id="modalParceiro" class="modal">
+  <div class="modal-content">
+    <h2 id="modalParceiroTitulo">Novo parceiro</h2>
+    <input type="hidden" id="parceiroId">
+    <label>Nome do parceiro</label>
+    <input id="parceiroNome" placeholder="Loja Bebê Feliz">
+    <label>E-mail de login</label>
+    <input id="parceiroEmail" placeholder="contato@loja.com">
+    <label>Senha</label>
+    <input id="parceiroSenha" placeholder="Senha do parceiro">
+    <label>WhatsApp</label>
+    <input id="parceiroWhatsapp" placeholder="21999999999">
+    <label>Status</label>
+    <select id="parceiroStatus">
+      <option value="ativo">ativo</option>
+      <option value="bloqueado">bloqueado</option>
+    </select>
+    <label>Limite de anúncios por mês</label>
+    <input id="parceiroLimiteAds" type="number" value="3">
+    <label>Trocas de imagem por mês</label>
+    <input id="parceiroLimiteTrocas" type="number" value="1">
+    <div class="modal-actions">
+      <button class="green" onclick="salvarParceiro()">Salvar parceiro</button>
+      <button class="gray" onclick="fecharModalParceiro()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+</main>
   </div>
 </div>
 
@@ -176,7 +226,7 @@ function adminHeaders() {
 const API = location.origin;
 document.getElementById("apiUrl").textContent = API;
 
-let usuarios=[], itens=[], anuncios=[], filtroUsuario="ativo", filtroItem="ativo";
+let usuarios=[], itens=[], anuncios=[], parceiros=[], filtroUsuario="ativo", filtroItem="ativo";
 
 function idOf(obj){ return obj?._id || obj?.id || obj?.codigo || ""; }
 function txt(v){ return String(v ?? "").replace(/[<>&]/g, ""); }
@@ -212,17 +262,19 @@ async function carregarTudo(){
   if(!ADMIN_PASSWORD){adminMostrarBloqueio();return;}
   document.getElementById("status").textContent="carregando...";
   try{
-    const [u,i,a]=await Promise.all([
+    const [u,i,a,p]=await Promise.all([
       apiGet(["/admin/usuarios"]),
       apiGet(["/admin/publicacoes","/publicacoes"]),
-      apiGet(["/admin/anuncios","/anuncios"])
+      apiGet(["/admin/anuncios","/anuncios"]),
+      apiGet(["/admin/parceiros"])
     ]);
     usuarios=Array.isArray(u)?u:(u.usuarios||[]);
     itens=Array.isArray(i)?i:(i.publicacoes||i.itens||[]);
     anuncios=Array.isArray(a)?a:(a.anuncios||[]);
+    parceiros=Array.isArray(p)?p:(p.parceiros||[]);
     document.getElementById("status").textContent="conectado";
     document.getElementById("status").style.color="#15803d";
-    atualizarStats(); renderUsuarios(); renderItens(); renderAnuncios();
+    atualizarStats(); renderUsuarios(); renderItens(); renderAnuncios(); renderParceiros();
   }catch(e){
     document.getElementById("status").textContent="erro: "+e.message;
     document.getElementById("status").style.color="#b91c1c";
@@ -260,37 +312,37 @@ async function alterarPlanoUsuario(email, plano){
 }
 
 function renderUsuarios(){
-  setUserTabs(); 
-  const box=usuariosBox; 
-  let lista=usuarios.slice();
+  setUserTabs();
+  const box = usuariosBox;
+  let lista = usuarios.slice();
 
-  if(filtroUsuario==="ativo") lista=lista.filter(u=>(u.status||"ativo")!=="banido");
-  if(filtroUsuario==="banido") lista=lista.filter(u=>(u.status||"")==="banido");
+  if(filtroUsuario === "ativo") lista = lista.filter(u => (u.status || "ativo") !== "banido");
+  if(filtroUsuario === "banido") lista = lista.filter(u => (u.status || "") === "banido");
 
   if(!lista.length){
-    box.innerHTML='<div class="empty">Nenhum usuário encontrado.</div>';
+    box.innerHTML = '<div class="empty">Nenhum usuário encontrado.</div>';
     return;
   }
 
-  box.innerHTML=lista.map(u=>{
-    const uid=idOf(u);
-    const banido=(u.status||"")==="banido";
-    const email=txt(u.email||"");
-    const plano=String(u.plano||"gratis").toLowerCase();
-    const assinatura=String(u.assinaturaStatus||"").toLowerCase();
-    const premium=(u.premiumAtivo===true || plano==="premium" || assinatura==="ativo");
-    const tagPlano=premium?'<span class="premiumTag">Premium</span>':'<span class="freeTag">Gratuito</span>';
+  box.innerHTML = lista.map(u => {
+    const uid = idOf(u);
+    const banido = (u.status || "") === "banido";
+    const email = txt(u.email || "");
+    const plano = String(u.plano || "gratis").toLowerCase();
+    const assinatura = String(u.assinaturaStatus || "").toLowerCase();
+    const premium = (u.premiumAtivo === true || plano === "premium" || assinatura === "ativo");
+    const tagPlano = premium ? '<span class="premiumTag">Premium</span>' : '<span class="freeTag">Gratuito</span>';
     const dias = u.trialDiasRestantes ?? "-";
 
     return `<div class="user">
-      <h3>${txt(u.nome||u.name||"Usuário sem nome")} ${tagPlano}</h3>
-      <p><b>E-mail:</b> ${email||"-"}</p>
-      <p><b>WhatsApp:</b> ${txt(u.whatsapp||u.whats||"-")}</p>
-      <p><b>Status:</b> ${statusBadge(u.status||"ativo")}</p>
-      <p><b>Plano:</b> ${premium?"Premium ativo":"Gratuito"} ${premium?"":`<br><b>Dias grátis restantes:</b> ${txt(dias)}`}</p>
+      <h3>${txt(u.nome || u.name || "Usuário sem nome")} ${tagPlano}</h3>
+      <p><b>E-mail:</b> ${email || "-"}</p>
+      <p><b>WhatsApp:</b> ${txt(u.whatsapp || u.whats || "-")}</p>
+      <p><b>Status:</b> ${statusBadge(u.status || "ativo")}</p>
+      <p><b>Plano:</b> ${premium ? "Premium ativo" : "Gratuito"}${premium ? "" : `<br><b>Dias grátis restantes:</b> ${txt(dias)}`}</p>
 
-      <button class="small ${banido?"green":"red"}" onclick="alterarStatusUsuario('${uid}','${banido?"ativo":"banido"}')">
-        ${banido?"Reativar":"Banir"} usuário
+      <button class="small ${banido ? "green" : "red"}" onclick="alterarStatusUsuario('${uid}','${banido ? "ativo" : "banido"}')">
+        ${banido ? "Reativar" : "Banir"} usuário
       </button>
 
       ${premium
@@ -311,7 +363,7 @@ function renderItens(){
 }
 function renderAnuncios(){
   if(!anuncios.length){anunciosBox.innerHTML='<div class="card empty">Nenhum anúncio cadastrado.</div>';return;}
-  anunciosBox.innerHTML=anuncios.slice().reverse().map(a=>{const aid=idOf(a);const img=a.imagem?`<img src="${txt(a.imagem)}" onerror="this.outerHTML='<span class=&quot;fallback&quot;>🍼</span>'">`:'<span class="fallback">🍼</span>';return `<div class="card ad"><h3>${txt(a.titulo||"Anúncio sem título")}</h3><p><b>Status:</b> ${statusBadge(a.status||"ativo")}</p><p><b>Texto:</b> ${txt(a.texto||"-")}</p><p><b>Link:</b> ${txt(a.link||"-")}</p><div class="preview">${img}<div><b>${txt(a.titulo||"Anúncio")}</b><br><small>${txt(a.texto||"Toque para saber mais")}</small></div></div><button class="small blue" onclick='editarAnuncio(${JSON.stringify(JSON.stringify(a))})'>Editar</button> <button class="small red" onclick="excluirAnuncio('${aid}')">Excluir</button> <button class="small gray" onclick='abrirDados(${JSON.stringify(JSON.stringify(a))})'>Dados</button></div>`}).join("");
+  anunciosBox.innerHTML=anuncios.slice().reverse().map(a=>{const aid=idOf(a);const img=a.imagem?`<img src="${txt(a.imagem)}" onerror="this.outerHTML='<span class=&quot;fallback&quot;>🍼</span>'">`:'<span class="fallback">🍼</span>';return `<div class="card ad"><h3>${txt(a.titulo||"Anúncio sem título")} ${a.parceiroNome?`<span class="partnerTag">Parceiro</span>`:""}</h3>${a.parceiroNome?`<p><b>Parceiro:</b> ${txt(a.parceiroNome)}<br><b>E-mail:</b> ${txt(a.parceiroEmail||"-")}</p>`:""}<p><b>Status:</b> ${statusBadge(a.status||"ativo")}</p><p><b>Texto:</b> ${txt(a.texto||"-")}</p><p><b>Link:</b> ${txt(a.link||"-")}</p><div class="preview">${img}<div><b>${txt(a.titulo||"Anúncio")}</b><br><small>${txt(a.texto||"Toque para saber mais")}</small></div></div><button class="small blue" onclick='editarAnuncio(${JSON.stringify(JSON.stringify(a))})'>Editar</button> <button class="small red" onclick="excluirAnuncio('${aid}')">Excluir</button> <button class="small gray" onclick='abrirDados(${JSON.stringify(JSON.stringify(a))})'>Dados</button></div>`}).join("");
 }
 function abrirModalAnuncio(){modalTitulo.textContent="Cadastrar anúncio";adId.value="";adTitulo.value="";adTexto.value="";adImagem.value="";adLink.value="";adStatus.value="ativo";modalAnuncio.classList.add("show");}
 function fecharModalAnuncio(){modalAnuncio.classList.remove("show");}
@@ -344,6 +396,90 @@ function abrirDados(raw){dadosPre.textContent=JSON.stringify(JSON.parse(raw),nul
 function fecharDados(){modalDados.classList.remove("show");}
 if(ADMIN_PASSWORD){adminLiberarPainel();carregarTudo();}else{adminMostrarBloqueio();}
 setInterval(function(){if(ADMIN_PASSWORD)carregarTudo();},30000);
+
+function renderParceiros(){
+  const box=document.getElementById("parceirosBox");
+  if(!box)return;
+
+  if(!parceiros.length){
+    box.innerHTML='<div class="card empty">Nenhum parceiro cadastrado.</div>';
+    return;
+  }
+
+  box.innerHTML=parceiros.map(p=>{
+    const pid=idOf(p);
+    const ads=p.anuncios||[];
+    const listaAds=ads.length
+      ? ads.map(a=>`<div>• ${txt(a.titulo||"Anúncio")} — ${statusBadge(a.status||"ativo")}</div>`).join("")
+      : "<div>Nenhum anúncio deste parceiro.</div>";
+
+    return `<div class="card">
+      <h3>${txt(p.nome||"Parceiro")} <span class="partnerTag">${txt(p.status||"ativo")}</span></h3>
+      <p><b>E-mail:</b> ${txt(p.email||"-")}</p>
+      <p><b>WhatsApp:</b> ${txt(p.whatsapp||"-")}</p>
+      <p><b>Plano:</b> ${txt(p.plano||"basico")}</p>
+      <p><b>Anúncios:</b> ${txt(p.anunciosTotal||0)} total / ${txt(p.anunciosAtivos||0)} ativos</p>
+      <p><b>Limite mensal:</b> ${txt(p.limiteAnunciosMes||3)} anúncios / ${txt(p.limiteTrocasImagemMes||1)} troca de imagem</p>
+      <div class="partnerAdsList"><b>Anúncios do parceiro:</b>${listaAds}</div>
+      <button class="small partnerBtn" onclick='editarParceiro(${JSON.stringify(JSON.stringify(p))})'>Editar parceiro</button>
+      <button class="small gray" onclick='abrirDados(${JSON.stringify(JSON.stringify(p))})'>Dados</button>
+    </div>`;
+  }).join("");
+}
+
+function abrirModalParceiro(){
+  modalParceiroTitulo.textContent="Novo parceiro";
+  parceiroId.value="";
+  parceiroNome.value="";
+  parceiroEmail.value="";
+  parceiroSenha.value="";
+  parceiroWhatsapp.value="";
+  parceiroStatus.value="ativo";
+  parceiroLimiteAds.value=3;
+  parceiroLimiteTrocas.value=1;
+  modalParceiro.classList.add("show");
+}
+function fecharModalParceiro(){modalParceiro.classList.remove("show");}
+function editarParceiro(raw){
+  const p=JSON.parse(raw);
+  modalParceiroTitulo.textContent="Editar parceiro";
+  parceiroId.value=idOf(p);
+  parceiroNome.value=p.nome||"";
+  parceiroEmail.value=p.email||"";
+  parceiroSenha.value=p.senha||"";
+  parceiroWhatsapp.value=p.whatsapp||"";
+  parceiroStatus.value=p.status||"ativo";
+  parceiroLimiteAds.value=p.limiteAnunciosMes||3;
+  parceiroLimiteTrocas.value=p.limiteTrocasImagemMes||1;
+  modalParceiro.classList.add("show");
+}
+async function salvarParceiro(){
+  const id=parceiroId.value;
+  const payload={
+    nome:parceiroNome.value.trim(),
+    email:parceiroEmail.value.trim().toLowerCase(),
+    senha:parceiroSenha.value.trim(),
+    whatsapp:parceiroWhatsapp.value.trim(),
+    status:parceiroStatus.value,
+    limiteAnunciosMes:Number(parceiroLimiteAds.value||3),
+    limiteTrocasImagemMes:Number(parceiroLimiteTrocas.value||1),
+    plano:"basico"
+  };
+  if(!payload.nome||!payload.email||!payload.senha){
+    alert("Informe nome, e-mail e senha do parceiro.");
+    return;
+  }
+  try{
+    if(id) await apiSend([`/admin/parceiros/${id}`],"PUT",payload);
+    else await apiSend(["/admin/parceiros"],"POST",payload);
+    fecharModalParceiro();
+    await carregarTudo();
+    alert("Parceiro salvo.");
+  }catch(e){
+    alert("Erro ao salvar parceiro: "+e.message);
+  }
+}
+
 </script>
 </body>
 </html>
