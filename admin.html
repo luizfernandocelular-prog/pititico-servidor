@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Painel Admin PiTiTiCo</title>
+<title>PiTiTiCo - Admin e Parceiros</title>
 <style>
 :root{
   --primary:#eb4fa0; --primary2:#ef6eb8; --green:#22c55e; --blue:#5ec5ed;
@@ -64,21 +64,47 @@ button.freeBtn{background:#f5d8ea!important;color:#9a2969!important}
 button.partnerBtn{background:#0ea5e9!important;color:white!important}
 .partnerAdsList{background:#fff7fc;border-radius:16px;padding:10px;margin-top:10px;font-size:13px}
 
+
+/* v3.1 - login unificado Admin/Parceiro */
+#parceiroPortal .stat strong{font-size:20px}
+#parceiroAnunciosBox{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+#parceiroAnunciosBox .card img{width:80px;height:80px;border-radius:999px;object-fit:cover;background:#fff0f7}
+@media(max-width:900px){#parceiroAnunciosBox{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
 <div id="adminLock" class="admin-lock">
   <div class="admin-lock-card">
-    <h2>🔒 Admin PiTiTiCo</h2>
-    <p>Digite a senha do administrador para acessar o painel.</p>
-    <label>Senha admin</label>
-    <input id="adminPasswordInput" type="password" placeholder="Digite a senha">
-    <button onclick="adminEntrar()">Entrar no painel</button>
-    <div id="adminLockError" class="admin-lock-error">Senha incorreta ou servidor recusou acesso.</div>
-    <p style="font-size:13px;margin-top:14px">Senha padrão: 1234. Depois você pode mudar no Render.</p>
+    <h2>🔒 PiTiTiCo</h2>
+    <p>Escolha o tipo de acesso.</p>
+
+    <div class="tabs" style="margin-bottom:16px">
+      <button id="loginAdminTab" class="tab active" type="button" onclick="selecionarTipoLogin('admin')">Administrador</button>
+      <button id="loginParceiroTab" class="tab" type="button" onclick="selecionarTipoLogin('parceiro')">Parceiro</button>
+    </div>
+
+    <div id="loginAdminBox">
+      <label>Senha admin</label>
+      <input id="adminPasswordInput" type="password" placeholder="Digite a senha">
+      <button onclick="adminEntrar()">Entrar como Admin</button>
+      <p style="font-size:13px;margin-top:14px">Acesso completo ao painel administrativo.</p>
+    </div>
+
+    <div id="loginParceiroBox" style="display:none">
+      <label>E-mail do parceiro</label>
+      <input id="parceiroLoginEmail" placeholder="parceiro@email.com">
+      <label>Senha do parceiro</label>
+      <input id="parceiroLoginSenha" type="password" placeholder="Digite a senha">
+      <button onclick="parceiroEntrar()">Entrar como Parceiro</button>
+      <p style="font-size:13px;margin-top:14px">Parceiros acessam somente os próprios anúncios.</p>
+    </div>
+
+    <div id="adminLockError" class="admin-lock-error">Acesso recusado.</div>
   </div>
 </div>
-<div class="wrap">
+
+<div id="adminWrap" class="wrap">
   <div class="header">
     <div class="logo">👶</div>
     <div>
@@ -137,7 +163,6 @@ button.partnerBtn{background:#0ea5e9!important;color:white!important}
   <h2>🤝 Parceiros Anunciantes</h2>
   <p>Controle dos parceiros e quantidade de anúncios cadastrados.</p>
   <button class="green" onclick="abrirModalParceiro()">+ Novo parceiro</button>
-  <a class="small gray" href="/parceiro.html" target="_blank" style="display:inline-block;text-decoration:none;padding:13px 16px;border-radius:16px;margin-left:8px;">Abrir login do parceiro</a>
   <div id="parceirosBox" class="cards"></div>
 </section>
 
@@ -173,6 +198,67 @@ button.partnerBtn{background:#0ea5e9!important;color:white!important}
   </div>
 </div>
 
+
+<div id="parceiroPortal" class="wrap" style="display:none">
+  <div class="header">
+    <div class="logo">📢</div>
+    <div>
+      <h1>Área do Parceiro PiTiTiCo</h1>
+      <p class="sub">Acesso restrito aos seus anúncios.</p>
+      <p class="sub">Status: <span class="status" id="parceiroStatusLogin">conectado</span></p>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="green" onclick="parceiroAbrirNovo()">+ Novo anúncio</button>
+    <button class="gray" onclick="parceiroSair()">Sair do Parceiro</button>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><span>Parceiro</span><strong id="parceiroNomePainel">-</strong></div>
+    <div class="stat"><span>Plano</span><strong id="parceiroPlanoPainel">-</strong></div>
+    <div class="stat"><span>Anúncios do mês</span><strong id="parceiroAdsMes">0/3</strong></div>
+    <div class="stat"><span>Trocas de imagem</span><strong id="parceiroTrocasMes">0/1</strong></div>
+  </div>
+
+  <div class="card">
+    <h2>Meus anúncios</h2>
+    <p class="help">
+      Você pode cadastrar até 3 anúncios por mês. O texto pode ser editado.
+      A imagem só pode ser substituída após 15 dias e respeitando 1 troca mensal.
+    </p>
+  </div>
+  <div id="parceiroAnunciosBox"></div>
+</div>
+
+<div id="modalParceiroAnuncio" class="modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2 id="modalParceiroAnuncioTitulo">Novo anúncio</h2>
+      <button class="close" onclick="parceiroFecharModalAnuncio()">Fechar</button>
+    </div>
+    <input type="hidden" id="parceiroAdId">
+    <label>Título</label>
+    <input id="parceiroAdTitulo" placeholder="Ex: Promoção de fraldas">
+    <label>Texto</label>
+    <textarea id="parceiroAdTexto" placeholder="Texto curto do anúncio"></textarea>
+    <label>Imagem URL</label>
+    <input id="parceiroAdImagem" placeholder="https://...png">
+    <div class="warn">A imagem só pode ser trocada após 15 dias do cadastro do anúncio e apenas 1 vez por mês.</div>
+    <label>Link do anúncio</label>
+    <input id="parceiroAdLink" placeholder="https://...">
+    <label>Status</label>
+    <select id="parceiroAdStatus">
+      <option value="ativo">ativo</option>
+      <option value="pausado">pausado</option>
+    </select>
+    <div class="actions">
+      <button class="green" onclick="parceiroSalvarAnuncio()">Salvar anúncio</button>
+      <button class="gray" onclick="parceiroFecharModalAnuncio()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 <div id="modalAnuncio" class="modal">
   <div class="modal-box">
     <div class="modal-head"><h2 id="modalTitulo">Cadastrar anúncio</h2><button class="close" onclick="fecharModalAnuncio()">Fechar</button></div>
@@ -197,10 +283,18 @@ let ADMIN_PASSWORD = localStorage.getItem(ADMIN_STORAGE_KEY) || "";
 function adminMostrarBloqueio() {
   const lock = document.getElementById("adminLock");
   if (lock) lock.style.display = "flex";
+  const aw = document.getElementById("adminWrap");
+  const pp = document.getElementById("parceiroPortal");
+  if (aw) aw.style.display = "none";
+  if (pp) pp.style.display = "none";
 }
 function adminLiberarPainel() {
   const lock = document.getElementById("adminLock");
   if (lock) lock.style.display = "none";
+  const aw = document.getElementById("adminWrap");
+  const pp = document.getElementById("parceiroPortal");
+  if (aw) aw.style.display = "block";
+  if (pp) pp.style.display = "none";
 }
 async function adminEntrar() {
   const input = document.getElementById("adminPasswordInput");
@@ -221,6 +315,203 @@ function adminSair() {
 }
 function adminHeaders() {
   return {"Content-Type":"application/json", "x-admin-password": ADMIN_PASSWORD || ""};
+}
+
+
+const PARCEIRO_EMAIL_KEY = "pititico_parceiro_email";
+const PARCEIRO_SENHA_KEY = "pititico_parceiro_senha";
+let parceiroAtual = null;
+let parceiroLimites = null;
+let parceiroAnuncios = [];
+
+function selecionarTipoLogin(tipo){
+  const adminBox = document.getElementById("loginAdminBox");
+  const parceiroBox = document.getElementById("loginParceiroBox");
+  const adminTab = document.getElementById("loginAdminTab");
+  const parceiroTab = document.getElementById("loginParceiroTab");
+  const erro = document.getElementById("adminLockError");
+  if(erro) erro.style.display = "none";
+
+  if(tipo === "parceiro"){
+    adminBox.style.display = "none";
+    parceiroBox.style.display = "block";
+    adminTab.classList.remove("active");
+    parceiroTab.classList.add("active");
+  }else{
+    adminBox.style.display = "block";
+    parceiroBox.style.display = "none";
+    parceiroTab.classList.remove("active");
+    adminTab.classList.add("active");
+  }
+}
+
+function parceiroHeaders(){
+  return {
+    "Content-Type":"application/json",
+    "x-parceiro-email": localStorage.getItem(PARCEIRO_EMAIL_KEY) || parceiroAtual?.email || "",
+    "x-parceiro-senha": localStorage.getItem(PARCEIRO_SENHA_KEY) || ""
+  };
+}
+
+function parceiroMostrarPainel(){
+  const lock = document.getElementById("adminLock");
+  const aw = document.getElementById("adminWrap");
+  const pp = document.getElementById("parceiroPortal");
+  if(lock) lock.style.display = "none";
+  if(aw) aw.style.display = "none";
+  if(pp) pp.style.display = "block";
+}
+
+async function parceiroEntrar(){
+  const email = (document.getElementById("parceiroLoginEmail")?.value || "").trim().toLowerCase();
+  const senha = (document.getElementById("parceiroLoginSenha")?.value || "").trim();
+  const erro = document.getElementById("adminLockError");
+
+  if(!email || !senha){
+    if(erro){ erro.textContent = "Informe e-mail e senha do parceiro."; erro.style.display = "block"; }
+    return;
+  }
+
+  try{
+    const r = await fetch(location.origin + "/parceiros/login", {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({email, senha})
+    });
+    const d = await r.json().catch(()=>({}));
+    if(!r.ok) throw new Error(d.mensagem || "Login do parceiro recusado.");
+
+    parceiroAtual = d.parceiro;
+    localStorage.setItem(PARCEIRO_EMAIL_KEY, email);
+    localStorage.setItem(PARCEIRO_SENHA_KEY, senha);
+    localStorage.removeItem(ADMIN_STORAGE_KEY);
+    ADMIN_PASSWORD = "";
+
+    parceiroMostrarPainel();
+    await parceiroCarregarPainel();
+  }catch(e){
+    if(erro){ erro.textContent = e.message; erro.style.display = "block"; }
+  }
+}
+
+async function parceiroCarregarPainel(){
+  const [meR, adsR] = await Promise.all([
+    fetch(location.origin + "/parceiros/me", {headers:parceiroHeaders(), cache:"no-store"}),
+    fetch(location.origin + "/parceiros/anuncios", {headers:parceiroHeaders(), cache:"no-store"})
+  ]);
+
+  if(meR.status === 401 || adsR.status === 401){
+    parceiroSair();
+    return;
+  }
+
+  const me = await meR.json();
+  parceiroAtual = me.parceiro;
+  parceiroLimites = me.limites;
+  parceiroAnuncios = await adsR.json();
+
+  document.getElementById("parceiroNomePainel").textContent = parceiroAtual.nome || "-";
+  document.getElementById("parceiroPlanoPainel").textContent = parceiroAtual.plano || "basico";
+  document.getElementById("parceiroAdsMes").textContent = `${parceiroLimites.anunciosMes || 0}/${parceiroLimites.limiteAnunciosMes || 3}`;
+  document.getElementById("parceiroTrocasMes").textContent = `${parceiroLimites.trocasImagemMes || 0}/${parceiroLimites.limiteTrocasImagemMes || 1}`;
+
+  parceiroRenderAnuncios();
+}
+
+function parceiroRenderAnuncios(){
+  const box = document.getElementById("parceiroAnunciosBox");
+  if(!box) return;
+
+  if(!parceiroAnuncios.length){
+    box.innerHTML = '<div class="card empty">Nenhum anúncio cadastrado.</div>';
+    return;
+  }
+
+  box.innerHTML = parceiroAnuncios.map(a=>{
+    const aid = idOf(a);
+    const img = a.imagem ? `<img src="${txt(a.imagem)}" onerror="this.outerHTML='<span class=&quot;fallback&quot;>🍼</span>'">` : '<span class="fallback">🍼</span>';
+    return `<div class="card ad">
+      ${img}
+      <h3>${txt(a.titulo || "Anúncio")}</h3>
+      <p><b>Status:</b> ${statusBadge(a.status || "ativo")}</p>
+      <p><b>Texto:</b> ${txt(a.texto || "-")}</p>
+      <p><b>Link:</b> ${txt(a.link || "-")}</p>
+      <p class="help"><b>Criado:</b> ${dt(a.criadoEm)}</p>
+      <button class="small blue" onclick='parceiroEditarAnuncio(${JSON.stringify(JSON.stringify(a))})'>Editar</button>
+      <button class="small gray" onclick='abrirDados(${JSON.stringify(JSON.stringify(a))})'>Dados</button>
+    </div>`;
+  }).join("");
+}
+
+function parceiroAbrirNovo(){
+  modalParceiroAnuncioTitulo.textContent = "Novo anúncio";
+  parceiroAdId.value = "";
+  parceiroAdTitulo.value = "";
+  parceiroAdTexto.value = "";
+  parceiroAdImagem.value = "";
+  parceiroAdLink.value = "";
+  parceiroAdStatus.value = "ativo";
+  modalParceiroAnuncio.classList.add("show");
+}
+
+function parceiroEditarAnuncio(raw){
+  const a = JSON.parse(raw);
+  modalParceiroAnuncioTitulo.textContent = "Editar anúncio";
+  parceiroAdId.value = idOf(a);
+  parceiroAdTitulo.value = a.titulo || "";
+  parceiroAdTexto.value = a.texto || "";
+  parceiroAdImagem.value = a.imagem || "";
+  parceiroAdLink.value = a.link || "";
+  parceiroAdStatus.value = a.status || "ativo";
+  modalParceiroAnuncio.classList.add("show");
+}
+
+function parceiroFecharModalAnuncio(){
+  modalParceiroAnuncio.classList.remove("show");
+}
+
+async function parceiroSalvarAnuncio(){
+  const id = parceiroAdId.value;
+  const payload = {
+    titulo: parceiroAdTitulo.value.trim(),
+    texto: parceiroAdTexto.value.trim(),
+    imagem: parceiroAdImagem.value.trim(),
+    link: parceiroAdLink.value.trim(),
+    status: parceiroAdStatus.value
+  };
+
+  if(!payload.titulo || !payload.texto || !payload.imagem){
+    alert("Título, texto e imagem são obrigatórios.");
+    return;
+  }
+
+  try{
+    const url = id ? `/parceiros/anuncios/${id}` : "/parceiros/anuncios";
+    const metodo = id ? "PUT" : "POST";
+    const r = await fetch(location.origin + url, {
+      method: metodo,
+      headers: parceiroHeaders(),
+      body: JSON.stringify(payload)
+    });
+    const d = await r.json().catch(()=>({}));
+    if(!r.ok) throw new Error(d.mensagem || "Erro ao salvar anúncio.");
+
+    parceiroFecharModalAnuncio();
+    await parceiroCarregarPainel();
+    alert("Anúncio salvo.");
+  }catch(e){
+    alert(e.message);
+  }
+}
+
+function parceiroSair(){
+  localStorage.removeItem(PARCEIRO_EMAIL_KEY);
+  localStorage.removeItem(PARCEIRO_SENHA_KEY);
+  parceiroAtual = null;
+  parceiroLimites = null;
+  parceiroAnuncios = [];
+  adminMostrarBloqueio();
+  selecionarTipoLogin("parceiro");
 }
 
 const API = location.origin;
@@ -479,6 +770,31 @@ async function salvarParceiro(){
     alert("Erro ao salvar parceiro: "+e.message);
   }
 }
+
+
+window.addEventListener("load", async function(){
+  try{
+    const parceiroEmail = localStorage.getItem(PARCEIRO_EMAIL_KEY);
+    const parceiroSenha = localStorage.getItem(PARCEIRO_SENHA_KEY);
+
+    if(parceiroEmail && parceiroSenha && !ADMIN_PASSWORD){
+      selecionarTipoLogin("parceiro");
+      parceiroMostrarPainel();
+      await parceiroCarregarPainel();
+      return;
+    }
+
+    if(ADMIN_PASSWORD){
+      adminLiberarPainel();
+      await carregarTudo();
+      return;
+    }
+
+    adminMostrarBloqueio();
+  }catch(e){
+    adminMostrarBloqueio();
+  }
+});
 
 </script>
 </body>

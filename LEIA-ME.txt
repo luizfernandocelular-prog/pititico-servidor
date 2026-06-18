@@ -1,19 +1,15 @@
-PiTiTiCo v3.0 - Área dos Parceiros
+PiTiTiCo v3.1 - Login Unificado em admin.html
 
-Inclui:
-- Login exclusivo do parceiro em /parceiro.html
-- Parceiro só administra os próprios anúncios
-- Limite de 3 anúncios por mês
-- 1 troca de imagem por mês
-- Imagem só pode ser trocada após 15 dias
-- Texto/link/status podem ser editados
-- Parceiro não vê área Admin
-- Admin vê parceiros, quantidade de anúncios e anúncios de cada parceiro
-- Admin pode cadastrar/editar parceiros
+Alteração:
+- A página /admin.html agora identifica se o acesso é Administrador ou Parceiro.
+- Parceiro entra pelo mesmo /admin.html, mas vê somente a área dele.
+- Parceiro não vê usuários, premium, banco, troca-troca ou painel admin.
+- /parceiro.html ficou apenas como redirecionamento para /admin.html.
 
 Substituir no Render/GitHub:
-server.js
 public/admin.html
+admin.html
 public/parceiro.html
-public/index.html
-public/app.html
+parceiro.html
+
+Manter server.js da v3.0, pois já possui as rotas dos parceiros.
