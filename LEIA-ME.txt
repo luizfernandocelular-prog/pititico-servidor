@@ -1,0 +1,19 @@
+PiTiTiCo v1.4 - Sem popup de atualização + anúncios
+
+Alterações:
+1. Remove/desativa a janela de atualização manual.
+2. Mantém anúncio flutuante no início do login.
+3. Adiciona anúncio flutuante após login/cadastro.
+4. Mantém controle gratuito de 90 dias.
+5. Badge visual fica somente v1.0.
+
+Substituir no Render/GitHub:
+server.js
+public/index.html
+public/app.html
+public/admin.html
+public/versao.json
+public/assets/pititico-login-logo.png
+
+Observação:
+O versao.json foi mantido apenas como controle interno, sem popup manual.

@@ -1808,6 +1808,97 @@
   .pititico-login-ad-actions { grid-template-columns: 1fr !important; }
 }
 
+
+/* v1.4 - atualização manual/popup removido */
+#modalAtualizacao,
+#updateModal,
+#pititicoUpdateModal,
+.atualizacao-modal,
+.update-modal,
+[class*="update-modal"],
+[class*="atualizacao"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+
+/* v1.4 - anúncio destaque após login */
+.pititico-post-login-ad-modal {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 100000 !important;
+  display: none !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 18px !important;
+  background: rgba(47, 20, 45, .42) !important;
+  backdrop-filter: blur(5px) !important;
+}
+.pititico-post-login-ad-modal.show {
+  display: flex !important;
+}
+.pititico-post-login-ad-card {
+  width: min(430px, 94vw) !important;
+  background: #fff !important;
+  border-radius: 28px !important;
+  padding: 22px !important;
+  box-shadow: 0 24px 70px rgba(60, 24, 55, .28) !important;
+  text-align: center !important;
+}
+.pititico-post-login-ad-img {
+  width: 92px !important;
+  height: 92px !important;
+  border-radius: 999px !important;
+  object-fit: cover !important;
+  background: #ffeaf4 !important;
+  display: grid !important;
+  place-items: center !important;
+  margin: 0 auto 12px !important;
+  font-size: 44px !important;
+}
+.pititico-post-login-ad-card h2 {
+  color: #f0529f !important;
+  margin: 0 0 8px !important;
+  font-size: 25px !important;
+}
+.pititico-post-login-ad-card p {
+  color: #5d5068 !important;
+  line-height: 1.45 !important;
+  font-weight: 700 !important;
+}
+.pititico-post-login-ad-actions {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 10px !important;
+  margin-top: 16px !important;
+}
+.pititico-post-login-ad-actions button,
+.pititico-post-login-ad-actions a {
+  border: 0 !important;
+  border-radius: 16px !important;
+  padding: 13px 12px !important;
+  font-weight: 1000 !important;
+  cursor: pointer !important;
+  text-decoration: none !important;
+  display: grid !important;
+  place-items: center !important;
+}
+.pititico-post-ad-close {
+  background: #f3e8f2 !important;
+  color: #5d5068 !important;
+}
+.pititico-post-ad-open {
+  background: linear-gradient(135deg,#ef6eb8,#e84b9d) !important;
+  color: #fff !important;
+}
+@media (max-width: 420px) {
+  .pititico-post-login-ad-actions {
+    grid-template-columns: 1fr !important;
+  }
+}
+
 </style>
 
 <script data-pititico="v1.2-cache-clean-before-load">
@@ -1909,6 +2000,52 @@ window.addEventListener("load", function() {
   }, 900);
 });
 
+
+/* v1.4 - anúncio pós-login */
+async function pititicoMostrarAnuncioPosLogin() {
+  const modal = document.getElementById("pititicoPostLoginAdModal");
+  if (!modal) return;
+
+  const visto = sessionStorage.getItem("pititico_post_login_ad_visto");
+  if (visto === "sim") return;
+
+  const titulo = document.getElementById("pititicoPostLoginAdTitle");
+  const texto = document.getElementById("pititicoPostLoginAdText");
+  const imgBox = document.getElementById("pititicoPostLoginAdImage");
+  const link = document.getElementById("pititicoPostLoginAdLink");
+
+  try {
+    const r = await fetch("https://pititico-servidor.onrender.com/anuncios?t=" + Date.now(), { cache: "no-store" });
+    if (r.ok) {
+      const dados = await r.json();
+      const lista = (Array.isArray(dados) ? dados : []).filter(a => String(a.status || "ativo").toLowerCase() === "ativo");
+      const ad = lista.length > 1 ? lista[1] : lista[0];
+
+      if (ad) {
+        if (titulo) titulo.textContent = ad.titulo || "Anúncio PiTiTiCo";
+        if (texto) texto.textContent = ad.texto || "Oferta especial para famílias.";
+        if (link) {
+          let href = String(ad.link || "#").trim();
+          if (href && href !== "#" && !/^https?:\/\//i.test(href)) href = "https://" + href;
+          link.href = href || "#";
+          link.style.display = href && href !== "#" ? "grid" : "none";
+        }
+        if (imgBox && ad.imagem) {
+          imgBox.innerHTML = '<img src="' + String(ad.imagem).replace(/[<>&"]/g,"") + '" style="width:92px;height:92px;border-radius:999px;object-fit:cover" onerror="this.parentNode.innerHTML=\'🍼\'">';
+        }
+      }
+    }
+  } catch(e) {}
+
+  modal.classList.add("show");
+  sessionStorage.setItem("pititico_post_login_ad_visto", "sim");
+}
+
+function pititicoFecharAnuncioPosLogin() {
+  const modal = document.getElementById("pititicoPostLoginAdModal");
+  if (modal) modal.classList.remove("show");
+}
+
 </script>
 
 </head>
@@ -1969,6 +2106,20 @@ window.addEventListener("load", function() {
     </div>
   </div>
 </div>
+
+
+<div id="pititicoPostLoginAdModal" class="pititico-post-login-ad-modal">
+  <div class="pititico-post-login-ad-card">
+    <div id="pititicoPostLoginAdImage" class="pititico-post-login-ad-img">🍼</div>
+    <h2 id="pititicoPostLoginAdTitle">Oferta especial</h2>
+    <p id="pititicoPostLoginAdText">Conheça novidades para mães e bebês.</p>
+    <div class="pititico-post-login-ad-actions">
+      <button class="pititico-post-ad-close" type="button" onclick="pititicoFecharAnuncioPosLogin()">Continuar no APP</button>
+      <a id="pititicoPostLoginAdLink" class="pititico-post-ad-open" href="#" target="_blank" rel="noopener">Ver anúncio</a>
+    </div>
+  </div>
+</div>
+
 
 <div id="pititicoAppLocked" class="pititico-app-locked">
   <div class="pititico-app-locked-card">
@@ -2185,7 +2336,7 @@ window.addEventListener("load", function() {
   </div>
 
 
-  <div class="pititico-version-badge">v1.3</div>
+  <div class="pititico-version-badge">v1.0</div>
 
   <a class="support-whatsapp" href="https://wa.me/5521997180033?text=Olá,%20preciso%20de%20suporte%20no%20app%20PiTiTiCo." target="_blank">☘</a>
 
@@ -2895,6 +3046,7 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
         if (typeof renderPerfilSuperior === "function") renderPerfilSuperior();
         pititicoAvisoTrial(usuarioAtual);
         if (typeof esconderLogin === "function") esconderLogin();
+        setTimeout(pititicoMostrarAnuncioPosLogin, 700);
         limparDadosDaSessaoVisual();
         carregarDados();
         renderTudoUsuario();

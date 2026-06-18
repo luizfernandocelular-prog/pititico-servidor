@@ -1,8 +1,8 @@
 {
   "app": "PiTiTiCo",
-  "versao": "1.3",
-  "codigo": 13,
-  "mensagem": "Nova versão disponível para o PiTiTiCo.",
+  "versao": "1.0",
+  "codigo": 10,
+  "mensagem": "",
   "obrigatoria": false,
   "url": "https://pititico-servidor.onrender.com/index.html",
   "atualizadoEm": "2026-06-18"
