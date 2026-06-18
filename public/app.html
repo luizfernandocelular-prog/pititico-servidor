@@ -1899,6 +1899,35 @@
   }
 }
 
+
+/* v1.5 corrigida - popup de atualização desativado */
+#modalAtualizacao,
+#updateModal,
+#pititicoUpdateModal,
+.atualizacao-modal,
+.update-modal,
+[class*="update-modal"],
+[class*="atualizacao"]{
+  display:none !important;
+  visibility:hidden !important;
+  opacity:0 !important;
+  pointer-events:none !important;
+}
+
+
+/* v1.5 corrigida - anúncio pós-login */
+.pititico-post-login-ad-modal{position:fixed !important;inset:0 !important;z-index:100000 !important;display:none !important;align-items:center !important;justify-content:center !important;padding:18px !important;background:rgba(47,20,45,.42) !important;backdrop-filter:blur(5px) !important;}
+.pititico-post-login-ad-modal.show{display:flex !important;}
+.pititico-post-login-ad-card{width:min(430px,94vw) !important;background:#fff !important;border-radius:28px !important;padding:22px !important;box-shadow:0 24px 70px rgba(60,24,55,.28) !important;text-align:center !important;}
+.pititico-post-login-ad-img{width:92px !important;height:92px !important;border-radius:999px !important;object-fit:cover !important;background:#ffeaf4 !important;display:grid !important;place-items:center !important;margin:0 auto 12px !important;font-size:44px !important;}
+.pititico-post-login-ad-card h2{color:#f0529f !important;margin:0 0 8px !important;font-size:25px !important;}
+.pititico-post-login-ad-card p{color:#5d5068 !important;line-height:1.45 !important;font-weight:700 !important;}
+.pititico-post-login-ad-actions{display:grid !important;grid-template-columns:1fr 1fr !important;gap:10px !important;margin-top:16px !important;}
+.pititico-post-login-ad-actions button,.pititico-post-login-ad-actions a{border:0 !important;border-radius:16px !important;padding:13px 12px !important;font-weight:1000 !important;cursor:pointer !important;text-decoration:none !important;display:grid !important;place-items:center !important;}
+.pititico-post-ad-close{background:#f3e8f2 !important;color:#5d5068 !important;}
+.pititico-post-ad-open{background:linear-gradient(135deg,#ef6eb8,#e84b9d) !important;color:#fff !important;}
+@media(max-width:420px){.pititico-post-login-ad-actions{grid-template-columns:1fr !important;}}
+
 </style>
 
 <script data-pititico="v1.2-cache-clean-before-load">
@@ -1916,10 +1945,54 @@
   } catch(e) {}
 })();
 
+/* v1.3 - anúncio no login + 90 dias grátis */
 
-/* v1.5 - anúncios integrados ao Admin e aleatórios */
+
+
+
+function pititicoAvisoTrial(usuario) {
+  if (!usuario) return;
+
+  const dias = Number(usuario.trialDiasRestantes ?? 90);
+  let box = document.getElementById("pititicoTrialBox");
+
+  if (!box) {
+    box = document.createElement("div");
+    box.id = "pititicoTrialBox";
+    box.className = "pititico-trial-box";
+    const pop = document.getElementById("perfilDados");
+    if (pop && pop.parentNode) pop.insertAdjacentElement("afterend", box);
+  }
+
+  if (usuario.premiumAtivo || usuario.plano === "premium") {
+    box.innerHTML = "Plano Premium ativo.";
+  } else {
+    box.innerHTML = "Plano gratuito: " + Math.max(0, dias) + " dia(s) restantes dos 90 dias.";
+  }
+}
+
+function pititicoBloquearApp(mensagem) {
+  const lock = document.getElementById("pititicoAppLocked");
+  if (lock) {
+    const p = lock.querySelector("p");
+    if (p && mensagem) p.textContent = mensagem;
+    lock.classList.add("show");
+  } else {
+    alert(mensagem || "Acesso gratuito expirado.");
+  }
+}
+
+/* v1.4 - anúncio pós-login */
+
+
+
+
+
+/* v1.5 corrigida - anúncios do Admin aleatórios */
 function pititicoEscolherAnuncioAleatorio(lista) {
-  const ativos = (Array.isArray(lista) ? lista : []).filter(a => String(a.status || "ativo").toLowerCase() === "ativo");
+  const ativos = (Array.isArray(lista) ? lista : []).filter(function(a){
+    return String(a.status || "ativo").toLowerCase() === "ativo";
+  });
   if (!ativos.length) return null;
   return ativos[Math.floor(Math.random() * ativos.length)];
 }
@@ -1945,7 +2018,12 @@ function pititicoAplicarAnuncioNoModal(prefixo, ad) {
   if (imgBox) {
     if (ad.imagem) {
       const img = String(ad.imagem).replace(/[<>&"]/g, "");
-      imgBox.innerHTML = '<img src="' + img + '" style="width:92px;height:92px;border-radius:999px;object-fit:cover" onerror="this.parentNode.innerHTML=\'🍼\'">';
+      const tag = '<img src="' + img + '" style="width:92px;height:92px;border-radius:999px;object-fit:cover">';
+      imgBox.innerHTML = tag;
+      const imagem = imgBox.querySelector("img");
+      if (imagem) {
+        imagem.onerror = function(){ imgBox.innerHTML = "🍼"; };
+      }
     } else {
       imgBox.innerHTML = "🍼";
     }
@@ -1998,7 +2076,9 @@ function pititicoFecharAnuncioPosLogin() {
 window.addEventListener("load", function() {
   setTimeout(function() {
     const login = document.getElementById("loginScreen");
-    if (login && login.classList.contains("show")) pititicoMostrarAnuncioLogin();
+    if (login && login.classList.contains("show")) {
+      pititicoMostrarAnuncioLogin();
+    }
   }, 900);
 });
 

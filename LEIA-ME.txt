@@ -1,26 +1,22 @@
-PiTiTiCo v1.5 - Anúncios Admin Aleatórios
+PiTiTiCo v1.5 CORRIGIDA - Ads Admin Aleatórios
 
-Alterações:
-1. O anúncio do início do login usa os anúncios cadastrados no Admin.
-2. O anúncio após login/cadastro também usa os anúncios cadastrados no Admin.
-3. A cada reload, fechamento/abertura do browser ou APP, o anúncio é escolhido aleatoriamente.
-4. Não usa mais trava de "visto hoje" para esses anúncios.
-5. Mantém gratuito 90 dias e sem popup de atualização.
-6. Badge visual permanece v1.0.
+Refiz usando como base a v1.4, sem perder as alterações anteriores.
+
+Mantido:
+- gratuito 90 dias
+- sem popup de atualização
+- anúncio no login
+- anúncio após login
+- controle de banidos
+- controle Premium
+- badge visual v1.0
+
+Atualizado:
+- anúncios do login e pós-login agora vêm da coleção anúncios/Admin
+- anúncio escolhido aleatoriamente a cada reload/abertura
+- sem trava de "visto hoje"
 
 Substituir no Render/GitHub:
 public/index.html
 public/app.html
-
-Pode manter:
-server.js
-admin.html
-versao.json
-
-Observação:
-Para controlar os anúncios, use o Admin normalmente:
-- título
-- texto
-- imagem
-- link
-- status ativo
+public/versao.json
