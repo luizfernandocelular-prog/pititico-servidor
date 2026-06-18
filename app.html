@@ -1900,7 +1900,7 @@
 }
 
 
-/* v1.5 corrigida - popup de atualização desativado */
+/* v1.7 final - ajustes seguros */
 #modalAtualizacao,
 #updateModal,
 #pititicoUpdateModal,
@@ -1914,31 +1914,8 @@
   pointer-events:none !important;
 }
 
-
-/* v1.5 corrigida - anúncio pós-login */
-.pititico-post-login-ad-modal{position:fixed !important;inset:0 !important;z-index:100000 !important;display:none !important;align-items:center !important;justify-content:center !important;padding:18px !important;background:rgba(47,20,45,.42) !important;backdrop-filter:blur(5px) !important;}
-.pititico-post-login-ad-modal.show{display:flex !important;}
-.pititico-post-login-ad-card{width:min(430px,94vw) !important;background:#fff !important;border-radius:28px !important;padding:22px !important;box-shadow:0 24px 70px rgba(60,24,55,.28) !important;text-align:center !important;}
-.pititico-post-login-ad-img{width:92px !important;height:92px !important;border-radius:999px !important;object-fit:cover !important;background:#ffeaf4 !important;display:grid !important;place-items:center !important;margin:0 auto 12px !important;font-size:44px !important;}
-.pititico-post-login-ad-card h2{color:#f0529f !important;margin:0 0 8px !important;font-size:25px !important;}
-.pititico-post-login-ad-card p{color:#5d5068 !important;line-height:1.45 !important;font-weight:700 !important;}
-.pititico-post-login-ad-actions{display:grid !important;grid-template-columns:1fr 1fr !important;gap:10px !important;margin-top:16px !important;}
-.pititico-post-login-ad-actions button,.pititico-post-login-ad-actions a{border:0 !important;border-radius:16px !important;padding:13px 12px !important;font-weight:1000 !important;cursor:pointer !important;text-decoration:none !important;display:grid !important;place-items:center !important;}
-.pititico-post-ad-close{background:#f3e8f2 !important;color:#5d5068 !important;}
-.pititico-post-ad-open{background:linear-gradient(135deg,#ef6eb8,#e84b9d) !important;color:#fff !important;}
-@media(max-width:420px){.pititico-post-login-ad-actions{grid-template-columns:1fr !important;}}
-
 </style>
 
-<script data-pititico="v1.6-login-session-clean">
-(function(){
-  try {
-    localStorage.removeItem("pititico_usuario");
-    localStorage.removeItem("pititico_usuarios_cadastrados");
-    sessionStorage.removeItem("pititico_usuario_sessao");
-  } catch(e) {}
-})();
-</script>
 </head>
 
 <body>
@@ -2683,17 +2660,24 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
     }
 
     function carregarUsuarioLocal() {
-  try {
-    localStorage.removeItem("pititico_usuario");
-    localStorage.removeItem("pititico_usuarios_cadastrados");
-    sessionStorage.removeItem("pititico_usuario_sessao");
-  } catch (e) {}
+      try {
+        localStorage.removeItem("pititico_usuario");
+        localStorage.removeItem("pititico_usuarios_cadastrados");
+        Object.keys(localStorage).forEach(function(k) {
+          const kl = String(k).toLowerCase();
+          if (kl.includes("usuario") || kl.includes("user") || kl.includes("login") || kl.includes("sessao") || kl.includes("session") || kl.includes("auth")) {
+            localStorage.removeItem(k);
+          }
+        });
+        sessionStorage.clear();
+      } catch (e) {}
 
-  usuarioAtual = null;
-  renderPerfilSuperior();
-  mostrarLogin(true, "login");
-  return null;
-}
+      usuarioAtual = null;
+      limparDadosDaSessaoVisual();
+      renderPerfilSuperior();
+      mostrarLogin(true, "login");
+      return null;
+    }
 
 
     async function validarUsuarioNoServidor() {
@@ -2818,24 +2802,25 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
     }
 
     function trocarUsuario() {
-  try {
-    sessionStorage.removeItem("pititico_usuario_sessao");
-    sessionStorage.removeItem("pititico_post_login_ad_visto");
-    sessionStorage.removeItem("pititico_login_ad_visto");
-    localStorage.removeItem("pititico_usuario");
-    localStorage.removeItem("pititico_usuarios_cadastrados");
-  } catch (e) {}
+      try {
+        localStorage.removeItem("pititico_usuario");
+        localStorage.removeItem("pititico_usuarios_cadastrados");
+        Object.keys(localStorage).forEach(function(k) {
+          const kl = String(k).toLowerCase();
+          if (kl.includes("usuario") || kl.includes("user") || kl.includes("login") || kl.includes("sessao") || kl.includes("session") || kl.includes("auth")) {
+            localStorage.removeItem(k);
+          }
+        });
+        sessionStorage.clear();
+      } catch (e) {}
 
-  usuarioAtual = null;
-  fecharPerfilUsuario();
-  renderPerfilSuperior();
-  mostrarLogin(true, "login");
-
-  // Anúncio de entrada do login também reaparece ao trocar usuário.
-  setTimeout(function(){
-    if (typeof pititicoMostrarAnuncioLogin === "function") pititicoMostrarAnuncioLogin();
-  }, 500);
-}
+      usuarioAtual = null;
+      limparDadosDaSessaoVisual();
+      renderTudoUsuario();
+      renderPerfilSuperior();
+      fecharPerfilUsuario();
+      mostrarLogin(true, "login");
+    }
 
     async function entrarUsuario() {
       const email = document.getElementById("loginEmailEntrar").value.trim().toLowerCase();
@@ -2874,7 +2859,10 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
 
         sessionStorage.setItem("pititico_usuario_sessao", JSON.stringify(usuarioAtual));
 
-        pititicoLoginConcluido();
+        renderPerfilSuperior();
+        esconderLogin();
+        carregarDados();
+        renderTudoUsuario();
 
       } catch (erro) {
         abrirModal("Servidor indisponível", "Não foi possível validar seu login no servidor. Tente novamente com internet.", () => {});
@@ -4026,5 +4014,162 @@ window.controlarAnunciosPorMenu=function(){pititicoLimparAdsDuplicadosV79();cons
 window.addEventListener("load",()=>{setTimeout(controlarAnunciosPorMenu,500);setTimeout(controlarAnunciosPorMenu,1600);setTimeout(controlarAnunciosPorMenu,3200);});document.addEventListener("click",()=>setTimeout(controlarAnunciosPorMenu,150));
 
 </script>
+
+<script data-pititico="v1.7-final-corrigido">
+(function(){
+  window.verificarAtualizacao = async function(){ return; };
+  window.mostrarModalAtualizacao = function(){ return; };
+  window.abrirModalAtualizacao = function(){ return; };
+
+  function ativos(lista){
+    return (Array.isArray(lista) ? lista : []).filter(function(a){
+      return String(a.status || "ativo").toLowerCase() === "ativo";
+    });
+  }
+
+  function aleatorio(lista){
+    const a = ativos(lista);
+    if (!a.length) return null;
+    return a[Math.floor(Math.random() * a.length)];
+  }
+
+  async function buscarAd(){
+    try {
+      const r = await fetch("https://pititico-servidor.onrender.com/anuncios?t=" + Date.now(), { cache: "no-store" });
+      if (!r.ok) return null;
+      return aleatorio(await r.json());
+    } catch(e) {
+      return null;
+    }
+  }
+
+  function aplicar(prefixo, ad){
+    if (!ad) return false;
+
+    const titulo = document.getElementById(prefixo + "Title");
+    const texto = document.getElementById(prefixo + "Text");
+    const imgBox = document.getElementById(prefixo + "Image");
+    const link = document.getElementById(prefixo + "Link");
+
+    if (titulo) titulo.textContent = ad.titulo || "Anúncio PiTiTiCo";
+    if (texto) texto.textContent = ad.texto || "Oferta especial para mães e bebês.";
+
+    if (link) {
+      let href = String(ad.link || "#").trim();
+      if (href && href !== "#" && !/^https?:\/\//i.test(href)) href = "https://" + href;
+      link.href = href || "#";
+      link.style.display = href && href !== "#" ? "grid" : "none";
+    }
+
+    if (imgBox) {
+      imgBox.innerHTML = "🍼";
+      if (ad.imagem) {
+        const img = document.createElement("img");
+        img.src = String(ad.imagem).replace(/[<>&"]/g, "");
+        img.style.width = "92px";
+        img.style.height = "92px";
+        img.style.borderRadius = "999px";
+        img.style.objectFit = "cover";
+        img.onerror = function(){ imgBox.innerHTML = "🍼"; };
+        imgBox.innerHTML = "";
+        imgBox.appendChild(img);
+      }
+    }
+
+    return true;
+  }
+
+  window.pititicoMostrarAnuncioLogin = async function(){
+    const modal = document.getElementById("pititicoLoginAdModal");
+    if (!modal) return;
+    const ad = await buscarAd();
+    if (ad) aplicar("pititicoLoginAd", ad);
+    modal.classList.add("show");
+  };
+
+  window.pititicoFecharAnuncioLogin = function(){
+    const modal = document.getElementById("pititicoLoginAdModal");
+    if (modal) modal.classList.remove("show");
+  };
+
+  window.pititicoMostrarAnuncioPosLogin = async function(){
+    const modal = document.getElementById("pititicoPostLoginAdModal");
+    if (!modal) return;
+    const ad = await buscarAd();
+    if (ad) aplicar("pititicoPostLoginAd", ad);
+    modal.classList.add("show");
+  };
+
+  window.pititicoFecharAnuncioPosLogin = function(){
+    const modal = document.getElementById("pititicoPostLoginAdModal");
+    if (modal) modal.classList.remove("show");
+  };
+
+  window.pititicoAgendarAnuncioPosLogin = function(){
+    setTimeout(function(){
+      window.pititicoMostrarAnuncioPosLogin();
+    }, 700);
+  };
+
+  // Mostra anúncio na tela de login em toda abertura/reload.
+  window.addEventListener("load", function(){
+    try {
+      sessionStorage.removeItem("pititico_login_ad_visto");
+      sessionStorage.removeItem("pititico_post_login_ad_visto");
+    } catch(e) {}
+
+    setTimeout(function(){
+      const login = document.getElementById("loginScreen");
+      if (login && login.classList.contains("show")) {
+        window.pititicoMostrarAnuncioLogin();
+      }
+    }, 900);
+  });
+
+  // Envolve esconderLogin para mostrar anúncio pós-login em todo login/cadastro.
+  function instalarHookEsconderLogin(){
+    if (typeof window.esconderLogin !== "function") return false;
+    if (window.esconderLogin.__pititicoHookV17) return true;
+
+    const original = window.esconderLogin;
+    window.esconderLogin = function(){
+      const retorno = original.apply(this, arguments);
+      window.pititicoAgendarAnuncioPosLogin();
+      return retorno;
+    };
+    window.esconderLogin.__pititicoHookV17 = true;
+    return true;
+  }
+
+  if (!instalarHookEsconderLogin()) {
+    const timer = setInterval(function(){
+      if (instalarHookEsconderLogin()) clearInterval(timer);
+    }, 200);
+    setTimeout(function(){ clearInterval(timer); }, 5000);
+  }
+
+  // Trocar usuário sem apagar dados/configurações do usuário no app.
+  window.trocarUsuario = function(){
+    try {
+      sessionStorage.removeItem("pititico_usuario_sessao");
+      sessionStorage.removeItem("pititico_login_ad_visto");
+      sessionStorage.removeItem("pititico_post_login_ad_visto");
+      localStorage.removeItem("pititico_usuario");
+      localStorage.removeItem("pititico_usuarios_cadastrados");
+    } catch(e) {}
+
+    if (typeof window.usuarioAtual !== "undefined") window.usuarioAtual = null;
+
+    if (typeof window.fecharPerfilUsuario === "function") window.fecharPerfilUsuario();
+    if (typeof window.renderPerfilSuperior === "function") window.renderPerfilSuperior();
+    if (typeof window.mostrarLogin === "function") window.mostrarLogin(true, "login");
+
+    setTimeout(function(){
+      window.pititicoMostrarAnuncioLogin();
+    }, 500);
+  };
+})();
+</script>
+
 </body>
 </html>
