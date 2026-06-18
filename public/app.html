@@ -1916,44 +1916,63 @@
   } catch(e) {}
 })();
 
-/* v1.3 - anúncio no login + 90 dias grátis */
+
+/* v1.5 - anúncios integrados ao Admin e aleatórios */
+function pititicoEscolherAnuncioAleatorio(lista) {
+  const ativos = (Array.isArray(lista) ? lista : []).filter(a => String(a.status || "ativo").toLowerCase() === "ativo");
+  if (!ativos.length) return null;
+  return ativos[Math.floor(Math.random() * ativos.length)];
+}
+
+function pititicoAplicarAnuncioNoModal(prefixo, ad) {
+  if (!ad) return false;
+
+  const titulo = document.getElementById(prefixo + "Title");
+  const texto = document.getElementById(prefixo + "Text");
+  const imgBox = document.getElementById(prefixo + "Image");
+  const link = document.getElementById(prefixo + "Link");
+
+  if (titulo) titulo.textContent = ad.titulo || "Anúncio PiTiTiCo";
+  if (texto) texto.textContent = ad.texto || "Oferta especial para mães e bebês.";
+
+  if (link) {
+    let href = String(ad.link || "#").trim();
+    if (href && href !== "#" && !/^https?:\/\//i.test(href)) href = "https://" + href;
+    link.href = href || "#";
+    link.style.display = href && href !== "#" ? "grid" : "none";
+  }
+
+  if (imgBox) {
+    if (ad.imagem) {
+      const img = String(ad.imagem).replace(/[<>&"]/g, "");
+      imgBox.innerHTML = '<img src="' + img + '" style="width:92px;height:92px;border-radius:999px;object-fit:cover" onerror="this.parentNode.innerHTML=\'🍼\'">';
+    } else {
+      imgBox.innerHTML = "🍼";
+    }
+  }
+
+  return true;
+}
+
+async function pititicoBuscarAnuncioAleatorio() {
+  try {
+    const r = await fetch("https://pititico-servidor.onrender.com/anuncios?t=" + Date.now(), { cache: "no-store" });
+    if (!r.ok) return null;
+    const dados = await r.json();
+    return pititicoEscolherAnuncioAleatorio(dados);
+  } catch(e) {
+    return null;
+  }
+}
+
 async function pititicoMostrarAnuncioLogin() {
   const modal = document.getElementById("pititicoLoginAdModal");
   if (!modal) return;
 
-  const hoje = new Date().toISOString().slice(0,10);
-  const visto = sessionStorage.getItem("pititico_login_ad_visto");
-  if (visto === hoje) return;
-
-  const titulo = document.getElementById("pititicoLoginAdTitle");
-  const texto = document.getElementById("pititicoLoginAdText");
-  const imgBox = document.getElementById("pititicoLoginAdImage");
-  const link = document.getElementById("pititicoLoginAdLink");
-
-  try {
-    const r = await fetch("https://pititico-servidor.onrender.com/anuncios?t=" + Date.now(), { cache: "no-store" });
-    if (r.ok) {
-      const dados = await r.json();
-      const lista = (Array.isArray(dados) ? dados : []).filter(a => String(a.status || "ativo").toLowerCase() === "ativo");
-      if (lista.length) {
-        const ad = lista[0];
-        if (titulo) titulo.textContent = ad.titulo || "Anúncio PiTiTiCo";
-        if (texto) texto.textContent = ad.texto || "Oferta especial para famílias.";
-        if (link) {
-          let href = String(ad.link || "#").trim();
-          if (href && href !== "#" && !/^https?:\/\//i.test(href)) href = "https://" + href;
-          link.href = href || "#";
-          link.style.display = href && href !== "#" ? "grid" : "none";
-        }
-        if (imgBox && ad.imagem) {
-          imgBox.innerHTML = '<img src="' + String(ad.imagem).replace(/[<>&"]/g,"") + '" style="width:92px;height:92px;border-radius:999px;object-fit:cover" onerror="this.parentNode.innerHTML=\'🍼\'">';
-        }
-      }
-    }
-  } catch(e) {}
+  const ad = await pititicoBuscarAnuncioAleatorio();
+  if (ad) pititicoAplicarAnuncioNoModal("pititicoLoginAd", ad);
 
   modal.classList.add("show");
-  sessionStorage.setItem("pititico_login_ad_visto", hoje);
 }
 
 function pititicoFecharAnuncioLogin() {
@@ -1961,36 +1980,19 @@ function pititicoFecharAnuncioLogin() {
   if (modal) modal.classList.remove("show");
 }
 
-function pititicoAvisoTrial(usuario) {
-  if (!usuario) return;
+async function pititicoMostrarAnuncioPosLogin() {
+  const modal = document.getElementById("pititicoPostLoginAdModal");
+  if (!modal) return;
 
-  const dias = Number(usuario.trialDiasRestantes ?? 90);
-  let box = document.getElementById("pititicoTrialBox");
+  const ad = await pititicoBuscarAnuncioAleatorio();
+  if (ad) pititicoAplicarAnuncioNoModal("pititicoPostLoginAd", ad);
 
-  if (!box) {
-    box = document.createElement("div");
-    box.id = "pititicoTrialBox";
-    box.className = "pititico-trial-box";
-    const pop = document.getElementById("perfilDados");
-    if (pop && pop.parentNode) pop.insertAdjacentElement("afterend", box);
-  }
-
-  if (usuario.premiumAtivo || usuario.plano === "premium") {
-    box.innerHTML = "Plano Premium ativo.";
-  } else {
-    box.innerHTML = "Plano gratuito: " + Math.max(0, dias) + " dia(s) restantes dos 90 dias.";
-  }
+  modal.classList.add("show");
 }
 
-function pititicoBloquearApp(mensagem) {
-  const lock = document.getElementById("pititicoAppLocked");
-  if (lock) {
-    const p = lock.querySelector("p");
-    if (p && mensagem) p.textContent = mensagem;
-    lock.classList.add("show");
-  } else {
-    alert(mensagem || "Acesso gratuito expirado.");
-  }
+function pititicoFecharAnuncioPosLogin() {
+  const modal = document.getElementById("pititicoPostLoginAdModal");
+  if (modal) modal.classList.remove("show");
 }
 
 window.addEventListener("load", function() {
@@ -1999,52 +2001,6 @@ window.addEventListener("load", function() {
     if (login && login.classList.contains("show")) pititicoMostrarAnuncioLogin();
   }, 900);
 });
-
-
-/* v1.4 - anúncio pós-login */
-async function pititicoMostrarAnuncioPosLogin() {
-  const modal = document.getElementById("pititicoPostLoginAdModal");
-  if (!modal) return;
-
-  const visto = sessionStorage.getItem("pititico_post_login_ad_visto");
-  if (visto === "sim") return;
-
-  const titulo = document.getElementById("pititicoPostLoginAdTitle");
-  const texto = document.getElementById("pititicoPostLoginAdText");
-  const imgBox = document.getElementById("pititicoPostLoginAdImage");
-  const link = document.getElementById("pititicoPostLoginAdLink");
-
-  try {
-    const r = await fetch("https://pititico-servidor.onrender.com/anuncios?t=" + Date.now(), { cache: "no-store" });
-    if (r.ok) {
-      const dados = await r.json();
-      const lista = (Array.isArray(dados) ? dados : []).filter(a => String(a.status || "ativo").toLowerCase() === "ativo");
-      const ad = lista.length > 1 ? lista[1] : lista[0];
-
-      if (ad) {
-        if (titulo) titulo.textContent = ad.titulo || "Anúncio PiTiTiCo";
-        if (texto) texto.textContent = ad.texto || "Oferta especial para famílias.";
-        if (link) {
-          let href = String(ad.link || "#").trim();
-          if (href && href !== "#" && !/^https?:\/\//i.test(href)) href = "https://" + href;
-          link.href = href || "#";
-          link.style.display = href && href !== "#" ? "grid" : "none";
-        }
-        if (imgBox && ad.imagem) {
-          imgBox.innerHTML = '<img src="' + String(ad.imagem).replace(/[<>&"]/g,"") + '" style="width:92px;height:92px;border-radius:999px;object-fit:cover" onerror="this.parentNode.innerHTML=\'🍼\'">';
-        }
-      }
-    }
-  } catch(e) {}
-
-  modal.classList.add("show");
-  sessionStorage.setItem("pititico_post_login_ad_visto", "sim");
-}
-
-function pititicoFecharAnuncioPosLogin() {
-  const modal = document.getElementById("pititicoPostLoginAdModal");
-  if (modal) modal.classList.remove("show");
-}
 
 </script>
 

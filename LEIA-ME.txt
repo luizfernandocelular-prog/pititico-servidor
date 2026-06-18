@@ -1,19 +1,26 @@
-PiTiTiCo v1.4 - Sem popup de atualização + anúncios
+PiTiTiCo v1.5 - Anúncios Admin Aleatórios
 
 Alterações:
-1. Remove/desativa a janela de atualização manual.
-2. Mantém anúncio flutuante no início do login.
-3. Adiciona anúncio flutuante após login/cadastro.
-4. Mantém controle gratuito de 90 dias.
-5. Badge visual fica somente v1.0.
+1. O anúncio do início do login usa os anúncios cadastrados no Admin.
+2. O anúncio após login/cadastro também usa os anúncios cadastrados no Admin.
+3. A cada reload, fechamento/abertura do browser ou APP, o anúncio é escolhido aleatoriamente.
+4. Não usa mais trava de "visto hoje" para esses anúncios.
+5. Mantém gratuito 90 dias e sem popup de atualização.
+6. Badge visual permanece v1.0.
 
 Substituir no Render/GitHub:
-server.js
 public/index.html
 public/app.html
-public/admin.html
-public/versao.json
-public/assets/pititico-login-logo.png
+
+Pode manter:
+server.js
+admin.html
+versao.json
 
 Observação:
-O versao.json foi mantido apenas como controle interno, sem popup manual.
+Para controlar os anúncios, use o Admin normalmente:
+- título
+- texto
+- imagem
+- link
+- status ativo
