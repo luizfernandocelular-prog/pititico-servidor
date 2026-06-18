@@ -2923,7 +2923,7 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
         if (typeof carregarVitrineServidor === "function") carregarVitrineServidor();
 
       } catch (erro) {
-        abrirModal("Servidor indisponível", "Não foi possível cadastrar agora. Confira se o servidor está ligado.", () => {
+        abrirModal("Servidor indisponível", "Este e-mail já está cadastrado no PiTiTiCo. Use a opção Login para entrar ou edite apenas os dados permitidos no seu perfil.", () => {
           mostrarLogin(true);
         });
       }
@@ -4168,6 +4168,83 @@ window.addEventListener("load",()=>{setTimeout(controlarAnunciosPorMenu,500);set
       window.pititicoMostrarAnuncioLogin();
     }, 500);
   };
+})();
+</script>
+
+
+<script data-pititico="v1.8-trial-perfil-msg">
+(function(){
+  function textoTrial(usuario){
+    if (!usuario) return "";
+    const plano = String(usuario.plano || "gratis").toLowerCase();
+    const premium = usuario.premiumAtivo === true || plano === "premium" || String(usuario.assinaturaStatus || "").toLowerCase() === "ativo";
+
+    if (premium) return "Plano: Premium ativo";
+
+    let dias = usuario.trialDiasRestantes;
+    if (dias === undefined || dias === null || dias === "") {
+      const expira = usuario.trialExpiraEm ? new Date(usuario.trialExpiraEm) : null;
+      if (expira && !isNaN(expira.getTime())) {
+        dias = Math.ceil((expira - new Date()) / (1000 * 60 * 60 * 24));
+      }
+    }
+
+    if (dias === undefined || dias === null || dias === "" || isNaN(Number(dias))) {
+      return "Plano gratuito: 90 dias de utilização";
+    }
+
+    dias = Math.max(0, Number(dias));
+    return "Gratuito: " + dias + " dia(s) restantes";
+  }
+
+  function inserirTrialNoPerfil(){
+    try {
+      const box = document.getElementById("perfilDados");
+      if (!box || typeof usuarioAtual === "undefined" || !usuarioAtual) return;
+
+      let linha = document.getElementById("pititicoTrialPerfilInfo");
+      if (!linha) {
+        linha = document.createElement("p");
+        linha.id = "pititicoTrialPerfilInfo";
+        linha.style.margin = "8px 0 0";
+        linha.style.fontWeight = "900";
+        linha.style.color = "#f0529f";
+        box.appendChild(linha);
+      }
+
+      linha.textContent = textoTrial(usuarioAtual);
+    } catch(e) {}
+  }
+
+  // Envolve renderPerfilSuperior para sempre recolocar os dias no perfil.
+  function instalarHookPerfil(){
+    if (typeof window.renderPerfilSuperior !== "function") return false;
+    if (window.renderPerfilSuperior.__trialHookV18) return true;
+
+    const original = window.renderPerfilSuperior;
+    window.renderPerfilSuperior = function(){
+      const retorno = original.apply(this, arguments);
+      setTimeout(inserirTrialNoPerfil, 80);
+      return retorno;
+    };
+    window.renderPerfilSuperior.__trialHookV18 = true;
+    return true;
+  }
+
+  if (!instalarHookPerfil()) {
+    const t = setInterval(function(){
+      if (instalarHookPerfil()) clearInterval(t);
+    }, 200);
+    setTimeout(function(){ clearInterval(t); }, 5000);
+  }
+
+  // Também tenta atualizar após login e ao clicar no perfil.
+  window.addEventListener("load", function(){
+    setTimeout(inserirTrialNoPerfil, 1000);
+    document.addEventListener("click", function(){
+      setTimeout(inserirTrialNoPerfil, 120);
+    });
+  });
 })();
 </script>
 

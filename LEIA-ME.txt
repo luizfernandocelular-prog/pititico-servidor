@@ -1,12 +1,13 @@
-PiTiTiCo v1.6 - Correção login, anúncios e configuração
+PiTiTiCo v1.8 - Mensagem usuário cadastrado + dias gratuitos no perfil
 
 Correções:
-1. Anúncio pós-login agora abre em TODO login/cadastro bem sucedido.
-2. Ao sair/trocar usuário e logar novamente, o anúncio pós-login abre novamente.
-3. Ao trocar usuário, o app não apaga mais dados/configurações do usuário.
-4. O login continua obrigatório e sem auto-login por cache.
-5. Anúncios seguem aleatórios e vindos do Admin.
-6. Mantém gratuito 90 dias, sem popup de atualização e badge v1.0.
+1. Mensagem de cadastro/edição alterada para "Usuário já cadastrado" quando o e-mail já existe.
+2. Retorna no pop-up/dados do usuário a informação dos dias gratuitos restantes.
+3. Mantém anúncios aleatórios do Admin.
+4. Mantém anúncio no login e pós-login.
+5. Mantém gratuito 90 dias.
+6. Mantém sem popup de atualização.
+7. Badge visual v1.0.
 
 Substituir no Render/GitHub:
 public/index.html
