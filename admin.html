@@ -45,6 +45,12 @@ pre{white-space:pre-wrap;background:#f8f4f8;border-radius:14px;padding:12px;over
 .admin-lock{position:fixed;inset:0;z-index:999999;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#fff4fa,#ffeaf5,#f7ddff);padding:20px}
 .admin-lock-card{width:min(420px,94vw);background:#fff;border-radius:28px;padding:28px;box-shadow:0 25px 70px rgba(100,45,90,.25)}
 .admin-lock-card h2{margin:0 0 8px;color:#eb4fa0;font-size:30px}.admin-lock-card p{color:#665a72;font-weight:700}.admin-lock-card input{margin:10px 0 14px}.admin-lock-card button{width:100%}.admin-lock-error{color:#b91c1c;font-weight:900;margin-top:10px;display:none}
+
+.premiumTag{display:inline-block;background:#efe4ff;color:#6b3cc9;border-radius:999px;padding:5px 9px;font-weight:900;font-size:12px;margin-left:6px}
+.freeTag{display:inline-block;background:#fff0f7;color:#e84b9d;border-radius:999px;padding:5px 9px;font-weight:900;font-size:12px;margin-left:6px}
+button.premiumBtn{background:#6b3cc9;color:white}
+button.freeBtn{background:#f5d8ea;color:#9a2969}
+
 </style>
 </head>
 <body>
@@ -231,12 +237,70 @@ function atualizarStats(){
 }
 function setUserTabs(){["btnUserAtivos","btnUserBanidos","btnUserTodos"].forEach(id=>document.getElementById(id).classList.remove("active"));document.getElementById(filtroUsuario==="ativo"?"btnUserAtivos":filtroUsuario==="banido"?"btnUserBanidos":"btnUserTodos").classList.add("active");}
 function filtrarUsuarios(f){filtroUsuario=f;renderUsuarios();}
+
+async function alterarPlanoUsuario(email, plano){
+  if(!email){
+    alert("Usuário sem e-mail cadastrado.");
+    return;
+  }
+
+  const texto = plano === "premium"
+    ? "Ativar Premium para este usuário?"
+    : "Desativar Premium e voltar para Gratuito?";
+
+  if(!confirm(texto)) return;
+
+  try{
+    await apiSend(["/admin/usuarios/plano"], "POST", {email, plano});
+    alert(plano === "premium" ? "Premium ativado com sucesso." : "Premium desativado com sucesso.");
+    await carregarTudo();
+  }catch(e){
+    alert("Erro ao alterar plano: " + e.message);
+  }
+}
+
 function renderUsuarios(){
-  setUserTabs(); const box=usuariosBox; let lista=usuarios.slice();
-  if(filtroUsuario==="ativo")lista=lista.filter(u=>(u.status||"ativo")!=="banido");
-  if(filtroUsuario==="banido")lista=lista.filter(u=>(u.status||"")==="banido");
-  if(!lista.length){box.innerHTML='<div class="empty">Nenhum usuário encontrado.</div>';return;}
-  box.innerHTML=lista.map(u=>{const uid=idOf(u),banido=(u.status||"")==="banido";return `<div class="user"><h3>${txt(u.nome||u.name||"Usuário sem nome")}</h3><p><b>E-mail:</b> ${txt(u.email||"-")}</p><p><b>WhatsApp:</b> ${txt(u.whatsapp||u.whats||"-")}</p><p><b>Status:</b> ${statusBadge(u.status||"ativo")}</p><button class="small ${banido?"green":"red"}" onclick="alterarStatusUsuario('${uid}','${banido?"ativo":"banido"}')">${banido?"Reativar":"Banir"} usuário</button> <button class="small gray" onclick='abrirDados(${JSON.stringify(JSON.stringify(u))})'>Dados</button></div>`}).join("");
+  setUserTabs(); 
+  const box=usuariosBox; 
+  let lista=usuarios.slice();
+
+  if(filtroUsuario==="ativo") lista=lista.filter(u=>(u.status||"ativo")!=="banido");
+  if(filtroUsuario==="banido") lista=lista.filter(u=>(u.status||"")==="banido");
+
+  if(!lista.length){
+    box.innerHTML='<div class="empty">Nenhum usuário encontrado.</div>';
+    return;
+  }
+
+  box.innerHTML=lista.map(u=>{
+    const uid=idOf(u);
+    const banido=(u.status||"")==="banido";
+    const email=txt(u.email||"");
+    const plano=String(u.plano||"gratis").toLowerCase();
+    const assinatura=String(u.assinaturaStatus||"").toLowerCase();
+    const premium=(u.premiumAtivo===true || plano==="premium" || assinatura==="ativo");
+    const tagPlano=premium?'<span class="premiumTag">Premium</span>':'<span class="freeTag">Gratuito</span>';
+    const dias = u.trialDiasRestantes ?? "-";
+
+    return `<div class="user">
+      <h3>${txt(u.nome||u.name||"Usuário sem nome")} ${tagPlano}</h3>
+      <p><b>E-mail:</b> ${email||"-"}</p>
+      <p><b>WhatsApp:</b> ${txt(u.whatsapp||u.whats||"-")}</p>
+      <p><b>Status:</b> ${statusBadge(u.status||"ativo")}</p>
+      <p><b>Plano:</b> ${premium?"Premium ativo":"Gratuito"} ${premium?"":`<br><b>Dias grátis restantes:</b> ${txt(dias)}`}</p>
+
+      <button class="small ${banido?"green":"red"}" onclick="alterarStatusUsuario('${uid}','${banido?"ativo":"banido"}')">
+        ${banido?"Reativar":"Banir"} usuário
+      </button>
+
+      ${premium
+        ? `<button class="small freeBtn" onclick="alterarPlanoUsuario('${email}','gratis')">Desativar Premium</button>`
+        : `<button class="small premiumBtn" onclick="alterarPlanoUsuario('${email}','premium')">Ativar Premium</button>`
+      }
+
+      <button class="small gray" onclick='abrirDados(${JSON.stringify(JSON.stringify(u))})'>Dados</button>
+    </div>`;
+  }).join("");
 }
 function filtrarItens(f){filtroItem=f;renderItens();}
 function renderItens(){

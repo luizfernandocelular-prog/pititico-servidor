@@ -1,14 +1,16 @@
-PiTiTiCo v1.8 - Mensagem usuário cadastrado + dias gratuitos no perfil
+PiTiTiCo v2.0 - Premium sem anúncios + Admin com controle de plano
 
 Correções:
-1. Mensagem de cadastro/edição alterada para "Usuário já cadastrado" quando o e-mail já existe.
-2. Retorna no pop-up/dados do usuário a informação dos dias gratuitos restantes.
-3. Mantém anúncios aleatórios do Admin.
-4. Mantém anúncio no login e pós-login.
-5. Mantém gratuito 90 dias.
-6. Mantém sem popup de atualização.
-7. Badge visual v1.0.
+1. Usuário Premium não vê anúncio após login.
+2. Usuário Premium não vê anúncios no menu Regras.
+3. Usuário gratuito continua vendo anúncios após login e no menu Regras.
+4. Admin agora tem botão para Ativar Premium manualmente.
+5. Admin agora tem botão para Desativar Premium manualmente.
+6. Admin mostra tag Premium/Gratuito e dias grátis restantes.
+7. Mantém gratuito 90 dias, sem popup de atualização e badge v1.0.
 
 Substituir no Render/GitHub:
+server.js
 public/index.html
 public/app.html
+public/admin.html

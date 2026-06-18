@@ -1923,6 +1923,21 @@
   pointer-events: none !important;
 }
 
+
+/* v2.0 - Premium sem anúncios */
+body.pititico-premium #pititicoAdsBox,
+body.pititico-premium #pititicoAdsTrack,
+body.pititico-premium #pititicoPostLoginAdModal,
+body.pititico-premium #pititicoLoginAdModal,
+body.pititico-premium .pititico-ads-box,
+body.pititico-premium .pititico-ads-track,
+body.pititico-premium .pititico-ad-item {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 </style>
 
 </head>
@@ -4328,6 +4343,147 @@ window.addEventListener("load",()=>{setTimeout(controlarAnunciosPorMenu,500);set
       window.pititicoMostrarAnuncioPosLogin();
     }, 700);
   };
+})();
+</script>
+
+
+<script data-pititico="v2.0-premium-sem-anuncios">
+(function(){
+  function usuarioLogadoAtual(){
+    try {
+      if (typeof usuarioAtual !== "undefined" && usuarioAtual) return usuarioAtual;
+    } catch(e) {}
+
+    try {
+      const s = sessionStorage.getItem("pititico_usuario_sessao");
+      if (s) return JSON.parse(s);
+    } catch(e) {}
+
+    return null;
+  }
+
+  function usuarioEhPremium(usuario){
+    if (!usuario) return false;
+    const plano = String(usuario.plano || "").toLowerCase();
+    const assinatura = String(usuario.assinaturaStatus || "").toLowerCase();
+    return usuario.premiumAtivo === true || plano === "premium" || assinatura === "ativo";
+  }
+
+  function esconderTodosAnunciosPremium(){
+    const usuario = usuarioLogadoAtual();
+    if (!usuarioEhPremium(usuario)) return false;
+
+    const ids = [
+      "pititicoLoginAdModal",
+      "pititicoPostLoginAdModal",
+      "pititicoAdsBox",
+      "pititicoAdsTrack"
+    ];
+
+    ids.forEach(function(id){
+      const el = document.getElementById(id);
+      if (el) {
+        el.classList.remove("show");
+        el.style.display = "none";
+        el.style.visibility = "hidden";
+        el.style.opacity = "0";
+        el.style.pointerEvents = "none";
+      }
+    });
+
+    document.querySelectorAll(".pititico-ads-box, .pititico-ads-track, .pititico-ad-item").forEach(function(el){
+      el.style.display = "none";
+      el.style.visibility = "hidden";
+      el.style.opacity = "0";
+      el.style.pointerEvents = "none";
+    });
+
+    return true;
+  }
+
+  // Guarda referências das funções atuais.
+  const originalPostLogin = window.pititicoMostrarAnuncioPosLogin;
+  const originalCarregarAds = window.carregarAnunciosPititico;
+  const originalControlarAds = window.controlarAnunciosPorMenu;
+
+  // Anúncio pós-login: só usuário gratuito.
+  window.pititicoMostrarAnuncioPosLogin = async function(){
+    const usuario = usuarioLogadoAtual();
+
+    if (usuarioEhPremium(usuario)) {
+      esconderTodosAnunciosPremium();
+      return;
+    }
+
+    if (typeof originalPostLogin === "function") {
+      return await originalPostLogin.apply(this, arguments);
+    }
+
+    const modal = document.getElementById("pititicoPostLoginAdModal");
+    if (modal) modal.classList.add("show");
+  };
+
+  // Banner/anúncios do app/menu Regras: só usuário gratuito.
+  window.carregarAnunciosPititico = async function(){
+    const usuario = usuarioLogadoAtual();
+
+    if (usuarioEhPremium(usuario)) {
+      esconderTodosAnunciosPremium();
+      return;
+    }
+
+    if (typeof originalCarregarAds === "function") {
+      return await originalCarregarAds.apply(this, arguments);
+    }
+  };
+
+  window.controlarAnunciosPorMenu = function(){
+    const usuario = usuarioLogadoAtual();
+
+    if (usuarioEhPremium(usuario)) {
+      esconderTodosAnunciosPremium();
+      return;
+    }
+
+    if (typeof originalControlarAds === "function") {
+      return originalControlarAds.apply(this, arguments);
+    }
+  };
+
+  // Depois de qualquer render/click/menu, reforça ocultação para Premium.
+  function instalarHookRenderPerfil(){
+    try {
+      if (typeof window.renderPerfilSuperior !== "function") return false;
+      if (window.renderPerfilSuperior.__premiumNoAdsV20) return true;
+
+      const original = window.renderPerfilSuperior;
+      window.renderPerfilSuperior = function(){
+        const retorno = original.apply(this, arguments);
+        setTimeout(esconderTodosAnunciosPremium, 100);
+        return retorno;
+      };
+      window.renderPerfilSuperior.__premiumNoAdsV20 = true;
+      return true;
+    } catch(e) {
+      return false;
+    }
+  }
+
+  if (!instalarHookRenderPerfil()) {
+    const t = setInterval(function(){
+      if (instalarHookRenderPerfil()) clearInterval(t);
+    }, 200);
+    setTimeout(function(){ clearInterval(t); }, 5000);
+  }
+
+  window.addEventListener("load", function(){
+    setTimeout(esconderTodosAnunciosPremium, 800);
+    setTimeout(esconderTodosAnunciosPremium, 1800);
+  });
+
+  document.addEventListener("click", function(){
+    setTimeout(esconderTodosAnunciosPremium, 120);
+  });
 })();
 </script>
 
