@@ -1,22 +1,13 @@
-PiTiTiCo v1.5 CORRIGIDA - Ads Admin Aleatórios
+PiTiTiCo v1.6 - Correção login, anúncios e configuração
 
-Refiz usando como base a v1.4, sem perder as alterações anteriores.
-
-Mantido:
-- gratuito 90 dias
-- sem popup de atualização
-- anúncio no login
-- anúncio após login
-- controle de banidos
-- controle Premium
-- badge visual v1.0
-
-Atualizado:
-- anúncios do login e pós-login agora vêm da coleção anúncios/Admin
-- anúncio escolhido aleatoriamente a cada reload/abertura
-- sem trava de "visto hoje"
+Correções:
+1. Anúncio pós-login agora abre em TODO login/cadastro bem sucedido.
+2. Ao sair/trocar usuário e logar novamente, o anúncio pós-login abre novamente.
+3. Ao trocar usuário, o app não apaga mais dados/configurações do usuário.
+4. O login continua obrigatório e sem auto-login por cache.
+5. Anúncios seguem aleatórios e vindos do Admin.
+6. Mantém gratuito 90 dias, sem popup de atualização e badge v1.0.
 
 Substituir no Render/GitHub:
 public/index.html
 public/app.html
-public/versao.json

@@ -1930,160 +1930,15 @@
 
 </style>
 
-<script data-pititico="v1.2-cache-clean-before-load">
+<script data-pititico="v1.6-login-session-clean">
 (function(){
   try {
     localStorage.removeItem("pititico_usuario");
     localStorage.removeItem("pititico_usuarios_cadastrados");
-    Object.keys(localStorage).forEach(function(k){
-      var kl = String(k).toLowerCase();
-      if (kl.includes("usuario") || kl.includes("user") || kl.includes("login") || kl.includes("sessao") || kl.includes("session") || kl.includes("auth")) {
-        localStorage.removeItem(k);
-      }
-    });
-    sessionStorage.clear();
+    sessionStorage.removeItem("pititico_usuario_sessao");
   } catch(e) {}
 })();
-
-/* v1.3 - anúncio no login + 90 dias grátis */
-
-
-
-
-function pititicoAvisoTrial(usuario) {
-  if (!usuario) return;
-
-  const dias = Number(usuario.trialDiasRestantes ?? 90);
-  let box = document.getElementById("pititicoTrialBox");
-
-  if (!box) {
-    box = document.createElement("div");
-    box.id = "pititicoTrialBox";
-    box.className = "pititico-trial-box";
-    const pop = document.getElementById("perfilDados");
-    if (pop && pop.parentNode) pop.insertAdjacentElement("afterend", box);
-  }
-
-  if (usuario.premiumAtivo || usuario.plano === "premium") {
-    box.innerHTML = "Plano Premium ativo.";
-  } else {
-    box.innerHTML = "Plano gratuito: " + Math.max(0, dias) + " dia(s) restantes dos 90 dias.";
-  }
-}
-
-function pititicoBloquearApp(mensagem) {
-  const lock = document.getElementById("pititicoAppLocked");
-  if (lock) {
-    const p = lock.querySelector("p");
-    if (p && mensagem) p.textContent = mensagem;
-    lock.classList.add("show");
-  } else {
-    alert(mensagem || "Acesso gratuito expirado.");
-  }
-}
-
-/* v1.4 - anúncio pós-login */
-
-
-
-
-
-/* v1.5 corrigida - anúncios do Admin aleatórios */
-function pititicoEscolherAnuncioAleatorio(lista) {
-  const ativos = (Array.isArray(lista) ? lista : []).filter(function(a){
-    return String(a.status || "ativo").toLowerCase() === "ativo";
-  });
-  if (!ativos.length) return null;
-  return ativos[Math.floor(Math.random() * ativos.length)];
-}
-
-function pititicoAplicarAnuncioNoModal(prefixo, ad) {
-  if (!ad) return false;
-
-  const titulo = document.getElementById(prefixo + "Title");
-  const texto = document.getElementById(prefixo + "Text");
-  const imgBox = document.getElementById(prefixo + "Image");
-  const link = document.getElementById(prefixo + "Link");
-
-  if (titulo) titulo.textContent = ad.titulo || "Anúncio PiTiTiCo";
-  if (texto) texto.textContent = ad.texto || "Oferta especial para mães e bebês.";
-
-  if (link) {
-    let href = String(ad.link || "#").trim();
-    if (href && href !== "#" && !/^https?:\/\//i.test(href)) href = "https://" + href;
-    link.href = href || "#";
-    link.style.display = href && href !== "#" ? "grid" : "none";
-  }
-
-  if (imgBox) {
-    if (ad.imagem) {
-      const img = String(ad.imagem).replace(/[<>&"]/g, "");
-      const tag = '<img src="' + img + '" style="width:92px;height:92px;border-radius:999px;object-fit:cover">';
-      imgBox.innerHTML = tag;
-      const imagem = imgBox.querySelector("img");
-      if (imagem) {
-        imagem.onerror = function(){ imgBox.innerHTML = "🍼"; };
-      }
-    } else {
-      imgBox.innerHTML = "🍼";
-    }
-  }
-
-  return true;
-}
-
-async function pititicoBuscarAnuncioAleatorio() {
-  try {
-    const r = await fetch("https://pititico-servidor.onrender.com/anuncios?t=" + Date.now(), { cache: "no-store" });
-    if (!r.ok) return null;
-    const dados = await r.json();
-    return pititicoEscolherAnuncioAleatorio(dados);
-  } catch(e) {
-    return null;
-  }
-}
-
-async function pititicoMostrarAnuncioLogin() {
-  const modal = document.getElementById("pititicoLoginAdModal");
-  if (!modal) return;
-
-  const ad = await pititicoBuscarAnuncioAleatorio();
-  if (ad) pititicoAplicarAnuncioNoModal("pititicoLoginAd", ad);
-
-  modal.classList.add("show");
-}
-
-function pititicoFecharAnuncioLogin() {
-  const modal = document.getElementById("pititicoLoginAdModal");
-  if (modal) modal.classList.remove("show");
-}
-
-async function pititicoMostrarAnuncioPosLogin() {
-  const modal = document.getElementById("pititicoPostLoginAdModal");
-  if (!modal) return;
-
-  const ad = await pititicoBuscarAnuncioAleatorio();
-  if (ad) pititicoAplicarAnuncioNoModal("pititicoPostLoginAd", ad);
-
-  modal.classList.add("show");
-}
-
-function pititicoFecharAnuncioPosLogin() {
-  const modal = document.getElementById("pititicoPostLoginAdModal");
-  if (modal) modal.classList.remove("show");
-}
-
-window.addEventListener("load", function() {
-  setTimeout(function() {
-    const login = document.getElementById("loginScreen");
-    if (login && login.classList.contains("show")) {
-      pititicoMostrarAnuncioLogin();
-    }
-  }, 900);
-});
-
 </script>
-
 </head>
 
 <body>
@@ -2828,24 +2683,17 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
     }
 
     function carregarUsuarioLocal() {
-      try {
-        localStorage.removeItem("pititico_usuario");
-        localStorage.removeItem("pititico_usuarios_cadastrados");
-        Object.keys(localStorage).forEach(function(k) {
-          const kl = String(k).toLowerCase();
-          if (kl.includes("usuario") || kl.includes("user") || kl.includes("login") || kl.includes("sessao") || kl.includes("session") || kl.includes("auth")) {
-            localStorage.removeItem(k);
-          }
-        });
-        sessionStorage.clear();
-      } catch (e) {}
+  try {
+    localStorage.removeItem("pititico_usuario");
+    localStorage.removeItem("pititico_usuarios_cadastrados");
+    sessionStorage.removeItem("pititico_usuario_sessao");
+  } catch (e) {}
 
-      usuarioAtual = null;
-      limparDadosDaSessaoVisual();
-      renderPerfilSuperior();
-      mostrarLogin(true, "login");
-      return null;
-    }
+  usuarioAtual = null;
+  renderPerfilSuperior();
+  mostrarLogin(true, "login");
+  return null;
+}
 
 
     async function validarUsuarioNoServidor() {
@@ -2970,25 +2818,24 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
     }
 
     function trocarUsuario() {
-      try {
-        localStorage.removeItem("pititico_usuario");
-        localStorage.removeItem("pititico_usuarios_cadastrados");
-        Object.keys(localStorage).forEach(function(k) {
-          const kl = String(k).toLowerCase();
-          if (kl.includes("usuario") || kl.includes("user") || kl.includes("login") || kl.includes("sessao") || kl.includes("session") || kl.includes("auth")) {
-            localStorage.removeItem(k);
-          }
-        });
-        sessionStorage.clear();
-      } catch (e) {}
+  try {
+    sessionStorage.removeItem("pititico_usuario_sessao");
+    sessionStorage.removeItem("pititico_post_login_ad_visto");
+    sessionStorage.removeItem("pititico_login_ad_visto");
+    localStorage.removeItem("pititico_usuario");
+    localStorage.removeItem("pititico_usuarios_cadastrados");
+  } catch (e) {}
 
-      usuarioAtual = null;
-      limparDadosDaSessaoVisual();
-      renderTudoUsuario();
-      renderPerfilSuperior();
-      fecharPerfilUsuario();
-      mostrarLogin(true, "login");
-    }
+  usuarioAtual = null;
+  fecharPerfilUsuario();
+  renderPerfilSuperior();
+  mostrarLogin(true, "login");
+
+  // Anúncio de entrada do login também reaparece ao trocar usuário.
+  setTimeout(function(){
+    if (typeof pititicoMostrarAnuncioLogin === "function") pititicoMostrarAnuncioLogin();
+  }, 500);
+}
 
     async function entrarUsuario() {
       const email = document.getElementById("loginEmailEntrar").value.trim().toLowerCase();
@@ -3027,10 +2874,7 @@ localStorage.setItem(getStorageKeyUsuario(), JSON.stringify({
 
         sessionStorage.setItem("pititico_usuario_sessao", JSON.stringify(usuarioAtual));
 
-        renderPerfilSuperior();
-        esconderLogin();
-        carregarDados();
-        renderTudoUsuario();
+        pititicoLoginConcluido();
 
       } catch (erro) {
         abrirModal("Servidor indisponível", "Não foi possível validar seu login no servidor. Tente novamente com internet.", () => {});
